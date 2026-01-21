@@ -1,0 +1,38 @@
+.dynamic-form-container {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.form-fields-grid {
+  display: flex; /* Make it a flex container */
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  gap: 20px; /* Space between fields */
+  margin-bottom: 20px; /* Space below the grid of fields */
+}
+
+.form-field {
+  /* Calculate width for 3 columns, accounting for gap */
+  flex: 0 0 calc(33.333% - (2 * 20px / 3)); /* 33.333% minus 2/3 of the gap for perfect distribution */
+  min-width: 250px; /* Ensure fields don't get too small on narrow screens */
+  box-sizing: border-box; /* Include padding and border in the width calculation */
+}
+
+.full-width {
+  width: 100%; /* Make mat-form-field take full width of its parent (.form-field) */
+}
+
+// .form-field ng-container[ngSwitchCase="'checkbox'] mat-checkbox {
+//   margin-top: 15px; 
+//   margin-bottom: 10px;
+//   display: block; 
+// }
+
+/* Error Messages */
+.error-message {
+  color: red;
+  font-size: 0.8em;
+  margin-top: 5px;
+}

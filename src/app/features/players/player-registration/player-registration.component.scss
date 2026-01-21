@@ -1,0 +1,16 @@
+::ng-deep .mat-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-upload app-image-upload {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ccc;
+}
+
+.responsive-grid {
+  width: 100%;
+}

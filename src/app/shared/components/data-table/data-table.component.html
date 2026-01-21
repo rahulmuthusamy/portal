@@ -1,0 +1,127 @@
+<div class="table-responsive" [style.max-height]="config.height || '60vh'" style="overflow-y: auto;">
+  <table class="table table-bordered text-center align-middle">
+    <thead class="table-light sticky-top" style="z-index: 0;">
+      <tr>
+        <th *ngFor="let col of config.columns" class="text-center">
+          <div *ngIf="col.searchable" class="form-floating text-center">
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="filters[col.key]"
+              (input)="applyFilters()" placeholder="{{ col.label }}" />
+            <label class="w-100 text-center" style="font-size: 0.8rem;">
+              {{ col.label }}
+            </label>
+          </div>
+          <div *ngIf="!col.searchable" class="form-floating text-center">
+            <input type="text" class="form-control form-control-sm" (input)="applyFilters()"
+              placeholder="{{ col.label }}" disabled />
+            <label class="w-100 text-center" style="font-size: 0.8rem;">
+              {{ col.label }}
+            </label>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of pagedData">
+        <td *ngFor="let col of config.columns" [ngClass]="!col.actions ? row.rowClass : ''">
+
+          <ng-container *ngIf="col.render">
+            <span [innerHTML]="col.render(row)"></span>
+          </ng-container>
+          <ng-container *ngFor="let action of col.actions">
+            <button *ngIf="!action.condition || action.condition(row)" class="btn btn-sm me-1"
+              [disabled]="action.isDisabled" [ngClass]="action.class || 'btn-outline-primary'"
+              (click)="onActionClick({ type: action.type, row })" [title]="action?.title || ''">
+
+              <ng-container [ngSwitch]="action.type">
+                <svg *ngSwitchCase="'Edit'" [title]="action.type" xmlns="http://www.w3.org/2000/svg" width="16"
+                  height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                  <path
+                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                  <path fill-rule="evenodd"
+                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                  <title>{{action?.title ?? 'Edit'}}</title>
+
+                </svg>
+
+                <svg *ngSwitchCase="'View'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                  <title>{{action?.title ?? 'View'}}</title>
+                </svg>
+
+                <svg *ngSwitchCase="'Info'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0z" />
+                  <path
+                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 .875-.252 1.02-.598l.088-.416c-.287.176-.492.246-.61.246-.243 0-.299-.176-.248-.469l.738-3.468c.194-.897-.105-1.319-.808-1.319-.545 0-.875.252-1.02.598l-.088.416c.287-.176.492-.246.61-.246.243 0 .299.176.248.469z" />
+                  <circle cx="8" cy="4.5" r="1" />
+                  <title>{{action?.title ?? 'Info'}}</title>
+
+                </svg>
+
+                <svg *ngSwitchCase="'Save'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                  <path
+                    d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05" />
+                  <title>{{action?.title ?? 'Save'}}</title>
+
+                </svg>
+
+                <svg *ngSwitchCase="'Cancel'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                  <path
+                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                  <title>{{action?.title ?? 'Cancel'}}</title>
+
+                </svg>
+              </ng-container>
+            </button>
+          </ng-container>
+
+
+          <ng-container *ngIf="!col.render && !col.actions && !col.date">
+            <span [innerHTML]="row[col.key] | highlight:filters[col.key]"></span>
+          </ng-container>
+
+          <ng-container *ngIf="col.date">
+            <ng-container *ngIf="col.date.isDateTime">
+              <span *ngIf="col.date.combinDateandTime as formatFn; else rawDateTime">
+                {{ formatFn(row) | date: 'M/d/yy, h:mm a' }}
+              </span>
+              <ng-template #rawDateTime>
+                {{ row[col.key] | date: 'M/d/yy, h:mm a' }}
+              </ng-template>
+            </ng-container>
+            <ng-container *ngIf="!col.date.isDateTime">
+              {{ row[col.key] | date: 'M/d/yy' }}
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="col.isSelect && (!col.condition || col.condition(row))">
+            <select class="form-select form-select-sm" [ngModel]="getSelected(row.ChildID, col.key)"
+              [disabled]="col.isDisabled ?? false" (ngModelChange)="onSelectChange($event, row, col.key)">
+              <option *ngFor="let opt of col.options" [ngValue]="opt">
+                {{ col.optionLabelFn ? col.optionLabelFn(opt) : opt }}
+              </option>
+            </select>
+          </ng-container>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between align-items-center mt-2">
+  <span class="ms-2">Total Records: {{ filteredData.length }}</span>
+  <div class="btn-group me-2">
+    <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+    <button class="btn btn-sm btn-outline-secondary" disabled>{{ currentPage }} / {{ totalPages }}</button>
+    <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()"
+      [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

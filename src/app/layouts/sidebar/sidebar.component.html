@@ -1,0 +1,11 @@
+<mat-nav-list *ngIf="visible" class="sidebar-nav">
+  <ng-container *ngFor="let section of menuSections"> 
+    <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active-link"
+      class="sidebar-link"> 
+      <div class="sidebar-item-wrapper">
+        <mat-icon matTooltip="{{ item.label }}">{{ item.icon }}</mat-icon>
+        <span class="sidebar-label">{{ item.label }}</span>
+      </div>
+    </a> 
+  </ng-container>
+</mat-nav-list>

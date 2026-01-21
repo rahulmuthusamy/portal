@@ -1,0 +1,33 @@
+.header {
+
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+.header-toolbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+
+  .logo {
+    height: 32px;
+    margin-right: 12px;
+  }
+
+  .app-title {
+    font-size: 20px;
+    font-weight: 500;
+   }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  
+}

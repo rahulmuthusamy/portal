@@ -1,0 +1,86 @@
+<div class="container-fluid p-3">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="bg-white shadow rounded p-4">
+    <h4 class="mb-4 text-primary">Auction Session</h4>
+
+    <div class="row g-3">
+      <div class="col-md-3">
+        <app-input id="session_name" [control]="form.get('Name')!" [label]="'Auction Name *'"
+          placeholder="e.g., IPL 2025 Mega Auction">
+        </app-input>
+      </div>
+
+      <div class="col-md-1">
+        <app-input id="year" type="number" [control]="form.get('Year')!" [label]="'Year *'" placeholder="e.g., 2025"
+          [min]="2000" [max]="2100">
+        </app-input>
+      </div>
+
+      <div class="col-md-4">
+        <app-datepicker id="start_date" type="date" [control]="form.get('StartDate')!" [label]="'Start Date *'">
+        </app-datepicker>
+      </div>
+
+      <div class="col-md-4">
+        <app-datepicker id="end_date" type="date" [control]="form.get('EndDate')!" [label]="'End Date *'">
+        </app-datepicker>
+      </div>
+
+      <div class="col-md-4">
+        <app-input id="max_budget" type="number" [control]="form.get('MaxBudget')!" [label]="'Max Budget *'"
+          placeholder="e.g., 100000">
+        </app-input>
+      </div>
+
+      <div class="col-md-4">
+        <app-input id="max_players_per_team" type="number" [control]="form.get('MaxPlayersPerTeam')!"
+          [label]="'Max Players/Team *'" placeholder="e.g., 11">
+        </app-input>
+      </div>
+
+      <div class="col-md-4">
+        <app-select id="Status" [label]="'Select Status'" [control]="form.get('Status')!" [options]="StatusOptions"
+          placeholder="Select Status">
+        </app-select>
+      </div>
+
+      <div class="col-md-12">
+        <app-textarea id="description" [control]="form.get('Description')!" [label]="'Description (Optional)'"
+          placeholder="Add notes or details">
+        </app-textarea>
+      </div>
+    </div>
+
+    <div class="text-end mt-4">
+      <app-button label="{{isEdit ? 'Update ':'Save '}}Auction Session" [disabled]="form.invalid"
+        type="submit"></app-button>
+    </div>
+  </form>
+
+  <div class="mt-5 bg-white shadow rounded p-4" *ngIf="form.get('SessionID')?.value">
+    <h4 class="mb-4 text-primary">Auction Configuration</h4>
+
+    <ul class="nav nav-tabs" id="auctionTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams" type="button"
+          role="tab">
+          Auction Teams
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players" type="button"
+          role="tab">
+          Team-wise Players
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content pt-3" id="auctionTabsContent">
+      <div class="tab-pane fade show active" id="teams" role="tabpanel">
+        <!-- <app-auction-teams [sessionId]="sessionId"></app-auction-teams> -->
+      </div>
+      <div class="tab-pane fade" id="players" role="tabpanel">
+        <!-- <app-auction-team-players [sessionId]="sessionId"></app-auction-team-players> -->
+      </div>
+    </div>
+  </div>
+</div>

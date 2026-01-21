@@ -1,0 +1,16 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f6f9;
+}
+
+.page-body {
+  flex: 1;
+  padding: 16px;
+  background-color: #ffffff; 
+}

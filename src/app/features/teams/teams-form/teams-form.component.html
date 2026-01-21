@@ -1,0 +1,27 @@
+<div class="container">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+
+            <!-- LOGO -->
+            <div class="col-md-4 text-center">
+                <div class="profile-upload">
+                    <app-image-upload [control]="form.get('LogoURL')!"></app-image-upload>
+                </div>
+            </div>
+
+            <!-- Fields -->
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <app-input label="Team Name" [control]="form.get('Name')!" placeholder="Enter Team Name"
+                            type="text" />
+                    </div>
+                </div>
+            </div>
+            <!-- Submit -->
+            <div class="col-12 text-center">
+                <app-button label="Team Registration" type="submit"></app-button>
+            </div>
+        </div>
+    </form>
+</div>

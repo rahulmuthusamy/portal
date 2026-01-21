@@ -1,0 +1,7 @@
+<div class="row">
+  <div class="col-md-1 mb-2">
+    <app-button [label]="'Add'" (actionClick)="addPlayer()"> Add </app-button>
+  </div>
+</div>
+<app-data-table [config]="tableConfig" [data]="teams$ | async" (actionClick)="handleAction($event)">
+</app-data-table>

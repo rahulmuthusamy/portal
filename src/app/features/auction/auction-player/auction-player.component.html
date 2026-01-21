@@ -1,0 +1,62 @@
+<div class="auction-container">
+    <div class="registration-wrapper">
+        <div class="rules-panel">
+            <h2>Auction Rules</h2>
+            <ul>
+                <li>Players must provide accurate information.</li>
+                <li>Each team bids within budget.</li>
+                <li>Sold players are final.</li>
+                <li>Ineligible players will be disqualified.</li>
+                <li>Registration closes 24hrs before auction.</li>
+            </ul>
+        </div>
+
+        <div class="form-panel">
+            <div class="form-title">Auction Player Registration</div>
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="top-row d-flex align-items-center justify-content-between flex-wrap">
+                    <div class="profile-upload flex-shrink-0 me-3 mb-3">
+                        <app-image-upload [control]="form.get('PhotoURL')!"
+                            [defaultUrl]="existingImageUrl"></app-image-upload>
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <app-input label="Full Name" [control]="form.get('Name')!" placeholder="Enter full name"
+                            type="text"></app-input>
+                    </div>
+                    <div class="form-field">
+                        <app-input label="Father Name" [control]="form.get('FatherName')!" placeholder="Enter full name"
+                            type="text"></app-input>
+                    </div>
+                    <div class="form-field">
+                        <app-mobile-input [label]="'Mobile'" [control]="form.get('Mobile')!"
+                            placeholder="Enter mobile"></app-mobile-input>
+                    </div>
+                    <div class="form-field">
+                        <app-email label="Email" [control]="form.get('Email')!" type="email"></app-email>
+                    </div>
+                    <div class="form-field">
+                        <app-datepicker label="Date of Birth" [control]="form.get('DOB')!"></app-datepicker>
+                    </div>
+                    <div class="form-field">
+                        <app-select label="Role" [control]="form.get('Role')!" [options]="roles"></app-select>
+                    </div>
+                    <div class="form-field">
+                        <app-input label="Base Price (₹)" [control]="form.get('BasePrice')!" type="number"></app-input>
+                    </div>
+                    <div class="form-field">
+                        <app-input label="Status" [control]="form.get('Status')!"></app-input>
+                    </div>
+                </div>
+
+                <div class="submit-btn">
+                    <app-button label="Register Auction Player" type="submit"></app-button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>

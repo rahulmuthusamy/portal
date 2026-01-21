@@ -1,0 +1,51 @@
+<div *ngIf="currentPlayer" class="auction-dashboard">
+  <!-- Player Info Section -->
+  <div class="player-section">
+    <img [src]="currentPlayer.photo" alt="Player" class="player-img" />
+    <div class="player-details">
+      <h2>{{ currentPlayer.name }}</h2>
+      <p><strong>Base Price:</strong> ₹{{ currentPlayer.basePrice }}</p>
+      <p><strong>Role:</strong> {{ currentPlayer.role }}</p>
+      <p><strong>Country:</strong> {{ currentPlayer.country }}</p>
+    </div>
+  </div>
+
+  <!-- Auction Info Section -->
+  <div class="auction-info">
+    <div class="current-bid">
+      <h3>Current Bid</h3>
+      <p>₹{{ highestBid }}</p>
+      <p>By: <strong>{{ highestBidTeam }}</strong></p>
+    </div>
+    <div class="timer-container">
+      <svg class="timer-ring" viewBox="0 0 36 36">
+        <path class="timer-track" d="M18 2.0845
+         a 15.9155 15.9155 0 0 1 0 31.831
+         a 15.9155 15.9155 0 0 1 0 -31.831" />
+        <path class="timer-progress" [attr.stroke-dasharray]="progress + ', 100'" d="M18 2.0845
+         a 15.9155 15.9155 0 0 1 0 31.831
+         a 15.9155 15.9155 0 0 1 0 -31.831" />
+        <text x="18" y="20.35" class="timer-text">{{ timer }}s</text>
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- Action Panel -->
+  <div class="action-panel">
+    <button [disabled]="!canBid()" (click)="placeBid()">Place ₹{{ nextBid }} Bid</button>
+    <div class="your-budget">
+      <p><strong>Your Budget:</strong> ₹{{ team.budget }}</p>
+    </div>
+  </div>
+
+  <!-- Optional: Bid History -->
+  <div class="bid-history" *ngIf="bidHistory.length">
+    <h3>Bid History</h3>
+    <ul>
+      <li *ngFor="let bid of bidHistory">
+        ₹{{ bid.amount }} - {{ bid.team }} ({{ bid.time | date:'shortTime' }})
+      </li>
+    </ul>
+  </div>
+</div>

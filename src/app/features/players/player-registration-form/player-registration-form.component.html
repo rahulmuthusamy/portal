@@ -1,0 +1,72 @@
+<div class="container">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+
+            <!-- Profile -->
+            <div class="col-md-4 text-center">
+                <div class="profile-upload">
+                    <app-image-upload [control]="form.get('PhotoURL')!"></app-image-upload>
+                </div>
+            </div>
+
+            <!-- Fields -->
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <app-input label="Full Name" [control]="form.get('Name')!" placeholder="Enter full name"
+                            type="text" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-input label="Father Name" [control]="form.get('FatherName')!"
+                            placeholder="Enter your Father name" type="text"></app-input>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-mobile-input label="Mobile Number" [control]="form.get('Mobile')!"
+                            placeholder="Enter mobile" type="text"></app-mobile-input>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-email label="Email" [control]="form.get('Email')!" placeholder="Enter email"
+                            type="email"></app-email>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-datepicker label="Date of Birth" [control]="form.get('DOB')!"></app-datepicker>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-select label="Role" [control]="form.get('Role')!" [options]="roles"></app-select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-input label="Batting Style" [control]="form.get('BattingStyle')!"
+                            placeholder="e.g. Right-hand bat" type="text"></app-input>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <app-input label="Bowling Style" [control]="form.get('BowlingStyle')!"
+                            placeholder="e.g. Left-arm spin" type="text"></app-input>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <app-textarea label="Achievements" [control]="form.get('Notes')!"
+                            placeholder="Mention any achievements"></app-textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="col-12 d-flex justify-content-center gap-3 mt-3">
+                <app-button [label]="isEdit ? 'Update' : 'Save'" type="submit">
+                </app-button>
+
+                <app-button label="Close" class="btn-secondary" (actionClick)="close()">
+                </app-button>
+            </div>
+
+        </div>
+
+    </form>
+</div>

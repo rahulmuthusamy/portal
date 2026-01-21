@@ -1,0 +1,7 @@
+<div class="row">
+    <div class="col-md-1 mb-2">
+        <app-button [label]="'Add'" (actionClick)="addSession()"> Add </app-button>
+    </div>
+</div>
+<app-data-table [config]="tableConfig" [data]="auctionSession$ | async" (actionClick)="handleAction($event)">
+</app-data-table>

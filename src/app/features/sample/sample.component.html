@@ -1,0 +1,62 @@
+<!-- <app-chat></app-chat> -->
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+
+            <h1 class="mb-4 text-center">Dynamic Form Generator Using AI</h1>
+
+            <div class="mb-3">
+                <label for="userGoal" class="form-label fw-semibold">
+                    Tell me what kind of form you need
+                    <small class="text-muted d-block">
+                        (e.g., "personal loan application", "event registration", "newsletter signup")
+                    </small>
+                </label>
+                <mat-form-field appearance="fill" class="w-100" >
+                    <textarea matInput [(ngModel)]="userGoal" rows="3" id="userGoal" class="form-control"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-start align-items-center mb-5">
+                <button mat-raised-button color="primary" class="btn btn-primary" (click)="onGenerateForm()"
+                    [disabled]="loadingForm || !userGoal.trim()">
+                    {{ loadingForm ? 'Generating...' : 'Generate Form' }}
+                </button>
+
+                <span *ngIf="submissionMessage" class="text-success small ms-sm-3">
+                    {{ submissionMessage }}
+                </span>
+            </div>
+
+            <div *ngIf="!generatedFormConfig && !loadingForm" class="alert alert-info text-center mt-3">
+                Enter a form goal above to generate a dynamic form.
+            </div>
+
+            <div *ngIf="loadingForm" class="alert alert-warning text-center">
+                Loading form...
+            </div>
+
+            <app-dynamic-form class="mt-5" [formConfig]="generatedFormConfig" (formSubmitted)="onFormSubmitted($event)">
+            </app-dynamic-form>
+
+        </div>
+    </div>
+</div>
+<!-- <div>
+    <h1>Smart To-Do List</h1>
+    <input [(ngModel)]="userGoal" placeholder="Enter your goal (e.g., Plan a trip to Rome)">
+    <button (click)="generateTasks()">Generate Tasks</button>
+
+    <div *ngIf="loading">Loading tasks...</div>
+
+    <div *ngIf="todoItems.length > 0">
+        <h2>Your Smart To-Dos:</h2>
+        <ul>
+            <li *ngFor="let item of todoItems">
+                <strong>{{ item.task }}</strong> (Priority: {{ item.priority }})
+            </li>
+        </ul>
+    </div>
+    <div *ngIf="error">{{ error }}</div>
+</div> -->

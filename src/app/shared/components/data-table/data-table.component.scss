@@ -1,0 +1,24 @@
+.table-wrapper {
+    overflow-y: auto;
+    max-height: 65vh;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 2;
+        }
+    }
+}
+
+.row-red {
+    background-color: red !important;
+}
+
+.row-blue {
+    background-color: #7e95eb !important;
+}

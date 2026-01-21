@@ -1,0 +1,40 @@
+.sidebar-link {
+  padding: 0; // Remove default padding
+  margin: 2px 8px;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .sidebar-item-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    width: 100%;
+  }
+
+  .sidebar-icon {
+    font-size: 14px;
+    color: #616161;
+  }
+
+  .sidebar-label {
+    font-size: 15px;
+    color: #212121;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  &.active-link {
+    background-color: #e3f2fd;
+
+    .sidebar-icon,
+    .sidebar-label {
+      color: #1976d2;
+      font-weight: 600;
+    }
+  }
+}
+
+ 

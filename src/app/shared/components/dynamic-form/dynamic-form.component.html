@@ -1,0 +1,61 @@
+<div *ngIf="formConfig">
+  <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()">
+    <div class="form-fields-grid">
+      <div *ngFor="let field of formConfig.fields" class="form-field">
+
+        <!-- Handle checkbox outside mat-form-field -->
+        <ng-container *ngIf="field.type === 'checkbox'; else fieldTemplate">
+          <mat-checkbox [formControlName]="field.id" [required]="field.required">
+            {{ field.label }}
+          </mat-checkbox>
+          <mat-error *ngIf="dynamicForm.get(field.id)?.invalid && dynamicForm.get(field.id)?.touched">
+            {{ getErrorMessage(field) }}
+          </mat-error>
+        </ng-container>
+
+        <!-- All other field types -->
+        <ng-template #fieldTemplate>
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>{{ field.label }}</mat-label>
+
+            <ng-container [ngSwitch]="field.type">
+              <input *ngSwitchCase="'text'" matInput [formControlName]="field.id"
+                [placeholder]="field.placeholder ?? ''" type="text" [required]="field.required">
+
+              <input *ngSwitchCase="'email'" matInput [formControlName]="field.id"
+                [placeholder]="field.placeholder ?? ''" type="email" [required]="field.required">
+
+              <input *ngSwitchCase="'number'" matInput [formControlName]="field.id"
+                [placeholder]="field.placeholder ?? ''" type="number" [required]="field.required">
+
+              <textarea *ngSwitchCase="'textarea'" matInput [formControlName]="field.id"
+                [placeholder]="field.placeholder ?? ''" [required]="field.required"></textarea>
+
+              <mat-select *ngSwitchCase="'select'" [formControlName]="field.id" [required]="field.required">
+                <mat-option *ngFor="let option of field.options" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+
+              <ng-container *ngSwitchCase="'date'">
+                <input matInput [matDatepicker]="picker" [formControlName]="field.id"
+                  [placeholder]="field.placeholder ?? ''" [required]="field.required">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </ng-container>
+
+
+              <ng-container *ngSwitchDefault>
+                <p>Unsupported field type: {{ field.type }}</p>
+              </ng-container>
+            </ng-container>
+
+            <mat-error *ngIf="dynamicForm.get(field.id)?.invalid && dynamicForm.get(field.id)?.touched">
+              {{ getErrorMessage(field) }}
+            </mat-error>
+          </mat-form-field>
+        </ng-template>
+      </div>
+    </div>
+  </form>
+</div>

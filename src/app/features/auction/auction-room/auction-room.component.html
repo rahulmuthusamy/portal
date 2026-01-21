@@ -1,0 +1,71 @@
+<div class="auction-room-container" *ngIf="!loading; else loadingTpl">
+    <div class="current-player-panel animate-fade-in">
+        <img [src]="currentPlayer?.photo" alt="Player Photo" class="player-photo" />
+        <div class="player-details">
+            <h3>{{ currentPlayer?.name }}</h3>
+            <p><strong>Role:</strong> {{ currentPlayer?.role }}</p>
+            <p><strong>Base Price:</strong> ₹{{ currentPlayer?.basePrice }}</p>
+            <p><strong>Status:</strong>
+                <span [class.live]="currentPlayer?.status === 'live'"
+                    [class.available]="currentPlayer?.status === 'available'"
+                    [class.sold]="currentPlayer?.status === 'sold'">
+                    {{ currentPlayer?.status }}
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div class="teams-bidding-panel">
+        <div *ngFor="let team of teams" class="team-bid-card animate-scale-up">
+            <div class="team-header">
+                <img [src]="team?.logoUrl" alt="{{ team.name }} Logo" class="team-logo" />
+                <h4>{{ team.name }}</h4>
+            </div>
+            <p>Budget: ₹{{ team.budget }}</p>
+            <button class="bid-btn" (click)="placeBid(team)"
+                [disabled]="!currentPlayer || currentPlayer.status !== 'live' || team.budget < currentPlayer.currentBid + 100">
+                Bid ₹{{ (currentPlayer?.currentBid ?? 0) + 100 }}
+            </button>
+        </div>
+    </div>
+
+    <div class="live-bidding-info animate-slide-up">
+        <p><strong>Highest Bid:</strong> ₹{{ highestBid }} by {{ highestBidTeamName || 'No bids yet' }}</p>
+        <p><strong>Time Left:</strong></p>
+        <div class="timer-container animate-scale-up">
+            <svg class="timer-ring" viewBox="0 0 36 36">
+                <path class="timer-track" d="M18 2.0845
+         a 15.9155 15.9155 0 0 1 0 31.831
+         a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="timer-progress" [attr.stroke-dasharray]="timerProgress + ', 100'" d="M18 2.0845
+         a 15.9155 15.9155 0 0 1 0 31.831
+         a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <text x="18" y="20.35" class="timer-text">{{ timer }}s</text>
+            </svg>
+        </div>
+    </div>
+
+    <div class="auctioneer-controls animate-fade-in">
+        <button (click)="startPlayer()" [disabled]="!currentPlayer || currentPlayer.status !== 'available'">START
+            PLAYER</button>
+        <button (click)="sellPlayer()" [disabled]="!currentPlayer || currentPlayer.status !== 'live'">SELL
+            PLAYER</button>
+        <button (click)="skipPlayer()" [disabled]="!currentPlayer || currentPlayer.status !== 'live'">SKIP
+            PLAYER</button>
+    </div>
+</div>
+<!-- Optional: Bid History -->
+<div class="bid-history" *ngIf="bidHistory.length">
+    <h3>Bid History</h3>
+    <ul>
+        <li *ngFor="let bid of bidHistory">
+            ₹{{ bid.amount }} - {{ bid.team }} ({{ bid.time | date:'shortTime' }})
+        </li>
+    </ul>
+</div>
+<ng-template #loadingTpl>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Loading auction data...</p>
+    </div>
+</ng-template>

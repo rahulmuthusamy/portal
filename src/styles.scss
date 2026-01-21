@@ -1,0 +1,79 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+  background-color: #f4f6f9;
+}
+
+:root {
+  --primary-color: #6366f1;
+  --sidebar-bg: #ffffff;
+  --text-color: #1f2937;
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Global styles for snackbar messages */
+
+.snackbar-success,
+.snackbar-error,
+.snackbar-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px !important;
+  border-radius: 8px !important;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  animation: fadeInUp 300ms ease-out;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Colors */
+.snackbar-success {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.snackbar-error {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.snackbar-info {
+  background-color: #2196f3;
+  color: #fff;
+}
+
+/* Simple fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Make snackbar responsive */
+@media (max-width: 600px) {
+
+  .snackbar-success,
+  .snackbar-error,
+  .snackbar-info {
+    font-size: 14px;
+    padding: 12px 16px !important;
+    max-width: 90%;
+  }
+}

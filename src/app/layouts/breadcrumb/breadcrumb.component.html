@@ -1,0 +1,18 @@
+<nav *ngIf="breadcrumbs | async as crumbs" class="breadcrumb-container">
+   <a routerLink="/registration" class="breadcrumb-link home-link">
+    <mat-icon class="breadcrumb-icon">home</mat-icon>
+    Home
+  </a>
+
+  <span class="separator">/</span>
+
+   <ng-container *ngFor="let crumb of crumbs; let last = last">
+    <ng-container *ngIf="!last">
+      <a [routerLink]="crumb.url" class="breadcrumb-link">{{ crumb.label }}</a>
+      <span class="separator">/</span>
+    </ng-container>
+    <ng-container *ngIf="last">
+      <span class="breadcrumb-current">{{ crumb.label }}</span>
+    </ng-container>
+  </ng-container>
+</nav>
