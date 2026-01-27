@@ -1,16 +1,62 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { KkkWebsiteComponent } from '@features/kkk-website/kkk-website.component';
 import { AuthLayoutComponent } from '@features/auth/auth-layout/auth-layout.component';
 
 export const routes: Routes = [
+
+    /* ================= WEBSITE (Public) ================= */
     {
         path: '',
+        component: KkkWebsiteComponent,
+        children: [
+            {
+                path: '',
+                loadComponent: () =>
+                    import('@features/kkk-website/kkk-website.component')
+                        .then(m => m.KkkWebsiteComponent),
+            }
+        ]
+    },
+
+    /* ================= AUTH ================= */
+    {
+        path: '',
+        component: AuthLayoutComponent,
+        children: [
+            {
+                path: 'login',
+                loadComponent: () =>
+                    import('@features/auth/login/login.component')
+                        .then(m => m.LoginComponent),
+            }
+        ]
+    },
+
+    /* ================= APPLICATION ================= */
+    {
+        path: 'app',
         component: MainLayoutComponent,
         children: [
             {
                 path: 'players-list',
-                data: { breadcrumb: 'Registration List' },
-                loadComponent: () => import('@features/players/player-registration/player-registration.component').then(m => m.PlayerRegistrationComponent),
+                loadComponent: () =>
+                    import('@features/players/player-registration/player-registration.component')
+                        .then(m => m.PlayerRegistrationComponent),
+            },
+
+            {
+                path: 'registration-form',
+                loadComponent: () =>
+                    import('@features/players/player-registration-form/player-registration-form.component')
+                        .then(m => m.PlayerRegistrationFormComponent),
+            },
+
+            {
+                path: 'auction-room',
+                loadComponent: () =>
+                    import('@features/auction/auction-room/auction-room.component')
+                        .then(m => m.AuctionRoomComponent),
             },
             {
                 path: 'registration-form',
@@ -62,24 +108,17 @@ export const routes: Routes = [
                 loadComponent: () => import('@features/sample/sample.component').then(m => m.SampleComponent),
             },
 
-        ],
-    },
-    {
-        path: '',
-        component: AuthLayoutComponent,
-        children: [
             {
-                path: 'login',
-                loadComponent: () => import('@features/auth/login/login.component').then(m => m.LoginComponent),
-            },
-        ],
+                path: '',
+                redirectTo: 'players-list',
+                pathMatch: 'full'
+            }
+        ]
     },
-    {
-        path: 'register-player-auction',
-        loadComponent: () => import('@features/auction/auction-player/auction-player.component').then(m => m.AuctionPlayerComponent)
-    },
+
+    /* ================= FALLBACK ================= */
     {
         path: '**',
-        redirectTo: 'login',
-    },
+        redirectTo: '',
+    }
 ];

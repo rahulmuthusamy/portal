@@ -9,7 +9,7 @@ import { FormConfig, FormService } from '@shared/components/form.service';
 
 @Component({
   selector: 'app-sample',
-  imports: [DynamicFormComponent, ChatComponent, CommonModule, FormsModule, MatInputModule],
+  imports: [DynamicFormComponent, CommonModule, FormsModule, MatInputModule],
   templateUrl: './sample.component.html',
   styleUrl: './sample.component.scss'
 })

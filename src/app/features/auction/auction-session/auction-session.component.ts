@@ -6,11 +6,6 @@ import { DataTableComponent, TableConfig } from '@shared/components/data-table/d
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '@shared/forms/form-controls';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { FormConfig, FormService } from '@shared/components/form.service';
-import { MatInputModule } from '@angular/material/input';
-import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
-import { ChatComponent } from '@features/chat/chat.component';
 
 @Component({
   selector: 'app-auction-session',
@@ -62,14 +57,11 @@ export class AuctionSessionComponent implements OnInit {
   handleAction(event: { type: string, row: any }) {
     if (event.type === 'Edit') {
       sessionStorage.setItem('SessionID', event.row.SessionID);
-      this.router.navigate(['/auction-session-form'])
+      this.router.navigate(['/app/auction-session-form'])
     }
   }
 
   addSession() {
-    this.router.navigate(['/auction-session-form'])
+    this.router.navigate(['/app/auction-session-form'])
   }
-
-
-
 }
