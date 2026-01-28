@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-image-upload',
-  
+
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <label class="profile-circle" for="fileInput">
@@ -89,7 +90,7 @@ export class ImageUploadComponent {
   @Input() defaultUrl: string = '';
 
   get imageUrl() {
-    return this.previewUrl || this.defaultUrl || 'assets/avatars/default.jpg';
+    return this.previewUrl || environment.apiUrl + this.defaultUrl || 'assets/avatars/default.jpg';
   }
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;

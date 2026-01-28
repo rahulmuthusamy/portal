@@ -5,7 +5,8 @@
             <!-- Profile -->
             <div class="col-md-4 text-center">
                 <div class="profile-upload">
-                    <app-image-upload [control]="form.get('PhotoURL')!"></app-image-upload>
+                    <app-image-upload [control]="form.get('PhotoURL')!"
+                        [defaultUrl]="form.get('PhotoURL')!.value"></app-image-upload>
                 </div>
             </div>
 

@@ -1,40 +1,95 @@
+// Premium Sidebar Styles
+:host {
+  display: block;
+  height: 100%;
+  background-color: #1a1d21; // Dark Navy/Black
+  color: #fff;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .sidebar-link {
-  padding: 0; // Remove default padding
-  margin: 2px 8px;
-  border-radius: 8px;
-  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  margin: 0 8px;
+  /* Spacing for the rounded pill look */
 
   .sidebar-item-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 16px;
-    width: 100%;
-  }
+    transition: all 0.2s ease;
+    color: #a0a0a0; // Muted text default
 
-  .sidebar-icon {
-    font-size: 14px;
-    color: #616161;
-  }
+    .sidebar-icon {
+      color: #a0a0a0;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      transition: color 0.2s ease;
+    }
 
-  .sidebar-label {
-    font-size: 15px;
-    color: #212121;
-  }
+    .sidebar-label {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
 
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #fff;
+
+      .sidebar-icon {
+        color: #fff;
+      }
+    }
   }
 
   &.active-link {
-    background-color: #e3f2fd;
+    .sidebar-item-wrapper {
+      background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
+      color: #ffd700; // Gold text
+      border-left: 3px solid #ffd700; // Gold accent bar
+      padding-left: 13px !important; // Adjust for border (+3px border - 16px padding difference if needed, keeping simple)
 
-    .sidebar-icon,
-    .sidebar-label {
-      color: #1976d2;
-      font-weight: 600;
+      .sidebar-icon {
+        color: #ffd700;
+      }
     }
   }
 }
 
- 
+.bg-gradient-gold {
+  background: linear-gradient(135deg, #ffd700 0%, #fdb931 100%);
+}
+
+.tracking-wider {
+  letter-spacing: 0.1em;
+}
+
+// Scrollbar styling for sidebar
+.sidebar-nav {
+  overflow: hidden;
+  flex: 1;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}

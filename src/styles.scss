@@ -53,6 +53,11 @@ body {
   color: #fff;
 }
 
+app-main-layout,
+mat-sidenav-content {
+  overflow: hidden !important;
+}
+
 /* Simple fade-in animation */
 @keyframes fadeInUp {
   from {

@@ -15,13 +15,14 @@ export class BaseCrudService<T> {
         return this.api.get<T>(`${this.endpoint}/${id}`);
     }
 
-    create(data: Partial<T>): Observable<T> {
+    create(data: Partial<T> | FormData): Observable<T> {
         return this.api.post<T>(this.endpoint, data);
     }
 
-    update(id: number, data: Partial<T>): Observable<T> {
+    update(id: number, data: Partial<T> | FormData): Observable<T> {
         return this.api.put<T>(`${this.endpoint}/${id}`, data);
     }
+
 
     delete(id: number): Observable<void> {
         return this.api.delete<void>(`${this.endpoint}/${id}`);

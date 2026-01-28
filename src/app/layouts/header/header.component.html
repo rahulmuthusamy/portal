@@ -1,37 +1,58 @@
-<mat-toolbar color="primary" class="mat-elevation-z4 header-toolbar">
-  <!-- Sidebar toggle -->
-  <button mat-icon-button (click)="toggleSidebar.emit()" aria-label="Toggle sidebar">
-    <mat-icon>menu</mat-icon>
-  </button>
+<mat-toolbar class="header-toolbar bg-white border-bottom px-4">
+  <!-- Left: Sidebar Toggle & Page Title (Optional) -->
+  <div class="d-flex align-items-center">
+    <button mat-icon-button (click)="toggleSidebar.emit()" class="me-2 text-dark">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <!-- Breadcrumb or Page Title can go here -->
+    <!-- <h6 class="m-0 fw-bold text-dark">Dashboard</h6> -->
+  </div>
 
-  <!--  App Title -->
-  <span class="app-title">My App</span>
+  <!-- Center: Search Bar -->
+  <div class="flex-grow-1 d-flex justify-content-center mx-4">
+    <div class="search-bar position-relative d-none d-md-block w-100" style="max-width: 400px;">
+      <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+      <input type="text" class="form-control rounded-pill border-0 bg-light ps-5 py-2"
+        placeholder="Search players, teams..." style="font-size: 0.9rem;">
+    </div>
+  </div>
 
-  <!-- Spacer to push right section -->
-  <span class="spacer"></span>
+  <!-- Right: Actions -->
+  <div class="d-flex align-items-center gap-2">
+    <!-- Notifications -->
+    <button mat-icon-button class="position-relative text-dark">
+      <mat-icon>notifications_none</mat-icon>
+      <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"
+        style="width: 10px; height: 10px; top: 10px !important; right: 8px !important;"></span>
+    </button>
 
-  <!-- Notification Icon -->
-  <button mat-icon-button aria-label="Notifications">
-    <mat-icon>notifications</mat-icon>
-  </button>
-
-  <!-- User Account Menu -->
-  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
-    <mat-icon>account_circle</mat-icon>
-  </button>
+    <!-- User Profile Dropdown -->
+    <div class="dropdown ms-2">
+      <button mat-button [matMenuTriggerFor]="userMenu"
+        class="d-flex align-items-center px-2 py-1 rounded-pill hover-bg-light">
+        <div class="avatar bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+          style="width: 32px; height: 32px; font-size: 0.8rem;">
+          AD
+        </div>
+        <span class="d-none d-sm-block text-dark fw-medium small me-1">Admin</span>
+        <mat-icon class="icon-sm text-muted">expand_more</mat-icon>
+      </button>
+    </div>
+  </div>
 
   <!-- Menu Dropdown -->
-  <mat-menu #userMenu="matMenu">
+  <mat-menu #userMenu="matMenu" class="mt-2">
     <button mat-menu-item>
-      <mat-icon>person</mat-icon>
-      <span>Profile</span>
+      <mat-icon>person_outline</mat-icon>
+      <span>My Profile</span>
     </button>
     <button mat-menu-item>
       <mat-icon>settings</mat-icon>
       <span>Settings</span>
     </button>
-    <button mat-menu-item>
-      <mat-icon>logout</mat-icon>
+    <mat-divider></mat-divider>
+    <button mat-menu-item class="text-danger">
+      <mat-icon class="text-danger">logout</mat-icon>
       <span>Logout</span>
     </button>
   </mat-menu>

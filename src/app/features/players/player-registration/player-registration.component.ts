@@ -82,7 +82,7 @@ export class PlayerRegistrationComponent implements OnInit {
     if (event.type === 'View' || event.type === 'Edit') {
       console.log('View/Edit clicked', event.row);
 
-      this.router.navigate([`/registration-form-edit/${event.row.PlayerID}`]);
+      this.router.navigate([`/kkk/registration-form-edit/${event.row.PlayerID}`]);
     }
   }
 

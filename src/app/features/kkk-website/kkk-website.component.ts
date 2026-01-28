@@ -1,6 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, HostListener, OnInit, Inject, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from '@environments/environment';
 import { AuctionSessionService } from '@features/auction/services/auction-session.service';
 import { PlayerService } from '@features/players/services/players.service';
 import { TeamsService } from '@features/teams/services/teams.service';
@@ -38,7 +39,7 @@ export class KkkWebsiteComponent implements OnInit {
 
   // Data
   teams: WritableSignal<Team[]> = signal([]);
-  players: any[] = [];
+  players: any = [];
   filteredPlayers: any[] = [];
 
   // UI State
@@ -60,7 +61,7 @@ export class KkkWebsiteComponent implements OnInit {
   ];
 
   sponsorsList: any[] = [
-    { logo: 'https://cdn-icons-png.flaticon.com/512/732/732217.png', name: 'Tech Corp', desc: 'Title Sponsor' },
+    { logo: 'assets/sponsors/crenue.png', name: 'crenue', desc: 'Title Sponsor' },
     { logo: 'https://cdn-icons-png.flaticon.com/512/869/869869.png', name: 'Sports Gear', desc: 'Kit Partner' },
     { logo: 'https://cdn-icons-png.flaticon.com/512/3448/3448609.png', name: 'Refresh Co', desc: 'Hydration Partner' },
     { logo: 'https://cdn-icons-png.flaticon.com/512/2830/2830283.png', name: 'Local Media', desc: 'Media Partner' },
@@ -69,7 +70,7 @@ export class KkkWebsiteComponent implements OnInit {
 
   // Grid Images for KPL 2025
   gridImages = [
-    'assets/hero-image.jpeg',
+    'assets/GJ2026_3.jpeg',
     'assets/default-player.jpeg',
     'assets/MWPI3556.JPG',
     'assets/NMUM0899.JPG',
@@ -145,7 +146,18 @@ export class KkkWebsiteComponent implements OnInit {
         { src: 'assets/IUEF1539.JPG', caption: 'Full Squad' },
         { src: 'assets/default-player.jpeg', caption: 'Batting lineup' }
       ]
-    }
+    },
+    {
+      id: 'KPL-2026 RUNNER UP',
+      title: 'Winning Moments',
+      coverImage: 'assets/GJ2026_3.jpeg',
+      category: 'trophy',
+      images: [
+        { src: 'assets/GJ2026_1.jpeg', caption: 'Lifting the Trophy' },
+        { src: 'assets/GJ2026_2.jpeg', caption: 'Team Celebration' },
+        { src: 'assets/GJ2026_3.jpeg', caption: 'Victory Lap' },
+      ]
+    },
   ];
 
   // Flattened images for legacy support if needed, or helper
@@ -225,7 +237,16 @@ export class KkkWebsiteComponent implements OnInit {
     this.playerService.getAll().subscribe({
       next: (response: any) => {
         this.players = response?.data?.players ?? [];
-        this.filteredPlayers = [...this.players];
+
+        this.players = this.players.map((player: any) => ({
+          ...player,
+          PhotoURL: player.PhotoURL ?
+            environment.apiUrl + player.PhotoURL : ''
+        }));
+
+        const startIndex = (this.currentPage - 1) * this.playersPerPage;
+        const endIndex = startIndex + this.playersPerPage;
+        this.filteredPlayers = this.players.slice(startIndex, endIndex);
       },
       error: (error: any) => console.error('Error fetching Players:', error)
     });
@@ -311,12 +332,12 @@ export class KkkWebsiteComponent implements OnInit {
     let filtered = this.players;
 
     if (this.activeFilter !== 'all') {
-      filtered = filtered.filter(p => p.role === this.activeFilter);
+      filtered = filtered.filter((p: any) => p.role === this.activeFilter);
     }
 
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(p =>
+      filtered = filtered.filter((p: any) =>
         p.name.toLowerCase().includes(query) ||
         p.team.toLowerCase().includes(query)
       );

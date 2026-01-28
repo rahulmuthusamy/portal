@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-sidebar',
   imports: [CommonModule, MatListModule, FormsModule, RouterModule, MatIconModule, MatTooltipModule],
-  
+
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
@@ -17,15 +17,17 @@ export class SidebarComponent {
 
   menuSections = [
     {
-      title: 'Overview',
+      label: 'Overview',
       items: [
-        { label: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
-        { label: 'Players', route: '/players-list', icon: 'group' },
-        { label: 'Teams', route: '/teams-list', icon: 'group' },
-        { label: 'Auction Session', route: '/auction-session-list', icon: 'person' },
-        { label: 'Auction Room', route: '/auction-room', icon: 'settings' },
-        { label: 'Auction Dashboard', route: '/team-dashboard', icon: 'settings' },
-        { label: 'Sample page', route: '/sample-page', icon: 'settings' },
+        { label: 'Dashboard', route: '/kkk/dashboard', icon: 'dashboard' },
+        { label: 'Players', route: '/kkk/players-list', icon: 'group' },
+        { label: 'Teams', route: '/kkk/teams-list', icon: 'group' },
+        // { label: 'Sponsers', route: '/kkk/sponsers-list', icon: 'settings' },
+        { label: 'Auction Session', route: '/kkk/auction-session-list', icon: 'person' },
+        { label: 'Auction Room', route: '/kkk/auction-room', icon: 'settings' },
+        { label: 'Auction Dashboard', route: '/kkk/team-dashboard', icon: 'settings' },
+        { label: 'Sample page', route: '/kkk/sample-page', icon: 'settings' },
+        { label: 'Settings', route: '/kkk/settings', icon: 'settings' },
       ]
     }
   ];

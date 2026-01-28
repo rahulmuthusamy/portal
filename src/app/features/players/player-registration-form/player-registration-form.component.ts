@@ -33,7 +33,7 @@ export class PlayerRegistrationFormComponent {
   private toast = inject(ToastService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-
+  redirectUrl: string = '/kkk/players-list';
   ngOnInit(): void {
     this.InitForm();
     const id = this.route.snapshot.paramMap.get('id')!;;
@@ -87,17 +87,29 @@ export class PlayerRegistrationFormComponent {
       alert('Please fill all required fields correctly.');
       return;
     }
-
     const player = this.form.value;
 
+    const payload = new FormData();
+
+    if (player.PhotoURL instanceof File) {
+      payload.append('image', player.PhotoURL);
+    }
+    const { PhotoURL, ...playerData } = player;
+
+    Object.keys(playerData).forEach(key => {
+      if (playerData[key] !== null && playerData[key] !== undefined) {
+        payload.append(key, playerData[key]);
+      }
+    });
+
     const request$ = this.isEdit
-      ? this.playerService.update(player.PlayerID, player)
-      : this.playerService.create(player);
+      ? this.playerService.update(player.PlayerID, payload)
+      : this.playerService.create(payload);
 
     request$.subscribe({
       next: (response: any) => {
         this.toast.success(response?.message || (this.isEdit ? 'Player updated successfully.' : 'Player created successfully.'));
-        this.router.navigate(['players-list']);
+        this.router.navigate([this.redirectUrl]);
       },
       error: (error) => {
         console.error(this.isEdit ? 'Update failed:' : 'Creation failed:', error);
@@ -107,6 +119,6 @@ export class PlayerRegistrationFormComponent {
   }
 
   close() {
-    this.router.navigate(['players-list']);
+    this.router.navigate([this.redirectUrl]);
   }
 }

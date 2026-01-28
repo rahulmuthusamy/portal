@@ -37,7 +37,7 @@
     <div class="carousel-inner">
       <div class="carousel-item active">
         <div class="overlay"></div>
-        <img src="assets/hero-image.jpeg" class="d-block w-100 vh-100" alt="Cricket Match" style="object-fit: cover;">
+        <img src="assets/GJ2026_1.jpeg" class="d-block w-100 vh-100" alt="Cricket Match" style="object-fit: cover;">
         <div class="carousel-caption d-none d-md-block slide-up">
           <h1 class="display-1 fw-bold text-uppercase gradient-text">Kattur Premier League</h1>
           <p class="lead fs-3 mb-4">The Battle of Champions Returns</p>
@@ -287,57 +287,109 @@
 </section>
 
 <!-- Players Section -->
-<section id="players" class="py-5">
+<section id="players" class="py-5 bg-light">
   <div class="container">
+    <!-- Section Header -->
     <div class="text-center mb-5">
-      <h2 class="fw-bold">Star Players</h2>
-      <div class="d-flex justify-content-center gap-2 mt-4 flex-wrap">
-        <button class="btn btn-sm rounded-pill px-3" [class.btn-dark]="activeFilter === 'all'"
-          [class.btn-outline-dark]="activeFilter !== 'all'" (click)="filterPlayers('all')">All</button>
-        <button class="btn btn-sm rounded-pill px-3" [class.btn-success]="activeFilter === 'batsman'"
-          [class.btn-outline-success]="activeFilter !== 'batsman'" (click)="filterPlayers('batsman')">Batsmen</button>
-        <button class="btn btn-sm rounded-pill px-3" [class.btn-danger]="activeFilter === 'bowler'"
-          [class.btn-outline-danger]="activeFilter !== 'bowler'" (click)="filterPlayers('bowler')">Bowlers</button>
-        <button class="btn btn-sm rounded-pill px-3" [class.btn-warning]="activeFilter === 'allrounder'"
-          [class.btn-outline-warning]="activeFilter !== 'allrounder'" (click)="filterPlayers('allrounder')">All
-          Rounders</button>
+      <span class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-3 fw-bold tracking-wider">
+        <i class="bi bi-star-fill me-2"></i>STAR LINEUP
+      </span>
+      <h2 class="display-5 fw-bold mb-3">Meet Our Champions</h2>
+      <p class="text-muted lead">Discover the talent that makes KKK legendary</p>
+
+      <!-- Enhanced Filter Buttons -->
+      <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+        <button class="filter-btn" [class.active]="activeFilter === 'all'" (click)="filterPlayers('all')">
+          <i class="bi bi-grid-3x3-gap-fill me-2"></i>All Players
+        </button>
+        <button class="filter-btn filter-batsman" [class.active]="activeFilter === 'batsman'"
+          (click)="filterPlayers('batsman')">
+          <i class="bi bi-lightning-charge-fill me-2"></i>Batsmen
+        </button>
+        <button class="filter-btn filter-bowler" [class.active]="activeFilter === 'bowler'"
+          (click)="filterPlayers('bowler')">
+          <i class="bi bi-bullseye me-2"></i>Bowlers
+        </button>
+        <button class="filter-btn filter-allrounder" [class.active]="activeFilter === 'allrounder'"
+          (click)="filterPlayers('allrounder')">
+          <i class="bi bi-stars me-2"></i>All Rounders
+        </button>
       </div>
     </div>
 
+    <!-- Player Cards Grid -->
     <div class="row g-4">
       <div class="col-md-6 col-lg-3" *ngFor="let player of filteredPlayers">
-        <div class="card player-card border-0 shadow-sm h-100 rounded-4 overflow-hidden group">
-          <div class="position-relative">
-            <img [src]="player.PhotoURL || 'assets/default-player.jpeg'" class="card-img-top"
-              style="height: 250px; object-fit: cover; filter: grayscale(20%); transition: 0.3s;">
-            <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-to-t text-white">
-              <h5 class="fw-bold mb-0">{{player.Name}}</h5>
-              <small class="opacity-75">{{player.team}}</small>
+        <div class="premium-player-card">
+          <!-- Player Image with Overlay -->
+          <div class="player-image-wrapper">
+            <img [src]="player.PhotoURL || 'assets/avatars/default.jpg'" class="player-image" alt="{{player.Name}}">
+            <div class="image-overlay"></div>
+
+            <!-- Role Badge -->
+            <span class="role-badge" [ngClass]="getRoleBadgeClass(player.Role)">
+              <i class="bi" [ngClass]="{
+                'bi-lightning-charge-fill': player.Role === 'Batsman',
+                'bi-bullseye': player.Role === 'Bowler',
+                'bi-stars': player.Role === 'All-Rounder'
+              }"></i>
+              {{player.Role}}
+            </span>
+
+            <!-- Player Name Overlay -->
+            <div class="player-name-overlay">
+              <h5 class="player-name mb-1">{{player.Name}}</h5>
+              <p class="player-father-name mb-0">
+                <small>S/O {{player.FatherName}}</small>
+              </p>
             </div>
-            <span class="position-absolute top-0 end-0 m-3 badge rounded-pill"
-              [ngClass]="getRoleBadgeClass(player.Role)">{{player.Role}}</span>
           </div>
-          <div class="card-body">
-            <div class="d-flex justify-content-between text-center mb-3">
-              <div>
-                <div class="fw-bold">{{player.matches}}</div>
-                <small class="text-muted" style="font-size: 10px;">MATCHES</small>
+
+          <!-- Card Body with Stats -->
+          <div class="player-card-body">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <i class="bi bi-trophy-fill text-warning"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value">{{player.matches || 0}}</div>
+                  <div class="stat-label">Matches</div>
+                </div>
               </div>
-              <div>
-                <div class="fw-bold">{{player.runs || 0}}</div>
-                <small class="text-muted" style="font-size: 10px;">RUNS</small>
+
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <i class="bi bi-graph-up-arrow text-success"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value">{{player.runs || 0}}</div>
+                  <div class="stat-label">Runs</div>
+                </div>
               </div>
-              <div>
-                <div class="fw-bold">{{player.wickets || 0}}</div>
-                <small class="text-muted" style="font-size: 10px;">WICKETS</small>
+
+              <div class="stat-item">
+                <div class="stat-icon">
+                  <i class="bi bi-bullseye text-danger"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value">{{player.wickets || 0}}</div>
+                  <div class="stat-label">Wickets</div>
+                </div>
               </div>
             </div>
-            <button class="btn btn-outline-dark btn-sm w-100 rounded-pill" (click)="viewPlayerProfile(player)">View
-              Profile</button>
+
+            <!-- Action Button -->
+            <button class="btn-view-profile" (click)="viewPlayerProfile(player)">
+              <span>View Full Profile</span>
+              <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+            </button>
           </div>
         </div>
       </div>
     </div>
+
     <!-- Pagination -->
     <div class="d-flex justify-content-center align-items-center mt-5 gap-3">
       <button class="btn btn-outline-secondary rounded-circle" [disabled]="currentPage === 1" (click)="prevPage()">
@@ -383,7 +435,7 @@
   <div class="container">
     <div class="row g-4">
       <div class="col-md-4">
-        <h4 class="fw-bold text-warning mb-4">KCC</h4>
+        <h4 class="fw-bold text-warning mb-4">KKK</h4>
         <p class="text-white-50 mb-4">Kattur Cricket Club has been the heart of local cricket since 2021. We believe in
           fair play, community spirit, and nurturing young talent.</p>
         <div class="d-flex gap-3 social-links">
@@ -413,7 +465,7 @@
     </div>
     <hr class="border-secondary my-5">
     <div class="text-center text-white-50">
-      <small>&copy; 2024 Kattur Premier League. Designed with <i class="bi bi-heart-fill text-danger"></i> for
+      <small>&copy; 2026 Kattur Premier League. Designed with <i class="bi bi-heart-fill text-danger"></i> for
         Cricket.</small>
     </div>
   </div>

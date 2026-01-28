@@ -57,11 +57,11 @@ export class AuctionSessionComponent implements OnInit {
   handleAction(event: { type: string, row: any }) {
     if (event.type === 'Edit') {
       sessionStorage.setItem('SessionID', event.row.SessionID);
-      this.router.navigate(['/app/auction-session-form'])
+      this.router.navigate(['/kkk/auction-session-form'])
     }
   }
 
   addSession() {
-    this.router.navigate(['/app/auction-session-form'])
+    this.router.navigate(['/kkk/auction-session-form'])
   }
 }

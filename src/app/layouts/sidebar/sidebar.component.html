@@ -1,11 +1,33 @@
-<mat-nav-list *ngIf="visible" class="sidebar-nav">
-  <ng-container *ngFor="let section of menuSections"> 
-    <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active-link"
-      class="sidebar-link"> 
-      <div class="sidebar-item-wrapper">
-        <mat-icon matTooltip="{{ item.label }}">{{ item.icon }}</mat-icon>
-        <span class="sidebar-label">{{ item.label }}</span>
+<div class="sidebar-container">
+  <!-- Logo Section -->
+  <div class="logo-section d-flex align-items-center mb-4 px-3 pt-3">
+    <div class="logo-icon bg-warning rounded-circle d-flex align-items-center justify-content-center me-3"
+      style="width: 40px; height: 40px;">
+      <i class="bi bi-trophy-fill text-dark fs-5"></i>
+    </div>
+    <div class="logo-text" *ngIf="visible">
+      <h5 class="m-0 fw-bold text-white tracking-wider">KKK ADMIN</h5>
+      <small class="text-white-50" style="font-size: 0.75rem;">Premium League</small>
+    </div>
+  </div>
+
+  <mat-nav-list *ngIf="visible" class="sidebar-nav">
+    <ng-container *ngFor="let section of menuSections">
+      <!-- Section Header (Optional) -->
+      <div class="section-label text-uppercase text-white-50 px-3 py-2 mt-2 mb-1 fw-bold"
+        style="font-size: 0.7rem; letter-spacing: 1px;" *ngIf="section.label">
+        {{ section.label }}
       </div>
-    </a> 
-  </ng-container>
-</mat-nav-list>
+
+      <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active-link"
+        class="sidebar-link mb-1">
+        <div class="sidebar-item-wrapper d-flex align-items-center px-3 py-2 rounded-3">
+          <mat-icon class="sidebar-icon me-3">{{ item.icon }}</mat-icon>
+          <span class="sidebar-label">{{ item.label }}</span>
+        </div>
+      </a>
+    </ng-container>
+  </mat-nav-list>
+
+
+</div>
