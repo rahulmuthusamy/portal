@@ -186,9 +186,7 @@ export class KkkWebsiteComponent implements OnInit {
           Name: s.Name || s.name || '',
           Description: s.Description || s.description || '',
           WebsiteURL: s.WebsiteURL || s.website || '#',
-          LogoURL: (s.LogoURL || s.logoUrl) ?
-            ((s.LogoURL || s.logoUrl).startsWith('http') ? (s.LogoURL || s.logoUrl) : environment.apiUrl + (s.LogoURL || s.logoUrl)) :
-            ''
+          LogoURL: s.LogoURL ? environment.apiUrl + s.LogoURL : ''
         })) : []);
       },
       error: (err) => console.error('Error loading Sponsors:', err)
@@ -201,11 +199,9 @@ export class KkkWebsiteComponent implements OnInit {
         const images = res?.data?.gallery || [];
         this.dynamicGallery.set(Array.isArray(images) ? images.map((img: any) => ({
           ...img,
-          Title: img.Title || img.title || '',
-          Category: img.Category || img.category || 'Other',
-          url: (img.ImageURL || img.imageUrl) ?
-            ((img.ImageURL || img.imageUrl).startsWith('http') ? (img.ImageURL || img.imageUrl) : environment.apiUrl + (img.ImageURL || img.imageUrl)) :
-            ''
+          Title: img.Title || '',
+          Category: img.Category || 'Other',
+          url: img.ImageURL ? img.ImageURL.startsWith('http') ? img.ImageURL : environment.apiUrl + img.ImageURL : ''
         })) : []);
       },
       error: (err) => console.error('Error loading Gallery:', err)
@@ -362,15 +358,15 @@ export class KkkWebsiteComponent implements OnInit {
 
     let filtered = this.players;
 
-    if (this.activeFilter !== 'all') {
-      filtered = filtered.filter((p: any) => p.role === this.activeFilter);
+    if (this.activeFilter !== 'All') {
+      filtered = filtered.filter((p: any) => p.Role === this.activeFilter);
     }
 
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter((p: any) =>
-        p.name.toLowerCase().includes(query) ||
-        p.team.toLowerCase().includes(query)
+        p.Name.toLowerCase().includes(query) ||
+        p.Team.toLowerCase().includes(query)
       );
     }
 
@@ -475,7 +471,7 @@ Bio: ${team.Bio || 'A proud member of the Kattur Premier League.'}
   // ... (rest of the file until startCountdown)
 
   getAuctionList() {
-    this.auctionSessionService.getAll().subscribe({
+    this.auctionSessionService.getAuctionList().subscribe({
       next: (response: any) => {
         this.auctionList = response?.data?.sessions ?? [];
         // Optional: Sort by date

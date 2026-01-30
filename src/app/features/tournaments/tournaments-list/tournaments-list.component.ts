@@ -8,7 +8,7 @@ import { TeamsBannerComponent } from '@shared/components/teams-banner/teams-bann
 @Component({
   selector: 'app-tournaments-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TeamsBannerComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './tournaments-list.component.html',
   styleUrl: './tournaments-list.component.scss'
 })

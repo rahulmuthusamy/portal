@@ -11,4 +11,8 @@ export class AuctionSessionService extends BaseCrudService<Player> {
     constructor(api: ApiService) {
         super(api, `${environment.apiUrl}/sessions`);
     }
+
+    getAuctionList() {
+        return this.api.get(`${environment.apiUrl}/sessions/upcoming`);
+    }
 }

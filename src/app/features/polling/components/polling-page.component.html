@@ -1,0 +1,66 @@
+<!-- HERO -->
+<div class="hero">
+    <h1>KKK Community Polls</h1>
+    <p>One mobile • One vote • One winner</p>
+</div>
+
+<div class="page">
+
+    <!-- OTP -->
+    <div class="auth-card" *ngIf="!verified()">
+        <mat-icon>phone_android</mat-icon>
+        <h2>Verify Mobile</h2>
+
+        <input placeholder="Mobile Number" [(ngModel)]="mobile" maxlength="10" />
+        <button (click)="sendOtp()" *ngIf="!otpSent">Send OTP</button>
+
+        <div *ngIf="otpSent">
+            <input placeholder="OTP" [(ngModel)]="otp" maxlength="6" />
+            <button class="verify" (click)="verifyOtp()">Verify</button>
+        </div>
+    </div>
+
+    <!-- POLLS -->
+    <div class="poll-grid" *ngIf="verified()">
+
+        <div class="poll-card" *ngFor="let poll of polls()">
+
+            <div class="poll-header">
+                <h3>{{ poll.Question }}</h3>
+                <span class="status" [class.live]="poll.IsActive">
+                    {{ poll.IsActive ? 'LIVE' : 'ENDED' }}
+                </span>
+            </div>
+
+            <!-- OPTIONS -->
+            <div class="option" *ngFor="let opt of poll.options" (click)="vote(poll.id, opt.id)"
+                [class.disabled]="hasVoted(poll.id)">
+                <span>{{ opt.OptionText }}</span>
+                <strong *ngIf="hasVoted(poll.id)">
+                    {{ percent(opt.Votes, poll.TotalVotes) }}%
+                </strong>
+
+                <div class="bar" *ngIf="hasVoted(poll.id)">
+                    <div class="fill" [style.width.%]="percent(opt.Votes, poll.TotalVotes)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⭐ WINNER -->
+            <div class="winner">
+                <span class="badge">🏆 {{ poll.IsActive ? 'Leading' : 'Winner' }}</span>
+
+                <div class="winner-body">
+                    <img [src]="poll.winner.ImageUrl || 'assets/default-player.jpeg'" />
+                    <div>
+                        <h4>{{ poll.winner.OptionText }}</h4>
+                        <small>
+                            {{ percent(poll.winner.Votes, poll.TotalVotes) }}% votes
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

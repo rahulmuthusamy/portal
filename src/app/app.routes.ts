@@ -11,7 +11,7 @@ export const routes: Routes = [
     },
     {
         path: 'polling',
-        loadComponent: () => import('@features/polling/polling-page.component').then(m => m.PollingPageComponent),
+        loadComponent: () => import('@features/polling/components/polling-page.component').then(m => m.PollingPageComponent),
     },
     {
         path: '',

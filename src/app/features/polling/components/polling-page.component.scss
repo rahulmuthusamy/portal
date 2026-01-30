@@ -1,0 +1,135 @@
+.hero {
+    background: linear-gradient(135deg, #1a73e8, #34a853);
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.page {
+    max-width: 1200px;
+    margin: -40px auto 40px;
+    padding: 20px;
+}
+
+/* AUTH */
+.auth-card {
+    width: 360px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .15);
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: #1a73e8;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .verify {
+        background: #34a853;
+    }
+}
+
+/* POLLS */
+.poll-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.poll-card {
+    background: white;
+    padding: 22px;
+    border-radius: 22px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
+}
+
+.poll-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+
+    .status {
+        font-size: 12px;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background: #fbe9e7;
+
+        &.live {
+            background: #e3f2fd;
+            color: #1a73e8;
+        }
+    }
+}
+
+.option {
+    background: #f6f8fc;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+
+    &.disabled {
+        pointer-events: none;
+        opacity: .7;
+    }
+
+    .bar {
+        height: 6px;
+        background: #ddd;
+        border-radius: 6px;
+        margin-top: 6px;
+
+        .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a73e8, #34a853);
+            border-radius: 6px;
+        }
+    }
+}
+
+/* WINNER */
+.winner {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff8e1, #fff3c4);
+    border: 1px solid #ffe082;
+
+    .badge {
+        font-size: 12px;
+        font-weight: bold;
+        color: #ff6f00;
+    }
+
+    .winner-body {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 10px;
+
+        img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 15px rgba(255, 193, 7, .6);
+        }
+    }
+}

@@ -313,19 +313,19 @@
 
       <!-- Enhanced Filter Buttons -->
       <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-        <button class="filter-btn" [class.active]="activeFilter === 'all'" (click)="filterPlayers('all')">
+        <button class="filter-btn" [class.active]="activeFilter === 'All'" (click)="filterPlayers('All')">
           <i class="bi bi-grid-3x3-gap-fill me-2"></i>All Players
         </button>
-        <button class="filter-btn filter-batsman" [class.active]="activeFilter === 'batsman'"
-          (click)="filterPlayers('batsman')">
+        <button class="filter-btn filter-batsman" [class.active]="activeFilter === 'Batsman'"
+          (click)="filterPlayers('Batsman')">
           <i class="bi bi-lightning-charge-fill me-2"></i>Batsmen
         </button>
-        <button class="filter-btn filter-bowler" [class.active]="activeFilter === 'bowler'"
-          (click)="filterPlayers('bowler')">
+        <button class="filter-btn filter-bowler" [class.active]="activeFilter === 'Bowler'"
+          (click)="filterPlayers('Bowler')">
           <i class="bi bi-bullseye me-2"></i>Bowlers
         </button>
-        <button class="filter-btn filter-allrounder" [class.active]="activeFilter === 'allrounder'"
-          (click)="filterPlayers('allrounder')">
+        <button class="filter-btn filter-allrounder" [class.active]="activeFilter === 'All-Rounder'"
+          (click)="filterPlayers('All-Rounder')">
           <i class="bi bi-stars me-2"></i>All Rounders
         </button>
       </div>

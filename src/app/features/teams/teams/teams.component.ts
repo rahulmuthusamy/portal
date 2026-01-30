@@ -9,7 +9,7 @@ import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-teams',
-  imports: [CommonModule, ButtonComponent, DataTableComponent],
+  imports: [CommonModule, DataTableComponent],
   templateUrl: './teams.component.html',
   styleUrl: './teams.component.scss'
 })
