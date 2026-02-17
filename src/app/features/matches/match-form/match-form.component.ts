@@ -1,181 +1,417 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MatchService } from '../services/match.service';
 import { TournamentService } from '@features/tournaments/services/tournament.service';
 import { TeamsService } from '@features/teams/services/teams.service';
+import { ButtonComponent, InputComponent, SelectComponent } from '@shared/forms/form-controls';
+import { ToastService } from '@shared/services/toast.service';
 
 @Component({
   selector: 'app-match-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    InputComponent,
+    SelectComponent,
+    ButtonComponent
+  ],
   template: `
-    <div class="match-form-container animate-fade"> 
+    <div class="match-form-container animate-fade p-2 p-md-4"> 
+      <div class="header-section mb-4">
+        <h2 class="fw-bold text-dark mb-1">{{ isEdit ? 'Edit' : 'Schedule' }} Match</h2>
+        <p class="text-muted">Fill in the details to {{ isEdit ? 'update' : 'create' }} a cricket match.</p>
+      </div>
+
       <div class="form-wrapper bg-white shadow-sm rounded-4 border p-4">
         <form [formGroup]="matchForm" (ngSubmit)="onSubmit()">
-          <div class="row g-4">
-            
+          <!-- Match Identity -->
+          <div class="section-title mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">Match Identity</h5>
+          </div>
+
+          <div class="row g-4 mb-5">
             <div class="col-md-6">
-              <label class="form-label fw-bold">Select Tournament *</label>
-              <select formControlName="tournamentId" class="form-select">
-                <option value="">-- Choose Tournament --</option>
-                <option *ngFor="let t of tournaments()" [value]="t.id">{{ t.name }}</option>
-              </select>
+              <app-select
+                label="Tournament Association"
+                [control]="matchForm.get('TournamentID')!"
+                [options]="tournamentOptions()"
+                placeholder="-- No Tournament (Quick Match) --">
+              </app-select>
+            </div>
+            <div class="col-md-6">
+              <app-input
+                label="Match Number"
+                type="number"
+                [control]="matchForm.get('MatchNumber')!"
+                placeholder="e.g. 1">
+              </app-input>
+            </div>
+            <div class="col-md-6">
+              <app-select
+                label="Match Type"
+                [control]="matchForm.get('MatchType')!"
+                [options]="matchTypeOptions">
+              </app-select>
+            </div>
+            <div class="col-md-6">
+              <app-input
+                label="Group/Round Name (Optional)"
+                [control]="matchForm.get('GroupName')!"
+                placeholder="e.g. Group A / Semi Final">
+              </app-input>
+            </div>
+          </div>
+
+          <!-- Teams Selection -->
+          <div class="section-title mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">Teams & Venue</h5>
+          </div>
+
+          <div class="row g-4 mb-5 align-items-center">
+            <div class="col-md-5">
+              <app-select
+                label="Team A (Home)"
+                [control]="matchForm.get('TeamA_ID')!"
+                [options]="teamOptions()"
+                required="true"
+                placeholder="-- Select Team A --">
+              </app-select>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label fw-bold">Venue *</label>
-              <input type="text" formControlName="venue" class="form-control" placeholder="Ground Name / City">
+            <div class="col-md-2 d-flex justify-content-center pt-4">
+              <div class="vs-badge">VS</div>
             </div>
 
             <div class="col-md-5">
-              <label class="form-label fw-bold">Team 1 *</label>
-              <select formControlName="team1Id" class="form-select team-select">
-                <option value="">-- Choose Team 1 --</option>
-                <option *ngFor="let team of availableTeams()" [value]="team.id">{{ team.name }}</option>
-              </select>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-end justify-content-center pb-3">
-              <div class="vs-circle shadow-sm">VS</div>
-            </div>
-
-            <div class="col-md-5">
-              <label class="form-label fw-bold">Team 2 *</label>
-              <select formControlName="team2Id" class="form-select team-select">
-                <option value="">-- Choose Team 2 --</option>
-                <option *ngFor="let team of availableTeams()" [value]="team.id">{{ team.name }}</option>
-              </select>
+              <app-select
+                label="Team B (Away)"
+                [control]="matchForm.get('TeamB_ID')!"
+                [options]="teamOptions()"
+                required="true"
+                placeholder="-- Select Team B --">
+              </app-select>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">Match Date & Time *</label>
-              <input type="datetime-local" formControlName="date" class="form-control">
+              <app-input
+                label="Match Date & Time"
+                type="datetime-local"
+                [control]="matchForm.get('MatchDate')!"
+                required="true">
+              </app-input>
             </div>
-
-            <div class="col-md-3">
-              <label class="form-label fw-bold">Overs *</label>
-              <input type="number" formControlName="oversPerInnings" class="form-control" min="1" max="50">
+            <div class="col-md-6">
+              <app-input
+                label="Venue / Ground"
+                [control]="matchForm.get('Venue')!"
+                required="true"
+                placeholder="Enter ground name">
+              </app-input>
             </div>
+          </div>
 
-            <div class="col-md-3">
-              <label class="form-label fw-bold">Match No.</label>
-              <input type="number" formControlName="matchNumber" class="form-control">
+          <!-- Match Configuration -->
+          <div class="section-title mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">Match Configuration</h5>
+          </div>
+
+          <div class="row g-4 mb-5">
+            <div class="col-md-4">
+              <app-select
+                label="Match Format"
+                [control]="matchForm.get('MatchFormat')!"
+                [options]="matchFormatOptions">
+              </app-select>
             </div>
-
-            <div class="col-md-12 mt-5">
-              <div class="d-flex gap-3 justify-content-end">
-                <button type="button" class="btn btn-light px-5 py-2 border fw-bold" [routerLink]="['/kkk/match-list']">Cancel</button>
-                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold" [disabled]="matchForm.invalid || isSubmitting()">
-                  Schedule Match
-                </button>
+            <div class="col-md-2">
+              <app-input
+                label="Overs"
+                type="number"
+                [control]="matchForm.get('OversPerSide')!">
+              </app-input>
+            </div>
+            <div class="col-md-2">
+              <app-input
+                label="Balls/Over"
+                type="number"
+                [control]="matchForm.get('BallsPerOver')!">
+              </app-input>
+            </div>
+            <div class="col-md-2">
+              <app-input
+                label="Powerplay"
+                type="number"
+                [control]="matchForm.get('PowerplayOvers')!">
+              </app-input>
+            </div>
+            <div class="col-md-2">
+              <div class="form-check pt-4 mt-2">
+                <input class="form-check-input" type="checkbox" formControlName="IsNeutralVenue" id="neutralVenue">
+                <label class="form-check-label fw-bold" for="neutralVenue">
+                  Neutral Venue
+                </label>
               </div>
             </div>
+          </div>
 
+          <!-- Officials -->
+          <div class="section-title mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">Officials</h5>
+          </div>
+
+          <div class="row g-4 mb-5">
+            <div class="col-md-6">
+              <app-input
+                label="Umpire 1"
+                [control]="matchForm.get('Umpire1Name')!"
+                placeholder="Primary Umpire Name">
+              </app-input>
+            </div>
+            <div class="col-md-6">
+              <app-input
+                label="Umpire 2"
+                [control]="matchForm.get('Umpire2Name')!"
+                placeholder="Secondary Umpire Name">
+              </app-input>
+            </div>
+            <div class="col-md-4">
+              <app-input
+                label="Third Umpire"
+                [control]="matchForm.get('ThirdUmpireName')!">
+              </app-input>
+            </div>
+            <div class="col-md-4">
+              <app-input
+                label="Match Referee"
+                [control]="matchForm.get('RefereeName')!">
+              </app-input>
+            </div>
+            <div class="col-md-4">
+              <app-input
+                label="Official Scorer"
+                [control]="matchForm.get('ScorerName')!">
+              </app-input>
+            </div>
+          </div>
+
+          <!-- Conditions -->
+          <div class="section-title mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">Conditions & Media</h5>
+          </div>
+
+          <div class="row g-4 mb-5">
+            <div class="col-md-6">
+              <app-input
+                label="Pitch Conditions"
+                [control]="matchForm.get('PitchConditions')!"
+                placeholder="e.g. Dry, Flat, Grassy">
+              </app-input>
+            </div>
+            <div class="col-md-6">
+              <app-input
+                label="Weather"
+                [control]="matchForm.get('WeatherConditions')!"
+                placeholder="e.g. Sunny, Overcast">
+              </app-input>
+            </div>
+            <div class="col-md-12">
+              <app-input
+                label="Live Stream URL"
+                [control]="matchForm.get('StreamURL')!"
+                placeholder="YouTube / Facebook Live Link">
+              </app-input>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label fw-bold small text-uppercase text-muted">Additional Match Notes</label>
+              <textarea class="form-control rounded-3" formControlName="MatchNotes" rows="3" placeholder="Any extra details..."></textarea>
+            </div>
+          </div>
+
+          <div class="col-md-12 mt-4">
+            <div class="d-flex gap-3 justify-content-end">
+              <button type="button" class="btn btn-light px-4 py-2 border fw-bold rounded-3" 
+                (click)="cancel()">Cancel</button>
+              <app-button
+                type="submit"
+                [loading]="isSubmitting()"
+                [disabled]="matchForm.invalid"
+                variant="primary"
+                [label]="isEdit ? 'Update Match' : 'Schedule Match'">
+              </app-button>
+            </div>
           </div>
         </form>
       </div>
     </div>
   `,
   styles: [`
-    .match-form-container { padding: 1rem; max-width: 900px; margin: 0 auto; }
-    .page-title { font-weight: 800; letter-spacing: -1px; }
-    .vs-circle {
-      width: 50px;
-      height: 50px;
-      background: #f1f5f9;
+    .match-form-container { max-width: 1000px; margin: 0 auto; }
+    .vs-badge {
+      width: 40px;
+      height: 40px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 900;
-      color: #94a3b8;
-      border: 4px solid white;
+      color: #64748b;
+      font-size: 0.8rem;
     }
-    .form-control, .form-select {
-      border: 2px solid #e2e8f0;
-      padding: 0.75rem;
-      border-radius: 10px;
-      &:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-      }
+    .form-check-input:checked {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
     }
-    .team-select { font-weight: 700; color: #1e293b; }
   `]
 })
 export class MatchFormComponent implements OnInit {
-  matchForm: FormGroup;
-  tournaments = signal<any[]>([]);
-  availableTeams = signal<any[]>([]);
+  isEdit = false;
   isSubmitting = signal(false);
+  matchForm: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private matchService: MatchService,
-    private tournamentService: TournamentService,
-    private teamService: TeamsService,
-    private router: Router
-  ) {
+  tournamentOptions = signal<any[]>([]);
+  teamOptions = signal<any[]>([]);
+
+  matchTypeOptions = [
+    { label: 'League Match', value: 'League' },
+    { label: 'Group Stage', value: 'Group' },
+    { label: 'Round of 16', value: 'Round16' },
+    { label: 'Quarter Final', value: 'QuarterFinal' },
+    { label: 'Semi Final', value: 'SemiFinal' },
+    { label: 'Final', value: 'Final' }
+  ];
+
+  matchFormatOptions = [
+    { label: 'T20', value: 'T20' },
+    { label: 'ODI', value: 'ODI' },
+    { label: 'T10', value: 'T10' },
+    { label: 'The 100', value: 'The100' },
+    { label: 'Test', value: 'Test' },
+    { label: 'Custom', value: 'Custom' }
+  ];
+
+  private fb = inject(FormBuilder);
+  private matchService = inject(MatchService);
+  private tournamentService = inject(TournamentService);
+  private teamService = inject(TeamsService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private toast = inject(ToastService);
+
+  constructor() {
     this.matchForm = this.fb.group({
-      tournamentId: ['', Validators.required],
-      team1Id: ['', Validators.required],
-      team2Id: ['', Validators.required],
-      date: ['', Validators.required],
-      venue: ['', Validators.required],
-      oversPerInnings: [20, [Validators.required, Validators.min(1)]],
-      matchNumber: [1],
-      status: ['Scheduled']
+      MatchID: [null],
+      TournamentID: [null],
+      TeamA_ID: ['', Validators.required],
+      TeamB_ID: ['', Validators.required],
+      MatchDate: ['', Validators.required],
+      Venue: ['', Validators.required],
+      MatchNumber: [1],
+      MatchType: ['League'],
+      GroupName: [''],
+      MatchFormat: ['T20'],
+      OversPerSide: [20, [Validators.required, Validators.min(1)]],
+      BallsPerOver: [6],
+      PowerplayOvers: [6],
+      IsNeutralVenue: [true],
+      Umpire1Name: [''],
+      Umpire2Name: [''],
+      ThirdUmpireName: [''],
+      RefereeName: [''],
+      ScorerName: [''],
+      PitchConditions: [''],
+      WeatherConditions: [''],
+      StreamURL: [''],
+      MatchNotes: [''],
+      Status: ['Scheduled']
+    });
+
+    // Auto-adjust overs based on format
+    this.matchForm.get('MatchFormat')?.valueChanges.subscribe(format => {
+      this.updateConfig(format);
     });
   }
 
   ngOnInit(): void {
-    this.loadTournaments();
-    this.loadTeams();
+    this.loadData();
+    const id = this.route.snapshot.params['id'];
+    if (id) {
+      this.isEdit = true;
+      this.loadMatch(id);
+    }
   }
 
-  loadTournaments(): void {
+  loadData(): void {
     this.tournamentService.getAll().subscribe((res: any) => {
-      this.tournaments.set(res.data?.tournaments || res || []);
+      const ts = res.data?.tournaments || res || [];
+      this.tournamentOptions.set(ts.map((t: any) => ({ label: t.Name, value: t.TournamentID })));
+    });
+
+    this.teamService.getAll().subscribe((res: any) => {
+      const teams = res.data?.teams || res || [];
+      this.teamOptions.set(teams.map((t: any) => ({ label: t.Name, value: t.TeamID })));
     });
   }
 
-  loadTeams(): void {
-    this.teamService.getAll().subscribe((res: any) => {
-      this.availableTeams.set(res.data?.teams || res || []);
+  loadMatch(id: string): void {
+    this.matchService.getById(Number(id)).subscribe((res: any) => {
+      const m = res.data?.match || res;
+      this.matchForm.patchValue({
+        ...m,
+        MatchDate: m.MatchDate ? new Date(m.MatchDate).toISOString().slice(0, 16) : ''
+      });
     });
+  }
+
+  updateConfig(format: string): void {
+    const overs = this.matchForm.get('OversPerSide');
+    const pp = this.matchForm.get('PowerplayOvers');
+    switch (format) {
+      case 'T20': overs?.setValue(20); pp?.setValue(6); break;
+      case 'ODI': overs?.setValue(50); pp?.setValue(10); break;
+      case 'T10': overs?.setValue(10); pp?.setValue(4); break;
+      case 'The100': overs?.setValue(16); pp?.setValue(5); break;
+      case 'Test': overs?.setValue(90); pp?.setValue(0); break;
+    }
   }
 
   onSubmit(): void {
-    if (this.matchForm.invalid) return;
+    if (this.matchForm.invalid) {
+      this.matchForm.markAllAsTouched();
+      return;
+    }
 
-    const val = this.matchForm.value;
-    if (val.team1Id === val.team2Id) {
-      alert('Team 1 and Team 2 cannot be the same');
+    const val = this.matchForm.getRawValue();
+    if (val.TeamA_ID === val.TeamB_ID) {
+      this.toast.error('Teams must be different');
       return;
     }
 
     this.isSubmitting.set(true);
-    const payload = {
-      TournamentID: val.tournamentId,
-      TeamA_ID: val.team1Id,
-      TeamB_ID: val.team2Id,
-      MatchDate: val.date,
-      Venue: val.venue,
-      MatchNumber: val.matchNumber,
-      Status: val.status
-    };
+    const request = this.isEdit
+      ? this.matchService.update(val.MatchID, val)
+      : this.matchService.create(val);
 
-    this.matchService.create(payload).subscribe({
+    request.subscribe({
       next: () => {
-        alert('Match scheduled successfully!');
+        this.toast.success(`Match ${this.isEdit ? 'updated' : 'scheduled'} successfully!`);
         this.router.navigate(['/kkk/match-list']);
       },
       error: (err) => {
         console.error(err);
+        this.toast.error('Failed to save match');
         this.isSubmitting.set(false);
       }
     });
   }
+
+  cancel(): void {
+    this.router.navigate(['/kkk/match-list']);
+  }
 }
+

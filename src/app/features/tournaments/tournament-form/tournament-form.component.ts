@@ -44,6 +44,15 @@ export class TournamentFormComponent implements OnInit {
     { label: 'Completed', value: 'Completed' }
   ];
 
+  matchFormats = [
+    { label: 'T20 (20 Overs)', value: 'T20' },
+    { label: 'ODI (50 Overs)', value: 'ODI' },
+    { label: 'T10 (10 Overs)', value: 'T10' },
+    { label: 'The Hundred (100 Balls)', value: 'The100' },
+    { label: 'Test Match', value: 'Test' },
+    { label: 'Custom', value: 'Custom' }
+  ];
+
   private fb = inject(FormBuilder);
   private tournamentService = inject(TournamentService);
   private teamService = inject(TeamsService);
@@ -66,7 +75,44 @@ export class TournamentFormComponent implements OnInit {
       Organizer: [''],
       PrizePool: [''],
       Rules: [''],
-      Category: ['']
+      Category: [''],
+      // Registration Management
+      RegistrationStartDate: [''],
+      RegistrationEndDate: [''],
+      IsRegistrationOpen: [true],
+      MaxTeams: [16, [Validators.required, Validators.min(2)]],
+      MinTeams: [4, [Validators.required, Validators.min(2)]],
+      // Match Configuration
+      MatchFormat: ['T20', Validators.required],
+      OversPerMatch: [20, [Validators.required, Validators.min(1)]],
+      PlayersPerTeam: [11, [Validators.required, Validators.min(1)]],
+      BallsPerOver: [6],
+      PowerplayOvers: [6],
+      // Financial & Contact
+      RegistrationFee: [0],
+      ContactEmail: ['', Validators.email],
+      ContactPhone: [''],
+      WebsiteURL: [''],
+      // Visibility
+      IsPublic: [true],
+      FeaturedImage: [''],
+      // Venue Details
+      VenueName: [''],
+      City: [''],
+      State: [''],
+      Country: ['India'],
+      // Tournament Structure
+      GroupCount: [0],
+      TeamsPerGroup: [0],
+      QualifiersCount: [2],
+      PointsForWin: [2],
+      PointsForTie: [1],
+      PointsForNoResult: [1]
+    });
+
+    // Auto-set overs based on match format
+    this.tournamentForm.get('MatchFormat')?.valueChanges.subscribe(format => {
+      this.onMatchFormatChange(format);
     });
   }
 
@@ -82,7 +128,6 @@ export class TournamentFormComponent implements OnInit {
   loadTeams(): void {
     this.teamService.getAll().subscribe((res: any) => {
       const teams = res.data?.teams || res || [];
-      // Handle image URLs for preview
       teams.forEach((t: any) => {
         if (t.LogoURL && !t.LogoURL.startsWith('http')) {
           t.FullLogoURL = environment.apiUrl + t.LogoURL;
@@ -111,10 +156,73 @@ export class TournamentFormComponent implements OnInit {
         Organizer: t.Organizer,
         PrizePool: t.PrizePool,
         Rules: t.Rules,
-        Category: t.Category
+        Category: t.Category,
+        // Registration
+        RegistrationStartDate: t.RegistrationStartDate ? new Date(t.RegistrationStartDate).toISOString().split('T')[0] : '',
+        RegistrationEndDate: t.RegistrationEndDate ? new Date(t.RegistrationEndDate).toISOString().split('T')[0] : '',
+        IsRegistrationOpen: t.IsRegistrationOpen ?? true,
+        MaxTeams: t.MaxTeams || 16,
+        MinTeams: t.MinTeams || 4,
+        // Match Configuration
+        MatchFormat: t.MatchFormat || 'T20',
+        OversPerMatch: t.OversPerMatch || 20,
+        PlayersPerTeam: t.PlayersPerTeam || 11,
+        BallsPerOver: t.BallsPerOver || 6,
+        PowerplayOvers: t.PowerplayOvers || 6,
+        // Financial & Contact
+        RegistrationFee: t.RegistrationFee || 0,
+        ContactEmail: t.ContactEmail || '',
+        ContactPhone: t.ContactPhone || '',
+        WebsiteURL: t.WebsiteURL || '',
+        // Visibility
+        IsPublic: t.IsPublic ?? true,
+        FeaturedImage: t.FeaturedImage || '',
+        // Venue
+        VenueName: t.VenueName || '',
+        City: t.City || '',
+        State: t.State || '',
+        Country: t.Country || 'India',
+        // Structure
+        GroupCount: t.GroupCount || 0,
+        TeamsPerGroup: t.TeamsPerGroup || 0,
+        QualifiersCount: t.QualifiersCount || 2,
+        PointsForWin: t.PointsForWin || 2,
+        PointsForTie: t.PointsForTie || 1,
+        PointsForNoResult: t.PointsForNoResult || 1
       });
       this.selectedTeamIds.set(t.Teams?.map((team: any) => team.TeamID) || []);
     });
+  }
+
+  onMatchFormatChange(format: string): void {
+    const oversControl = this.tournamentForm.get('OversPerMatch');
+    const powerplayControl = this.tournamentForm.get('PowerplayOvers');
+
+    switch (format) {
+      case 'T20':
+        oversControl?.setValue(20);
+        powerplayControl?.setValue(6);
+        break;
+      case 'ODI':
+        oversControl?.setValue(50);
+        powerplayControl?.setValue(10);
+        break;
+      case 'T10':
+        oversControl?.setValue(10);
+        powerplayControl?.setValue(4);
+        break;
+      case 'The100':
+        oversControl?.setValue(16); // 100 balls ≈ 16.4 overs
+        powerplayControl?.setValue(5);
+        break;
+      case 'Test':
+        oversControl?.setValue(90); // Per day
+        powerplayControl?.setValue(0);
+        break;
+      default:
+        // Custom - don't change
+        break;
+    }
   }
 
   toggleTeam(id: number): void {

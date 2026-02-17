@@ -88,6 +88,58 @@
 </section>
 
 
+<!-- Live Match Section -->
+<section id="live-match" class="py-4 bg-light border-bottom" *ngIf="liveMatches().length > 0">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden animate-fade-in">
+          <div class="card-body p-0">
+            <div class="d-flex flex-column flex-md-row">
+              <!-- Live Indicator Side -->
+              <div class="bg-danger text-white p-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                style="min-width: 120px;">
+                <div class="text-center">
+                  <div class="pulse-white mb-1"><i class="bi bi-broadcast fs-3"></i></div>
+                  <div class="fw-black small tracking-widest text-uppercase">Live</div>
+                </div>
+              </div>
+
+              <!-- Match Info -->
+              <div class="flex-grow-1 p-3 px-md-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div *ngFor="let m of liveMatches()"
+                  class="w-100 d-flex align-items-center justify-content-between flex-wrap">
+                  <div class="d-flex align-items-center gap-2 gap-md-4 flex-grow-1">
+                    <div class="text-end" style="min-width: 120px;">
+                      <h5 class="mb-0 fw-black text-truncate">{{ m.TeamA?.Name }}</h5>
+                      <span class="text-muted small">{{ m.TeamA_Runs }}/{{ m.TeamA_Wickets }} ({{ m.TeamA_Overs || 0
+                        }})</span>
+                    </div>
+                    <div class="fw-black text-muted fs-4">VS</div>
+                    <div class="text-start" style="min-width: 120px;">
+                      <h5 class="mb-0 fw-black text-truncate">{{ m.TeamB?.Name }}</h5>
+                      <span class="text-muted small">{{ m.TeamB_Runs }}/{{ m.TeamB_Wickets }} ({{ m.TeamB_Overs || 0
+                        }})</span>
+                    </div>
+                  </div>
+
+                  <div class="text-md-end flex-shrink-0">
+                    <div class="text-primary fw-bold small mb-2">{{ m.ResultNote || 'In Progress' }}</div>
+                    <a [routerLink]="['/kkk/scorecard', m.MatchID]"
+                      class="btn btn-dark btn-sm rounded-pill px-4 fw-bold">
+                      VIEW SCORECARD <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- KPL 2026 Grid Section -->
 <section id="fixtures" class="py-5 bg-dark position-relative overflow-hidden">
   <div class="container position-relative z-2">

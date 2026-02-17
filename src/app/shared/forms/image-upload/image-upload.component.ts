@@ -8,11 +8,11 @@ import { environment } from '@environments/environment';
 
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <label class="profile-circle" for="fileInput">
+    <label class="profile-circle" [for]="id">
   <img [src]="imageUrl" alt="Profile Image" />
   <input
     type="file"
-    id="fileInput"
+    [id]="id"
     accept="image/*"
     (change)="onFileChange($event)"
     hidden
@@ -88,6 +88,7 @@ export class ImageUploadComponent {
   @Input() control!: AbstractControl;
   previewUrl: string | null = null;
   @Input() defaultUrl: string = '';
+  @Input() id: string = 'fileInput';
 
   get imageUrl() {
     return this.previewUrl || environment.apiUrl + this.defaultUrl || 'assets/avatars/default.jpg';

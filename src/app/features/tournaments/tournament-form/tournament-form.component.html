@@ -66,6 +66,126 @@
                             <app-datepicker label="End Date *"
                                 [control]="tournamentForm.get('EndDate')!"></app-datepicker>
                         </div>
+                        <div class="col-md-6">
+                            <app-datepicker label="Registration Start Date"
+                                [control]="tournamentForm.get('RegistrationStartDate')!"></app-datepicker>
+                        </div>
+                        <div class="col-md-6">
+                            <app-datepicker label="Registration End Date"
+                                [control]="tournamentForm.get('RegistrationEndDate')!"></app-datepicker>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Configuration -->
+                <div class="premium-card mb-4">
+                    <h5 class="section-title"><i class="bi bi-gear me-2"></i>Match Configuration</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <app-select label="Match Format *" [control]="tournamentForm.get('MatchFormat')!"
+                                [options]="matchFormats"></app-select>
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="Overs Per Match *" [control]="tournamentForm.get('OversPerMatch')!"
+                                type="number" icon="bi-clock" placeholder="20" />
+                        </div>
+                        <div class="col-md-4">
+                            <app-input label="Players Per Team *" [control]="tournamentForm.get('PlayersPerTeam')!"
+                                type="number" icon="bi-people" placeholder="11" />
+                        </div>
+                        <div class="col-md-4">
+                            <app-input label="Balls Per Over" [control]="tournamentForm.get('BallsPerOver')!"
+                                type="number" icon="bi-circle" placeholder="6" />
+                        </div>
+                        <div class="col-md-4">
+                            <app-input label="Powerplay Overs" [control]="tournamentForm.get('PowerplayOvers')!"
+                                type="number" icon="bi-lightning" placeholder="6" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Limits & Points -->
+                <div class="premium-card mb-4">
+                    <h5 class="section-title"><i class="bi bi-trophy me-2"></i>Tournament Structure</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <app-input label="Maximum Teams *" [control]="tournamentForm.get('MaxTeams')!" type="number"
+                                icon="bi-people-fill" placeholder="16" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="Minimum Teams *" [control]="tournamentForm.get('MinTeams')!" type="number"
+                                icon="bi-people" placeholder="4" />
+                        </div>
+                        <div class="col-md-4" *ngIf="tournamentForm.get('Type')!.value === 'Hybrid'">
+                            <app-input label="Number of Groups" [control]="tournamentForm.get('GroupCount')!"
+                                type="number" icon="bi-grid" placeholder="2" />
+                        </div>
+                        <div class="col-md-4" *ngIf="tournamentForm.get('Type')!.value === 'Hybrid'">
+                            <app-input label="Teams Per Group" [control]="tournamentForm.get('TeamsPerGroup')!"
+                                type="number" icon="bi-grid-3x3" placeholder="4" />
+                        </div>
+                        <div class="col-md-4" *ngIf="tournamentForm.get('Type')!.value === 'Hybrid'">
+                            <app-input label="Qualifiers Per Group" [control]="tournamentForm.get('QualifiersCount')!"
+                                type="number" icon="bi-star" placeholder="2" />
+                        </div>
+                        <div class="col-md-4">
+                            <app-input label="Points for Win" [control]="tournamentForm.get('PointsForWin')!"
+                                type="number" icon="bi-trophy-fill" placeholder="2" />
+                        </div>
+                        <div class="col-md-4">
+                            <app-input label="Points for Tie" [control]="tournamentForm.get('PointsForTie')!"
+                                type="number" icon="bi-dash-circle" placeholder="1" />
+                        </div>
+                        <div class="col-md-4">
+                            <app-input label="Points for No Result" [control]="tournamentForm.get('PointsForNoResult')!"
+                                type="number" icon="bi-x-circle" placeholder="1" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Venue Details -->
+                <div class="premium-card mb-4">
+                    <h5 class="section-title"><i class="bi bi-geo-alt me-2"></i>Venue Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <app-input label="Venue/Ground Name" [control]="tournamentForm.get('VenueName')!"
+                                placeholder="e.g. Kattur Cricket Stadium" type="text" icon="bi-building" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="City" [control]="tournamentForm.get('City')!" placeholder="e.g. Kattur"
+                                type="text" icon="bi-geo" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="State" [control]="tournamentForm.get('State')!"
+                                placeholder="e.g. Tamil Nadu" type="text" icon="bi-map" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="Country" [control]="tournamentForm.get('Country')!" placeholder="India"
+                                type="text" icon="bi-globe" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact & Financial -->
+                <div class="premium-card mb-4">
+                    <h5 class="section-title"><i class="bi bi-telephone me-2"></i>Contact & Financial Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <app-input label="Contact Email" [control]="tournamentForm.get('ContactEmail')!"
+                                placeholder="tournament@example.com" type="email" icon="bi-envelope" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="Contact Phone" [control]="tournamentForm.get('ContactPhone')!"
+                                placeholder="+91 1234567890" type="tel" icon="bi-phone" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="Website URL" [control]="tournamentForm.get('WebsiteURL')!"
+                                placeholder="https://tournament.com" type="url" icon="bi-link" />
+                        </div>
+                        <div class="col-md-6">
+                            <app-input label="Registration Fee (₹)" [control]="tournamentForm.get('RegistrationFee')!"
+                                type="number" icon="bi-currency-rupee" placeholder="0" />
+                        </div>
                     </div>
                 </div>
 
@@ -73,7 +193,7 @@
                 <div class="premium-card mb-4">
                     <h5 class="section-title"><i class="bi bi-image me-2"></i>Tournament Banner</h5>
                     <div class="logo-upload-wrapper bg-light rounded-3 p-4 text-center border-dashed">
-                        <app-image-upload [control]="tournamentForm.get('BannerURL')!"
+                        <app-image-upload [id]="'banner'" [control]="tournamentForm.get('BannerURL')!"
                             [defaultUrl]="tournamentForm.get('BannerURL')!.value"></app-image-upload>
                         <p class="small text-muted mt-3">Recommended size: 1200x400px</p>
                     </div>

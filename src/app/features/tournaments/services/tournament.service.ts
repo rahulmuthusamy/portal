@@ -13,10 +13,34 @@ export class TournamentService extends BaseCrudService<any> {
     }
 
     getPointsTable(tournamentId: number): Observable<any> {
-        return this.api.get(`${environment.apiUrl}/tournaments/${tournamentId}/points-table`);
+        return this.api.get(`${this.endpoint}/${tournamentId}/points-table`);
     }
 
     getTournamentMatches(tournamentId: number): Observable<any> {
-        return this.api.get(`${environment.apiUrl}/tournaments/${tournamentId}/matches`);
+        return this.api.get(`${environment.apiUrl}/matches?TournamentID=${tournamentId}`);
+    }
+
+    generateFixtures(tournamentId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/${tournamentId}/fixtures/generate`, {});
+    }
+
+    closeRegistration(tournamentId: number): Observable<any> {
+        return this.api.patch(`${this.endpoint}/${tournamentId}/registration/close`, {});
+    }
+
+    getStandings(tournamentId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${tournamentId}/standings`);
+    }
+
+    getStats(tournamentId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${tournamentId}/stats`);
+    }
+
+    enrollTeam(tournamentId: number, teamId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/${tournamentId}/enroll`, { teamId });
+    }
+
+    withdrawTeam(tournamentId: number, teamId: number): Observable<any> {
+        return this.api.delete(`${this.endpoint}/${tournamentId}/teams/${teamId}`);
     }
 }

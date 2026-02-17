@@ -128,6 +128,11 @@ export const routes: Routes = [
                 data: { breadcrumb: 'Live Scorecard' },
                 loadComponent: () => import('@features/matches/scorecard/scorecard.component').then(m => m.ScorecardComponent),
             },
+            {
+                path: 'live-scoring/:id',
+                data: { breadcrumb: 'Live Scoring' },
+                loadComponent: () => import('@features/matches/live-scoring/live-scoring.component').then(m => m.LiveScoringComponent),
+            },
 
             // --- Other ---
             {

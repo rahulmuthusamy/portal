@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, HostListener, OnInit, Inject, PLATFORM_ID, signal, WritableSignal } from '@angular/core';
+import { Component, HostListener, OnInit, Inject, PLATFORM_ID, signal, WritableSignal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { environment } from '@environments/environment';
@@ -7,6 +7,7 @@ import { AuctionSessionService } from '@features/auction/services/auction-sessio
 import { PlayerService } from '@features/players/services/players.service';
 import { TeamsService } from '@features/teams/services/teams.service';
 import { SettingsService } from '@core/services/settings.service';
+import { MatchService } from '../matches/services/match.service';
 
 interface Team {
   Name: string;
@@ -66,6 +67,7 @@ export class KkkWebsiteComponent implements OnInit {
   carouselItems = signal<any[]>([]);
   dynamicSponsors = signal<any[]>([]);
   dynamicGallery = signal<any[]>([]);
+  liveMatches = signal<any[]>([]);
 
   gridImages = [
     'assets/GJ2026_3.jpeg',
@@ -124,9 +126,12 @@ export class KkkWebsiteComponent implements OnInit {
       this.getAuctionList();
       this.getTeamList();
       this.getPlayerList();
+      this.getLiveMatches();
       if (this.isBrowser) {
         this.startCountdown();
         this.updateActiveSection();
+        // Periodically refresh live matches
+        setInterval(() => this.getLiveMatches(), 30000);
       }
     } catch (e) {
       console.error('KkkWebsiteComponent: Error in ngOnInit', e);
@@ -265,6 +270,18 @@ export class KkkWebsiteComponent implements OnInit {
         this.filteredPlayers = this.players.slice(startIndex, endIndex);
       },
       error: (error: any) => console.error('Error fetching Players:', error)
+    });
+  }
+
+  private matchService = inject(MatchService);
+
+  getLiveMatches() {
+    this.matchService.getAll().subscribe({
+      next: (res: any) => {
+        const allMatches = res.data?.matches || res.matches || [];
+        const live = allMatches.filter((m: any) => m.Status === 'Live');
+        this.liveMatches.set(live);
+      }
     });
   }
 

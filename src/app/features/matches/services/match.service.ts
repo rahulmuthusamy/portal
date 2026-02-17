@@ -13,14 +13,42 @@ export class MatchService extends BaseCrudService<any> {
     }
 
     getLiveScore(matchId: number): Observable<any> {
-        return this.api.get(`${environment.apiUrl}/matches/${matchId}/live-score`);
+        return this.api.get(`${this.endpoint}/${matchId}/live-score`);
     }
 
-    updateScore(matchId: number, ballData: any): Observable<any> {
-        return this.api.post(`${environment.apiUrl}/matches/${matchId}/score`, ballData);
+    getLiveScoreDetailed(matchId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${matchId}/live-score-detailed`);
     }
 
-    getInningsData(matchId: number, inningsNumber: number): Observable<any> {
-        return this.api.get(`${environment.apiUrl}/matches/${matchId}/innings/${inningsNumber}`);
+    getScorecard(matchId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${matchId}/scorecard`);
+    }
+
+    getMatchSquads(matchId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${matchId}/squads`);
+    }
+
+    recordToss(matchId: number, data: { tossWinnerId: number, tossDecision: string }): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/toss`, data);
+    }
+
+    startInnings(matchId: number, data: { inningsNumber: number }): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/innings`, data);
+    }
+
+    recordBall(ballData: any): Observable<any> {
+        return this.api.post(`${this.endpoint}/ball`, ballData);
+    }
+
+    undoLastBall(matchId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/undo-ball`, {});
+    }
+
+    completeInnings(inningsId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/innings/complete`, { inningsId });
+    }
+
+    saveMatchSquad(matchId: number, teamId: number, playerIds: number[]): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/squads`, { teamId, playerIds });
     }
 }

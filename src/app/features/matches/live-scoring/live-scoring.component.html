@@ -1,0 +1,422 @@
+<div class="scoring-container" *ngIf="!loading(); else loadingTemplate">
+    <!-- Top Header: Match Summary -->
+    <div class="score-header sticky-top bg-white shadow-sm p-3">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="team-name mb-0 fw-bold">{{ match()?.TeamA?.Name }} <span class="text-muted">vs</span> {{
+                        match()?.TeamB?.Name }}</h5>
+                    <p class="match-info text-muted small mb-0">{{ match()?.Venue }} | {{ match()?.MatchFormat }} |
+                        Match {{ match()?.MatchNumber }}</p>
+                </div>
+                <div class="col-auto text-end">
+                    <div class="current-score">
+                        <h2 class="mb-0 fw-black text-primary">
+                            {{ (currentInnings()?.BattingTeamID === match()?.TeamA_ID ? match()?.TeamA_Runs :
+                            match()?.TeamB_Runs) || 0 }} -
+                            {{ (currentInnings()?.BattingTeamID === match()?.TeamA_ID ? match()?.TeamA_Wickets :
+                            match()?.TeamB_Wickets) || 0 }}
+                        </h2>
+                        <div class="overs text-muted fw-bold">
+                            Overs {{ (currentInnings()?.BattingTeamID === match()?.TeamA_ID ? match()?.TeamA_Overs :
+                            match()?.TeamB_Overs) || 0 }}/{{ match()?.OversPerSide }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content container-fluid p-3">
+        <div class="row g-4">
+            <!-- Left Column: Players and Stats -->
+            <div class="col-lg-8">
+                <!-- Batting Section -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                    <div class="card-header bg-primary text-white p-3 border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-person-walking"></i> Batting</h5>
+                            <span class="badge bg-light text-primary fw-bold">Innings {{ currentInnings()?.InningsNumber
+                                }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table mb-0 align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-3 py-2 border-0">Batsman</th>
+                                    <th class="text-center py-2 border-0">R</th>
+                                    <th class="text-center py-2 border-0">B</th>
+                                    <th class="text-center py-2 border-0">4s</th>
+                                    <th class="text-center py-2 border-0">6s</th>
+                                    <th class="text-center py-2 border-0">SR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr [class.striker-active]="true">
+                                    <td class="ps-3 py-3">
+                                        <div class="d-flex align-items-center cursor-pointer"
+                                            (click)="openSelection('striker')">
+                                            <i class="bi bi-star-fill text-warning me-2" title="Striker"></i>
+                                            <span class="fw-bold" [class.text-muted]="!striker()">{{ striker()?.Name ||
+                                                'Select Striker' }}</span>
+                                            <i class="bi bi-pencil-square ms-auto text-primary small"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-center fw-bold">{{ striker()?.Runs || 0 }}</td>
+                                    <td class="text-center">{{ striker()?.Balls || 0 }}</td>
+                                    <td class="text-center">{{ striker()?.Fours || 0 }}</td>
+                                    <td class="text-center">{{ striker()?.Sixes || 0 }}</td>
+                                    <td class="text-center text-muted small">{{ striker()?.SR || '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-3 py-3">
+                                        <div class="d-flex align-items-center cursor-pointer"
+                                            (click)="openSelection('nonStriker')">
+                                            <span class="ms-4" [class.text-muted]="!nonStriker()">{{ nonStriker()?.Name
+                                                || 'Select Non-Striker' }}</span>
+                                            <i class="bi bi-pencil-square ms-auto text-primary small"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-center fw-bold">{{ nonStriker()?.Runs || 0 }}</td>
+                                    <td class="text-center">{{ nonStriker()?.Balls || 0 }}</td>
+                                    <td class="text-center">{{ nonStriker()?.Fours || 0 }}</td>
+                                    <td class="text-center">{{ nonStriker()?.Sixes || 0 }}</td>
+                                    <td class="text-center text-muted small">{{ nonStriker()?.SR || '-' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bowling Section -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                    <div class="card-header bg-dark text-white p-3 border-0">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-life-preserver"></i> Bowling</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table mb-0 align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-3 py-2 border-0">Bowler</th>
+                                    <th class="text-center py-2 border-0">O</th>
+                                    <th class="text-center py-2 border-0">M</th>
+                                    <th class="text-center py-2 border-0">R</th>
+                                    <th class="text-center py-2 border-0">W</th>
+                                    <th class="text-center py-2 border-0">Eco</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-3 py-3">
+                                        <div class="d-flex align-items-center cursor-pointer"
+                                            (click)="openSelection('bowler')">
+                                            <span class="fw-bold" [class.text-muted]="!currentBowler()">{{
+                                                currentBowler()?.Name || 'Select Bowler' }}</span>
+                                            <i class="bi bi-pencil-square ms-auto text-primary small"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-center fw-bold">{{ currentBowler()?.Overs || '0.0' }}</td>
+                                    <td class="text-center">{{ currentBowler()?.Maidens || 0 }}</td>
+                                    <td class="text-center">{{ currentBowler()?.Runs || 0 }}</td>
+                                    <td class="text-center fw-bold text-danger">{{ currentBowler()?.Wickets || 0 }}</td>
+                                    <td class="text-center text-muted small">{{ currentBowler()?.Eco || '-' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-white border-0 py-2">
+                        <div class="last-over d-flex align-items-center gap-2 overflow-auto py-1">
+                            <span class="text-muted small fw-bold text-nowrap">Recent Balls:</span>
+                            <div class="ball-history d-flex gap-2">
+                                <div *ngFor="let ball of match()?.recentBalls" class="ball-circle-mini"
+                                    [class.wicket]="ball.IsWicket" [class.boundary]="ball.IsBoundary">
+                                    {{ ball.IsWicket ? 'W' : (ball.IsExtra ? ball.ExtraType + ball.ExtraRuns :
+                                    ball.RunsScored) }}
+                                </div>
+                                <div class="text-muted small mt-1" *ngIf="!match()?.recentBalls?.length">No balls
+                                    recorded yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fall of Wickets -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" *ngIf="fow().length">
+                    <div class="card-header bg-danger text-white p-3 border-0">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-graph-down-arrow"></i> Fall of Wickets (FOW)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="row g-0 p-3">
+                            <div class="col-6 col-md-3 mb-2" *ngFor="let w of fow()">
+                                <div class="fow-item p-2 text-center rounded-3 bg-light border me-2">
+                                    <div class="small fw-bold">{{ w.score }}/{{ w.wicketNumber }}</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">{{ w.player?.FirstName?.charAt(0)
+                                        }}. {{ w.player?.LastName }}</div>
+                                    <div class="text-primary fw-bold" style="font-size: 0.7rem;">({{ (w.overs |
+                                        number:'1.1-1') || '0.0' }})</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Controls -->
+            <div class="col-lg-4">
+                <div class="scoring-pad card border-0 shadow rounded-4 overflow-hidden h-100">
+                    <div class="card-header bg-primary text-white p-3 text-center border-0">
+                        <h5 class="mb-0 fw-black">SCORING PAD</h5>
+                    </div>
+                    <div class="card-body p-4 bg-light">
+                        <!-- Standard Runs -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-4" *ngFor="let run of [0,1,2,3,4,6]">
+                                <button class="btn run-btn shadow-sm w-100 py-3 fw-black"
+                                    [class.btn-outline-primary]="run < 4" [class.btn-primary]="run === 4"
+                                    [class.btn-dark]="run === 6" (click)="recordBall(run)">
+                                    {{ run }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Extras & Wicket -->
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <button class="btn shadow-sm w-100 py-3 fw-bold"
+                                    [class.btn-warning]="selectedExtra() === 'WD'"
+                                    [class.btn-outline-warning]="selectedExtra() !== 'WD'"
+                                    (click)="selectedExtra.set(selectedExtra() === 'WD' ? null : 'WD')">
+                                    WIDE <i class="bi bi-plus-circle ms-1" *ngIf="selectedExtra() === 'WD'"></i>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn shadow-sm w-100 py-3 fw-bold"
+                                    [class.btn-warning]="selectedExtra() === 'NB'"
+                                    [class.btn-outline-warning]="selectedExtra() !== 'NB'"
+                                    (click)="selectedExtra.set(selectedExtra() === 'NB' ? null : 'NB')">
+                                    NO BALL <i class="bi bi-plus-circle ms-1" *ngIf="selectedExtra() === 'NB'"></i>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-secondary shadow-sm w-100 py-2 fw-bold"
+                                    (click)="recordBall(0, 'LB')">LEG BYE</button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-outline-secondary shadow-sm w-100 py-2 fw-bold"
+                                    (click)="recordBall(0, 'BYE')">BYE</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <button class="btn btn-danger shadow-sm w-100 py-4 fw-black fs-4"
+                                (click)="openWicketModal()">
+                                <i class="bi bi-lightning-fill me-2"></i> WICKET
+                            </button>
+                        </div>
+
+                        <!-- Wicket Details Modal -->
+                        <div class="overlay-modal d-flex align-items-center justify-content-center"
+                            *ngIf="showWicketModal()" style="z-index: 2000;">
+                            <div class="modal-card bg-white p-4 rounded-4 shadow-lg border mx-3 w-100"
+                                style="max-width: 500px;">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="fw-black mb-0">RECORD WICKET</h4>
+                                    <button class="btn-close" (click)="showWicketModal.set(false)"></button>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Wicket
+                                        Type</label>
+                                    <div class="row g-2">
+                                        <div class="col-4"
+                                            *ngFor="let type of ['Caught','Bowled','LBW','Stumped','RunOut','HitWicket']">
+                                            <button class="btn btn-sm w-100 py-2 fw-bold"
+                                                [class.btn-primary]="wicketData().type === type"
+                                                [class.btn-outline-secondary]="wicketData().type !== type"
+                                                (click)="updateWicketData('type', type)">
+                                                {{ type }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Dismissed
+                                        Player</label>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-dark flex-grow-1 py-3 fw-bold"
+                                            [class.active]="wicketData().dismissedPlayerId === striker()?.PlayerID"
+                                            (click)="updateWicketData('dismissedPlayerId', striker()?.PlayerID); updateWicketData('dismissedPlayerName', striker()?.Name)">
+                                            {{ striker()?.Name }} (Striker)
+                                        </button>
+                                        <button class="btn btn-outline-dark flex-grow-1 py-3 fw-bold"
+                                            [class.active]="wicketData().dismissedPlayerId === nonStriker()?.PlayerID"
+                                            (click)="updateWicketData('dismissedPlayerId', nonStriker()?.PlayerID); updateWicketData('dismissedPlayerName', nonStriker()?.Name)">
+                                            {{ nonStriker()?.Name || 'Non-Striker' }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4" *ngIf="['Caught','Stumped','RunOut'].includes(wicketData().type)">
+                                    <label class="form-label small fw-bold text-muted text-uppercase">Fielder
+                                        Involved</label>
+                                    <button
+                                        class="btn btn-light border w-100 py-3 d-flex justify-content-between align-items-center"
+                                        (click)="openSelection('fielder')">
+                                        <span *ngIf="!wicketData().fielderId" class="text-muted">Select
+                                            Fielder...</span>
+                                        <span *ngIf="wicketData().fielderId" class="fw-bold">{{ wicketData().fielderName
+                                            }}</span>
+                                        <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+
+                                <div class="d-grid mt-4">
+                                    <button class="btn btn-danger py-3 fw-black fs-5 rounded-3"
+                                        (click)="confirmWicket()">
+                                        CONFIRM DISMISSAL
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Quick Actions -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-light border w-100 py-2 fw-bold"
+                                    (click)="rotateStriker()">
+                                    <i class="bi bi-arrow-left-right me-1"></i> Swap
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-light border w-100 py-2 fw-bold" (click)="undoLastBall()">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Undo
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-outline-primary w-100 py-2 fw-bold"
+                                    (click)="openSquadSelection('batting')">
+                                    <i class="bi bi-people-fill me-1"></i> Batting XI
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-outline-info w-100 py-2 fw-bold"
+                                    (click)="openSquadSelection('bowling')">
+                                    <i class="bi bi-people-fill me-1"></i> Bowling XI
+                                </button>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button class="btn btn-sm btn-outline-dark w-100 py-2 fw-bold" (click)="openSettings()">
+                                    <i class="bi bi-gear-fill me-1"></i> Match Settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toss & Setup Modal (Conditional Overlay) -->
+    <div class="overlay-modal d-flex align-items-center justify-content-center" *ngIf="match()?.Status === 'Scheduled'">
+        <div class="modal-card bg-white p-5 rounded-4 shadow-lg text-center border mx-3" style="max-width: 500px;">
+            <div class="icon-circle bg-primary text-white mx-auto mb-4">
+                <i class="bi bi-coin fs-1"></i>
+            </div>
+            <h3 class="fw-black mb-3 text-dark">MATCH NOT STARTED</h3>
+            <p class="text-muted mb-4">You need to record the toss and start the first innings to begin scoring.</p>
+
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary py-3 fw-bold rounded-3" (click)="recordToss(match()?.TeamA_ID, 'Bat')">
+                    Record Toss & Start Match
+                </button>
+                <button class="btn btn-light py-2 fw-bold" [routerLink]="['/kkk/match-list']">Back to List</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Squad Selection Modal -->
+    <div class="overlay-modal d-flex align-items-center justify-content-center" *ngIf="showSquadModal()"
+        style="z-index: 3000;">
+        <div class="modal-card bg-white rounded-4 shadow-lg overflow-hidden border mx-3 w-100"
+            style="max-width: 500px;">
+            <div class="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-black text-uppercase">SELECT PLAYING XI ({{ selectedPlayerIds().length }}/11)</h5>
+                <button class="btn-close btn-close-white" (click)="showSquadModal.set(false)"></button>
+            </div>
+            <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                <div class="list-group list-group-flush">
+                    <button *ngFor="let player of currentSquadPool()"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3"
+                        [class.bg-light]="selectedPlayerIds().includes(player.PlayerID)"
+                        (click)="toggleSquadPlayer(player.PlayerID)">
+                        <div class="d-flex align-items-center">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox"
+                                    [checked]="selectedPlayerIds().includes(player.PlayerID)">
+                            </div>
+                            <div>
+                                <div class="fw-bold"
+                                    [class.text-primary]="selectedPlayerIds().includes(player.PlayerID)">{{ player.Name
+                                    }}</div>
+                                <small class="text-muted text-uppercase">{{ player.Role || 'Player' }}</small>
+                            </div>
+                        </div>
+                        <span *ngIf="selectedPlayerIds().includes(player.PlayerID)"
+                            class="badge bg-primary rounded-pill">Selected</span>
+                    </button>
+                </div>
+            </div>
+            <div class="card-footer p-3 bg-light border-0">
+                <button class="btn btn-primary w-100 py-3 fw-black fs-5" [disabled]="selectedPlayerIds().length === 0"
+                    (click)="saveSquad()">
+                    SAVE PLAYING XI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Selection Modal -->
+    <div class="overlay-modal d-flex align-items-center justify-content-center" *ngIf="showSelectionModal"
+        style="z-index: 2500;">
+        <div class="modal-card bg-white rounded-4 shadow-lg overflow-hidden border mx-3 w-100"
+            style="max-width: 500px;">
+            <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-uppercase">Select {{ selectionType }}</h5>
+                <button class="btn-close btn-close-white" (click)="showSelectionModal = false"></button>
+            </div>
+            <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                <div class="list-group list-group-flush">
+                    <button
+                        *ngFor="let player of (['bowler', 'fielder'].includes(selectionType) ? bowlingTeamPlayers() : battingTeamPlayers())"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3"
+                        (click)="setPlayer(selectionType, player)">
+                        <div>
+                            <div class="fw-bold">{{ player.Name }}</div>
+                            <small class="text-muted text-uppercase">{{ player.Role }}</small>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration Overlay -->
+    <div class="celebration-overlay" *ngIf="celebration()">
+        <div class="celebration-content">
+            <h1 class="celebration-text">{{ celebration() }}</h1>
+            <div class="celebration-subtext">VILLAGE CRICKET LIVE</div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTemplate>
+    <div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+        <div class="spinner-grow text-primary" role="status"></div>
+        <span class="mt-3 text-muted fw-bold">Loading match for scoring...</span>
+    </div>
+</ng-template>

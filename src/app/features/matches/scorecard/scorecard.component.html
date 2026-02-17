@@ -1,0 +1,202 @@
+<div class="scorecard-wrapper" *ngIf="!loading(); else loadingTemplate">
+    <!-- Match Hero Section -->
+    <div class="match-hero shadow-lg animate-fade-in" *ngIf="match()">
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="badge bg-danger pulse" *ngIf="match().Status === 'Live'">
+                    <i class="bi bi-record-fill me-1"></i> LIVE
+                </span>
+                <span class="badge bg-secondary" *ngIf="match().Status === 'Completed'">FINISHED</span>
+                <span class="match-info-top">{{ match().Tournament?.Name || 'Match Match' }} #{{ match().MatchNumber
+                    }}</span>
+            </div>
+
+            <div class="row align-items-center text-white">
+                <div class="col-5 text-center">
+                    <div class="team-logo-placeholder mb-2">
+                        <i class="bi bi-shield-shaded fs-1"></i>
+                    </div>
+                    <h2 class="team-name text-truncate">{{ match().TeamA?.Name }}</h2>
+                    <div class="hero-score mt-2" [class.active-batting]="match().CurrentInnings === 1">
+                        {{ getScoreText(match().TeamA_ID) }}
+                    </div>
+                </div>
+                <div class="col-2 text-center text-muted fw-black fs-2">VS</div>
+                <div class="col-5 text-center">
+                    <div class="team-logo-placeholder mb-2">
+                        <i class="bi bi-shield-shaded fs-1"></i>
+                    </div>
+                    <h2 class="team-name text-truncate">{{ match().TeamB?.Name }}</h2>
+                    <div class="hero-score mt-2" [class.active-batting]="match().CurrentInnings === 2">
+                        {{ getScoreText(match().TeamB_ID) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="match-footer mt-4 text-center">
+                <p class="venue mb-0"><i class="bi bi-geo-alt-fill text-warning"></i> {{ match().Venue }}</p>
+                <div class="result-box mt-3" *ngIf="match().ResultNote">
+                    <span class="result-text">{{ match().ResultNote }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="container mt-n3">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-white p-0 border-0">
+                <ul class="nav nav-pills nav-justified custom-tabs">
+                    <li class="nav-item">
+                        <button class="nav-link" [class.active]="activeTab() === 0" (click)="setTab(0)">SUMMARY</button>
+                    </li>
+                    <li class="nav-item" *ngFor="let inn of innings()">
+                        <button class="nav-link" [class.active]="activeTab() === inn.InningsNumber"
+                            (click)="setTab(inn.InningsNumber)">
+                            INNINGS {{ inn.InningsNumber }}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-0">
+                <!-- Summary Tab -->
+                <div class="tab-content" *ngIf="activeTab() === 0">
+                    <div class="p-4 text-center" *ngIf="!match().ResultNote && match().Status !== 'Live'">
+                        <img src="assets/waiting.svg" alt="Upcoming" class="mb-3" style="width: 150px; opacity: 0.5;">
+                        <h5 class="text-muted">Match has not started yet.</h5>
+                        <p class="small text-muted">Detailed statistics will appear here once the first ball is bowled.
+                        </p>
+                    </div>
+
+                    <div class="live-summary p-4" *ngIf="match().Status === 'Live' || match().ResultNote">
+                        <div class="row g-4">
+                            <div class="col-md-6" *ngFor="let inn of innings()">
+                                <div class="inn-summary-card p-3 rounded-4 bg-light shadow-sm h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="mb-0 fw-bold border-start border-4 border-primary ps-2">{{
+                                            inn.BattingTeam?.Name }}</h6>
+                                        <span class="fw-black text-primary">{{ inn.TotalRuns }}/{{ inn.TotalWickets }}
+                                            ({{ inn.TotalOvers }})</span>
+                                    </div>
+                                    <div class="top-performers mt-2">
+                                        <div class="performer d-flex justify-content-between small mb-2"
+                                            *ngFor="let bt of inn.battingStats.slice(0, 2)">
+                                            <span>{{ bt.Player?.Name }}</span>
+                                            <span class="fw-bold">{{ bt.RunsScored }} ({{ bt.BallsFaced }})</span>
+                                        </div>
+                                        <hr class="my-2 opacity-10">
+                                        <div class="performer d-flex justify-content-between small text-muted"
+                                            *ngFor="let bl of inn.bowlingStats.slice(0, 1)">
+                                            <span>{{ bl.Player?.Name }}</span>
+                                            <span class="fw-bold">{{ bl.WicketsTaken }}-{{ bl.RunsConceded }} ({{
+                                                bl.OversBowled }})</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Innings Tab -->
+                <div class="tab-content" *ngFor="let inn of innings()">
+                    <div class="innings-details" *ngIf="activeTab() === inn.InningsNumber">
+                        <!-- Batting Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 custom-table">
+                                <thead class="bg-dark text-white">
+                                    <tr>
+                                        <th class="ps-4">BATTING</th>
+                                        <th class="text-center">R</th>
+                                        <th class="text-center">B</th>
+                                        <th class="text-center">4s</th>
+                                        <th class="text-center">6s</th>
+                                        <th class="text-center d-none d-md-table-cell">SR</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let bt of inn.battingStats">
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-primary">{{ bt.Player?.Name }}</div>
+                                            <div class="small text-muted">{{ bt.IsOut ? bt.HowOut : 'not out' }}</div>
+                                        </td>
+                                        <td class="text-center fw-black">{{ bt.RunsScored }}</td>
+                                        <td class="text-center text-muted">{{ bt.BallsFaced }}</td>
+                                        <td class="text-center">{{ bt.Fours }}</td>
+                                        <td class="text-center">{{ bt.Sixes }}</td>
+                                        <td class="text-center text-muted small d-none d-md-table-cell">{{ bt.StrikeRate
+                                            }}</td>
+                                    </tr>
+                                    <tr class="bg-light fw-bold">
+                                        <td class="ps-4">EXTRAS</td>
+                                        <td colspan="5" class="ps-3 text-muted">
+                                            {{ inn.Extras }} (wd {{ inn.Wides }}, nb {{ inn.NoBalls }}, lb {{
+                                            inn.LegByes }}, b {{ inn.Byes }})
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-primary text-white">
+                                        <td class="ps-4 py-3 h5 mb-0 fw-black">TOTAL</td>
+                                        <td colspan="5" class="ps-3 h5 mb-0 fw-black">
+                                            {{ inn.TotalRuns }}/{{ inn.TotalWickets }} <span
+                                                class="small opacity-75 ms-2">({{ inn.TotalOvers }} Overs, RR {{
+                                                inn.RunRate }})</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Bowling Table -->
+                        <div class="table-responsive mt-1">
+                            <table class="table table-hover align-middle mb-0 custom-table">
+                                <thead class="bg-secondary text-white">
+                                    <tr>
+                                        <th class="ps-4">BOWLING</th>
+                                        <th class="text-center">O</th>
+                                        <th class="text-center">M</th>
+                                        <th class="text-center">R</th>
+                                        <th class="text-center">W</th>
+                                        <th class="text-center d-none d-md-table-cell">ECON</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let bl of inn.bowlingStats">
+                                        <td class="ps-4 fw-bold">{{ bl.Player?.Name }}</td>
+                                        <td class="text-center">{{ bl.OversBowled }}</td>
+                                        <td class="text-center">{{ bl.Maidens || 0 }}</td>
+                                        <td class="text-center">{{ bl.RunsConceded }}</td>
+                                        <td class="text-center fw-black text-danger">{{ bl.WicketsTaken }}</td>
+                                        <td class="text-center text-muted small d-none d-md-table-cell">{{ bl.Economy }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Fall of Wickets -->
+                        <div class="fow-section p-4 bg-light" *ngIf="inn.fow?.length">
+                            <h6 class="fw-black mb-3 text-uppercase small text-muted">Fall of Wickets</h6>
+                            <div class="fow-list d-flex flex-wrap gap-2">
+                                <span class="badge bg-white border text-dark p-2 rounded-3 shadow-xs"
+                                    *ngFor="let wicket of inn.fow">
+                                    <span class="text-muted fw-normal">{{ wicket.score }}/{{ wicket.wicketNumber
+                                        }}</span>
+                                    <span class="mx-1 text-primary">({{ wicket.player?.LastName }})</span>
+                                    <span class="small opacity-50">{{ wicket.overs }} ov</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingTemplate>
+    <div class="loader-container d-flex flex-column align-items-center justify-content-center min-vh-100">
+        <div class="spinner-grow text-primary" role="status"></div>
+        <div class="mt-3 fw-black text-muted text-uppercase tracking-widest">Compiling Scorecard...</div>
+    </div>
+</ng-template>

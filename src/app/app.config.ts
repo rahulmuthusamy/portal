@@ -6,7 +6,9 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from '@core/interceptors/auth.interceptor';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideIonicAngular } from '@ionic/angular/standalone';
+// import { provideIonicAngular } from '@ionic/angular/standalone';
+
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,7 +17,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor])
     ),
-    provideAnimationsAsync(), provideIonicAngular({})
+    provideAnimationsAsync(),
+    // provideIonicAngular({}),
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    })
   ]
 };
 
