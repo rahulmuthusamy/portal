@@ -1,333 +1,152 @@
 .auction-room-container {
-  max-width: 960px;
-  margin: 1rem auto;
-  padding: 1rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #222;
-  background: #f9faff;
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding-top: 70px;
 }
 
-.current-player-panel {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1rem;
+.header-bar {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
-
-  .player-photo {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-    border: 3px solid #1976d2;
-    transition: transform 0.3s ease;
-  }
-
-  .player-photo:hover {
-    transform: scale(1.1);
-  }
-
-  .player-details {
-    flex-grow: 1;
-
-    h3 {
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-      font-size: 1.8rem;
-      color: #0b3d91;
-    }
-
-    p {
-      margin: 0.25rem 0;
-      font-size: 1.1rem;
-
-      strong {
-        color: #555;
-      }
-    }
-
-    span.live {
-      color: #2e7d32; // green
-      font-weight: 600;
-    }
-
-    span.available {
-      color: #1976d2; // blue
-      font-weight: 600;
-    }
-
-    span.sold {
-      color: #d32f2f; // red
-      font-weight: 600;
-    }
-  }
+  height: 70px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 0 20px;
 }
 
-.teams-bidding-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-
-  .team-bid-card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.08);
-    padding: 1rem;
-    width: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: box-shadow 0.3s ease;
-
-    &:hover {
-      box-shadow: 0 6px 15px rgba(25, 118, 210, 0.3);
-    }
-
-    .team-header {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      margin-bottom: 0.7rem;
-
-      .team-logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1.5px solid #1976d2;
-      }
-
-      h4 {
-        font-size: 1.2rem;
-        color: #0b3d91;
-        margin: 0;
-      }
-    }
-
-    p {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #444;
-    }
-
-    .bid-btn {
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-      background-color: #1976d2;
-      border: none;
-      color: white;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-
-      &:disabled {
-        background-color: #a0a0a0;
-        cursor: not-allowed;
-      }
-
-      &:not(:disabled):hover {
-        background-color: #0b4a8e;
-      }
-    }
-  }
+.text-gradient {
+  background: linear-gradient(45deg, #1e3c72, #2a5298);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
 
-.live-bidding-info {
-  background: white;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
-
-  .timer {
-    font-family: 'Courier New', Courier, monospace;
-    color: #d32f2f;
-    font-weight: 700;
-    font-size: 1.4rem;
-  }
+.premium-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+  overflow: hidden;
 }
 
-.auctioneer-controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-
-  button {
-    background-color: #1976d2;
-    color: white;
-    font-weight: 700;
-    border: none;
-    padding: 0.8rem 1.6rem;
-    border-radius: 25px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(25, 118, 210, 0.5);
-    transition: background-color 0.3s ease, transform 0.15s ease;
-
-    &:disabled {
-      background-color: #a0a0a0;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    &:not(:disabled):hover {
-      background-color: #0b4a8e;
-      transform: scale(1.05);
-    }
-  }
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 2rem 0;
-
-  .spinner {
-    border: 5px solid #ccc;
-    border-top: 5px solid #1976d2;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-  }
-
-  p {
-    font-size: 1.2rem;
-    color: #555;
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Animations */
-.animate-fade-in {
-  animation: fadeIn 0.6s ease forwards;
-}
-
-.animate-scale-up {
-  animation: scaleUp 0.5s ease forwards;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.5s ease forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleUp {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .auction-room-container {
-    padding: 0.5rem;
-  }
-
-  .current-player-panel {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-
-    .player-photo {
-      width: 110px;
-      height: 110px;
-    }
-  }
-
-  .teams-bidding-panel {
-    justify-content: center;
-
-    .team-bid-card {
-      width: 140px;
-      padding: 0.8rem;
-    }
-  }
-
-  .auctioneer-controls {
-    flex-direction: column;
-    gap: 0.5rem;
-
-    button {
-      width: 100%;
-    }
-  }
-}
-
-// === Timer SVG ===
-.timer-container {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
-
-  svg.timer-ring {
-    width: 100%;
+.player-card {
+  .image-wrapper {
+    position: relative;
     height: 100%;
-    transform: rotate(360deg);
+    background: #e9ecef;
+    overflow: hidden;
+
+    .player-img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .player-role-badge {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      background: white;
+      padding: 5px 15px;
+      border-radius: 50px;
+      font-weight: 700;
+      color: #1e3c72;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #333;
+
+  &.highlight {
+    font-size: 2.5rem;
+    color: #4caf50;
+    line-height: 1;
+  }
+}
+
+.bid-team {
+  font-weight: 600;
+  color: #1e3c72;
+  font-size: 1.1rem;
+
+  &.no-bid {
+    color: #999;
+    font-weight: 400;
+    font-style: italic;
+  }
+}
+
+.team-bid-box {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &.winning {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.05);
+
+    &::after {
+      content: 'Winning';
+      display: block;
+      font-size: 10px;
+      color: #4caf50;
+      text-transform: uppercase;
+      font-weight: 800;
+      text-align: right;
+    }
   }
 
-  .timer-track {
-    fill: none;
-    stroke: #eee;
-    stroke-width: 3.8;
-  }
+  .team-info {
+    margin-bottom: 10px;
 
-  .timer-progress {
-    fill: none;
-    stroke: #28a745;
-    stroke-width: 3.8;
-    stroke-linecap: round;
-    transition: stroke-dasharray 1s linear;
+    .budget {
+      font-size: 11px;
+      color: #666;
+    }
   }
+}
 
-  .timer-text {
-    fill: #333;
-    font-size: 0.5em;
-    text-anchor: middle;
-    dominant-baseline: middle;
+.huge-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.sold-snack {
+  background: #4caf50 !important;
+  color: white !important;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.summary-card {
+  .team-summary {
+    .badge {
+      font-size: 10px;
+    }
   }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

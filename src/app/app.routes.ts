@@ -13,6 +13,22 @@ export const routes: Routes = [
         path: 'polling',
         loadComponent: () => import('@features/polling/components/polling-page.component').then(m => m.PollingPageComponent),
     },
+    // ── Broadcast System (All standalone, no layout wrapper) ──
+    // Scorecard Overlay for OBS: http://localhost:4200/overlay/{matchId}
+    {
+        path: 'overlay/:id',
+        loadComponent: () => import('@features/matches/broadcast-overlay/broadcast-overlay.component').then(m => m.BroadcastOverlayComponent),
+    },
+    // Camera Source (open on mobile phones): http://localhost:4200/camera/{matchId}?label=Front%20View
+    {
+        path: 'camera/:id',
+        loadComponent: () => import('@features/broadcast/camera-source/camera-source.component').then(m => m.CameraSourceComponent),
+    },
+    // Broadcast Director (control room on laptop): http://localhost:4200/broadcast/{matchId}
+    {
+        path: 'broadcast/:id',
+        loadComponent: () => import('@features/broadcast/broadcast-director/broadcast-director.component').then(m => m.BroadcastDirectorComponent),
+    },
     {
         path: '',
         component: AuthLayoutComponent,
@@ -124,6 +140,11 @@ export const routes: Routes = [
                 loadComponent: () => import('@features/matches/match-form/match-form.component').then(m => m.MatchFormComponent),
             },
             {
+                path: 'match-form/:id',
+                data: { breadcrumb: 'Edit Match' },
+                loadComponent: () => import('@features/matches/match-form/match-form.component').then(m => m.MatchFormComponent),
+            },
+            {
                 path: 'scorecard/:id',
                 data: { breadcrumb: 'Live Scorecard' },
                 loadComponent: () => import('@features/matches/scorecard/scorecard.component').then(m => m.ScorecardComponent),
@@ -133,7 +154,11 @@ export const routes: Routes = [
                 data: { breadcrumb: 'Live Scoring' },
                 loadComponent: () => import('@features/matches/live-scoring/live-scoring.component').then(m => m.LiveScoringComponent),
             },
-
+            {
+                path: 'match-squad/:matchId/:teamId',
+                data: { breadcrumb: 'Match Squad' },
+                loadComponent: () => import('@features/matches/match-squad/match-squad.component').then(m => m.MatchSquadComponent),
+            },
             // --- Other ---
             {
                 path: 'sample-page',

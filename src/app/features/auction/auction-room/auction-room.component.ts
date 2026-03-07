@@ -1,156 +1,160 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SocketService } from '../services/socket.service';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Player } from '../models/player.model';
-import { Team } from '../models/team.model';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuctionManagementService } from '../services/auction-management.service';
+import { SocketService } from '@core/services/socket.service';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-auction-room',
-
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatSnackBarModule,
+    MatListModule,
+    MatDividerModule,
+    MatChipsModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './auction-room.component.html',
-  styleUrls: ['./auction-room.component.scss']
+  styleUrl: './auction-room.component.scss'
 })
 export class AuctionRoomComponent implements OnInit, OnDestroy {
-  players: Player[] = [];
-  teams: Team[] = [];
-  currentPlayer: Player | null = null;
-  timer: number = 0;
-  highestBid: number = 0;
-  highestBidTeamName: string = '';
-  loading = true;
-  subscriptions: Subscription[] = [];
-  maxTime = 30;
-  timerProgress = 100;
-  bidHistory: { amount: number; team: string; time: Date }[] = [];
+  sessionId = signal<number | null>(null);
+  currentPlayer = signal<any>(null);
+  highestBid = signal<number>(0);
+  highestBidTeam = signal<any>(null);
+  bidHistory = signal<any[]>([]);
+  auctionTeams = signal<any[]>([]);
+  loading = signal(true);
 
-  constructor(private socketService: SocketService) { }
+  apiUrl = environment.apiUrl;
 
-  ngOnInit() {
-    this.socketService.connect(1);
+  private route = inject(ActivatedRoute);
+  private auctionService = inject(AuctionManagementService);
+  private socketService = inject(SocketService);
+  private snackBar = inject(MatSnackBar);
+  public router = inject(Router);
 
-    this.subscriptions.push(
-      this.socketService.on<{ teamName: string; amount: number }>('bidUpdate').subscribe(data => {
-        this.highestBid = data.amount;
-        this.highestBidTeamName = data.teamName;
-
-        if (this.currentPlayer) {
-          this.currentPlayer.currentBid = data.amount;
-
-          const matchedTeam = this.teams.find(t => t.name === data.teamName);
-          this.currentPlayer.highestBidTeamId = matchedTeam ? matchedTeam.id : null;
-        }
-      })
-    );
-
-
-    this.subscriptions.push(
-      this.socketService.on<Player[]>('players').subscribe(players => {
-        this.players = players;
-        this.loading = false;
-      }),
-
-      this.socketService.on<Team[]>('teams').subscribe(teams => {
-        this.teams = teams;
-      }),
-
-      this.socketService.on<Player>('currentPlayer').subscribe(player => {
-
-        this.currentPlayer = player;
-        this.updateHighestBidInfo();
-        this.bidHistory = [];
-      }),
-
-      this.socketService.on<{ timeLeft: number }>('timerUpdate').subscribe(data => {
-        this.timer = data.timeLeft;
-        this.timerProgress = (this.timer / this.maxTime) * 100;
-      }),
-
-      this.socketService.on<Player>('playerUpdate').subscribe(player => {
-        const idx = this.players.findIndex(p => p.id === player.id);
-        if (idx > -1) this.players[idx] = player;
-
-        if (this.currentPlayer && this.currentPlayer.id === player.id) {
-          this.currentPlayer = player;
-          this.updateHighestBidInfo();
-        }
-      }),
-
-
-      this.socketService.on<Team>('teamUpdate').subscribe(team => {
-        const idx = this.teams.findIndex(t => t.id === team.id);
-        if (idx > -1) this.teams[idx] = team;
-        this.updateHighestBidInfo();
-      }),
-
-      this.socketService.on('auctionEnd').subscribe(() => {
-        alert('Auction Ended!');
-      }),
-
-      this.socketService.on<{ reason: string }>('bidRejected').subscribe(data => {
-        alert(`Bid rejected: ${data.reason}`);
-      })
-    );
-  }
-
-
-  updateHighestBidInfo() {
-    if (!this.currentPlayer) return;
-
-    this.highestBid = this.currentPlayer.currentBid ?? this.currentPlayer.basePrice ?? 0;
-
-    if (this.currentPlayer.highestBidTeamId) {
-      const team = this.teams.find(t => t.id === this.currentPlayer!.highestBidTeamId);
-      this.highestBidTeamName = team ? team.name : '';
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id') || this.route.snapshot.queryParamMap.get('id');
+    if (id) {
+      this.sessionId.set(+id);
+      this.setupSocket(+id);
+      this.loadAuctionState(+id);
     } else {
-      this.highestBidTeamName = 'No bids yet';
+      this.snackBar.open('Session ID missing', 'Error');
     }
   }
 
-  placeBid(team: Team) {
-    if (!this.currentPlayer) return;
+  ngOnDestroy(): void {
+    if (this.sessionId()) {
+      this.socketService.disconnect('/auction');
+    }
+  }
 
-    const minIncrement = 100;
-    const currentBid = this.currentPlayer.currentBid ?? this.currentPlayer.basePrice ?? 0;
-    const newBid = currentBid + minIncrement;
+  setupSocket(id: number): void {
+    this.socketService.emit('/auction', 'join-auction', id);
 
-    if (team.budget < newBid) {
-      alert(`${team.name} does not have enough budget to place this bid.`);
+    this.socketService.on('/auction', 'new-bid').subscribe((data: any) => {
+      this.highestBid.set(data.bidAmount);
+      this.highestBidTeam.set({ teamId: data.teamId, teamName: data.teamName });
+      this.bidHistory.update(prev => [data, ...prev].slice(0, 10));
+      this.snackBar.open(`New bid: ${data.bidAmount} by ${data.teamName}`, 'Bid', { duration: 1500 });
+    });
+
+    this.socketService.on('/auction', 'player-sold').subscribe((data: any) => {
+      this.snackBar.open(`SOLD! ${data.teamName} bought player for ${data.finalBid}`, 'SOLD', {
+        duration: 5000,
+        panelClass: ['sold-snack']
+      });
+      this.loadAuctionState(id);
+    });
+
+    this.socketService.on('/auction', 'player-unsold').subscribe((data: any) => {
+      this.snackBar.open('Player MARKED UNSOLD', 'Unsold', { duration: 3000 });
+      this.loadAuctionState(id);
+    });
+
+    this.socketService.on('/auction', 'error').subscribe((err: any) => {
+      this.snackBar.open(err.message, 'Error', { duration: 3000 });
+    });
+  }
+
+  loadAuctionState(id: number): void {
+    this.loading.set(true);
+    // Fetch initial state - we can use the results endpoint or a new detail endpoint
+    this.auctionService.getAuctionResults(id).subscribe({
+      next: (res: any) => {
+        const results = res.data;
+        // In a real app, we'd have a specific "Current Player" broadcast or state
+        // For now, let's assume the first player in pool without a team is current
+        this.auctionTeams.set(results.teams);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  placeBid(team: any): void {
+    const currentPrice = this.highestBid() || this.currentPlayer()?.basePrice || 0;
+    const bidAmount = currentPrice + 100; // Simple increment
+
+    if (team.remainingBudget < bidAmount) {
+      this.snackBar.open('Insufficient Budget!', 'Error', { duration: 2000 });
       return;
     }
 
-    this.socketService.emit('placeBid', {
-      playerId: this.currentPlayer.id,
-      teamId: team.id,
-      bidAmount: newBid
-    });
+    const payload = {
+      sessionId: this.sessionId(),
+      teamId: team.teamId,
+      playerId: this.currentPlayer()?.PlayerID,
+      bidAmount: bidAmount
+    };
 
-    // ✅ Push to bid history
-    this.bidHistory.unshift({
-      amount: newBid,
-      team: team.name,
-      time: new Date()
-    });
+    this.socketService.emit('/auction', 'place-bid', payload);
   }
 
-  // Auctioneer Controls
-  startPlayer() {
-    this.socketService.emit('start-player');
+  sellPlayer(): void {
+    if (!this.highestBidTeam()) {
+      this.snackBar.open('No bids yet!', 'Wait');
+      return;
+    }
+
+    const payload = {
+      sessionId: this.sessionId(),
+      playerId: this.currentPlayer()?.PlayerID,
+      teamId: this.highestBidTeam().teamId,
+      finalBid: this.highestBid()
+    };
+
+    this.socketService.emit('/auction', 'sell-player', payload);
   }
 
-  skipPlayer() {
-    this.socketService.emit('skip-player');
+  markUnsold(): void {
+    const payload = {
+      sessionId: this.sessionId(),
+      playerId: this.currentPlayer()?.PlayerID
+    };
+    this.socketService.emit('/auction', 'mark-unsold', payload);
   }
 
-  sellPlayer() {
-    this.socketService.emit('sell-player');
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.socketService.disconnect();
+  getPlayerImageUrl(photo: string): string {
+    return photo ? `${this.apiUrl}${photo}` : 'assets/images/default-player.png';
   }
 }

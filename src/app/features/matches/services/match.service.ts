@@ -48,7 +48,27 @@ export class MatchService extends BaseCrudService<any> {
         return this.api.post(`${this.endpoint}/innings/complete`, { inningsId });
     }
 
-    saveMatchSquad(matchId: number, teamId: number, playerIds: number[]): Observable<any> {
-        return this.api.post(`${this.endpoint}/${matchId}/squads`, { teamId, playerIds });
+    saveMatchSquad(matchId: number, teamId: number, players: any[]): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/squad`, { teamId, players });
+    }
+
+    getMatchSquad(matchId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${matchId}/squad`);
+    }
+
+    startMatch(matchId: number, tossWinnerId: number, tossDecision: string): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/start`, { tossWinnerId, tossDecision });
+    }
+
+    recordBallNew(ballData: any): Observable<any> {
+        return this.api.post(`${this.endpoint}/${ballData.matchId}/ball-new`, ballData);
+    }
+
+    generateScorecard(matchId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${matchId}/scorecard-full`);
+    }
+
+    completeMatch(matchId: number, winnerId: number, resultNote: string): Observable<any> {
+        return this.api.post(`${this.endpoint}/${matchId}/complete`, { winnerId, resultNote });
     }
 }

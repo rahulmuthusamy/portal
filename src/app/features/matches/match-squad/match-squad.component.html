@@ -1,0 +1,115 @@
+<div class="squad-container p-4">
+    <div class="header d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <button mat-icon-button (click)="goBack()" class="me-3">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+                <h1 class="m-0 text-gradient">Squad Selection: {{ teamName }}</h1>
+                <p class="text-muted m-0">Select 11 players including Captain and Keeper</p>
+            </div>
+        </div>
+        <div class="selection-counter shadow-sm" [class.ready]="selectedPlayerIds.size >= 2">
+            <span class="count">{{ selectedPlayerIds.size }}</span> Players <small class="text-muted">(Min 2)</small>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-none d-md-block">
+            <mat-card class="premium-card mb-4">
+                <mat-card-content class="p-0">
+                    <div class="table-responsive">
+                        <table class="table custom-table align-middle m-0">
+                            <thead>
+                                <tr>
+                                    <th>Selected</th>
+                                    <th>Player</th>
+                                    <th>Role</th>
+                                    <th class="text-center">Captain</th>
+                                    <th class="text-center">Wicket Keeper</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let player of players"
+                                    [class.selected-row]="selectedPlayerIds.has(player.PlayerID)">
+                                    <td class="text-center">
+                                        <mat-checkbox [checked]="selectedPlayerIds.has(player.PlayerID)"
+                                            (change)="togglePlayer(player.PlayerID)" color="primary"></mat-checkbox>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img [src]="getPlayerImageUrl(player.PhotoURL)" class="player-thumb me-3">
+                                            <span class="fw-bold">{{ player.Name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ player.Role }}</td>
+                                    <td class="text-center">
+                                        <mat-radio-button [value]="player.PlayerID" name="captainGroup"
+                                            [checked]="captainId === player.PlayerID"
+                                            [disabled]="!selectedPlayerIds.has(player.PlayerID)"
+                                            (change)="captainId = player.PlayerID" color="primary">
+                                        </mat-radio-button>
+                                    </td>
+                                    <td class="text-center">
+                                        <mat-radio-button [value]="player.PlayerID" name="keeperGroup"
+                                            [checked]="wicketKeeperId === player.PlayerID"
+                                            [disabled]="!selectedPlayerIds.has(player.PlayerID)"
+                                            (change)="wicketKeeperId = player.PlayerID" color="primary">
+                                        </mat-radio-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="col-12 d-md-none">
+            <div class="d-flex flex-column gap-3">
+                <mat-card class="player-card shadow-sm" *ngFor="let player of players"
+                    [class.border-primary]="selectedPlayerIds.has(player.PlayerID)">
+                    <div class="d-flex align-items-center p-3">
+                        <mat-checkbox [checked]="selectedPlayerIds.has(player.PlayerID)"
+                            (change)="togglePlayer(player.PlayerID)" color="primary" class="me-3"></mat-checkbox>
+
+                        <img [src]="getPlayerImageUrl(player.PhotoURL)" class="rounded-circle me-3" width="50"
+                            height="50" style="object-fit: cover;">
+
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold">{{ player.Name }}</h6>
+                            <small class="text-muted">{{ player.Role }}</small>
+                        </div>
+                    </div>
+
+                    <div class="card-actions bg-light p-2 d-flex justify-content-around border-top"
+                        *ngIf="selectedPlayerIds.has(player.PlayerID)">
+                        <div class="d-flex align-items-center">
+                            <mat-radio-button [value]="player.PlayerID" name="captainGroupMobile"
+                                [checked]="captainId === player.PlayerID" (change)="captainId = player.PlayerID"
+                                color="primary">
+                                <span class="small fw-bold ms-1">Captain</span>
+                            </mat-radio-button>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <mat-radio-button [value]="player.PlayerID" name="keeperGroupMobile"
+                                [checked]="wicketKeeperId === player.PlayerID"
+                                (change)="wicketKeeperId = player.PlayerID" color="primary">
+                                <span class="small fw-bold ms-1">WK</span>
+                            </mat-radio-button>
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions d-flex justify-content-end mt-4">
+        <button mat-stroked-button color="warn" class="me-3 px-4 py-2" (click)="goBack()">Cancel</button>
+        <button mat-raised-button color="primary" class="px-5 py-2 btn-glow"
+            [disabled]="selectedPlayerIds.size < 2 || !captainId || !wicketKeeperId" (click)="saveSquad()">
+            <mat-icon class="me-2">save</mat-icon> Confirm Squad
+        </button>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+.squad-container {
+    min-height: 100vh;
+    background: #f4f7f6;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #1e3c72, #2a5298);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.premium-card {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.selection-counter {
+    background: white;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    color: #666;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+
+    &.ready {
+        background: #4caf50;
+        color: white;
+        border-color: #4caf50;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .count {
+        font-size: 1.2rem;
+        color: inherit;
+    }
+}
+
+.custom-table {
+    thead {
+        background: #f8f9fa;
+
+        th {
+            border: none;
+            padding: 20px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+    }
+
+    tbody {
+        tr {
+            transition: background 0.2s;
+
+            td {
+                padding: 15px 20px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+            &.selected-row {
+                background-color: rgba(30, 60, 114, 0.03);
+            }
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.01);
+            }
+        }
+    }
+}
+
+.player-thumb {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-glow {
+    box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+
+    &:not([disabled]):hover {
+        box-shadow: 0 8px 25px rgba(30, 60, 114, 0.4);
+    }
+}
+
+.footer-actions {
+    position: sticky;
+    bottom: 20px;
+    z-index: 10;
+}

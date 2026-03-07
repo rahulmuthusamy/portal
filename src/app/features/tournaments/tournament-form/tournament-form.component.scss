@@ -4,26 +4,135 @@
     min-height: 100vh;
 }
 
-.tournament-form-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+/* Advanced Branding Identity Zone - Fix for existing component styles */
+.branding-hero-zone {
+    background: white;
+    margin-bottom: 4rem;
+    position: relative;
+    border-bottom: 1px solid #e2e8f0;
 
-    .page-title {
-        font-weight: 800;
-        letter-spacing: -1px;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: #e11d48;
+        z-index: 100;
     }
+}
+
+.banner-container {
+    width: 100%;
+    height: 300px;
+    background: #f1f5f9;
+    position: relative;
+    overflow: hidden;
+
+    /* Aggressive override for the internal profile-circle class */
+    ::ng-deep app-image-upload {
+        .profile-circle {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            background: transparent !important;
+
+            img {
+                border-radius: 0 !important;
+                object-fit: cover !important;
+            }
+
+            .overlay {
+                border-radius: 0 !important;
+            }
+        }
+    }
+
+    /* Reference Image specific camera icon */
+    &::after {
+        content: '\F219';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        background: #e11d48;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+        pointer-events: none;
+        z-index: 10;
+    }
+}
+
+.logo-overlap-circle {
+    position: absolute;
+    bottom: -50px;
+    left: 50px;
+    width: 150px;
+    height: 150px;
+    z-index: 50;
+
+    ::ng-deep app-image-upload {
+        .profile-circle {
+            width: 150px !important;
+            height: 150px !important;
+            border: 4px solid white !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            background: #fff !important;
+            position: relative;
+
+            img {
+                border-radius: 50% !important;
+            }
+        }
+    }
+
+    /* Small Red Camera for Logo */
+    &::after {
+        content: '\F219';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 36px;
+        height: 36px;
+        background: #e11d48;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(225, 29, 72, 0.3);
+        z-index: 60;
+        pointer-events: none;
+    }
+}
+
+/* Rest of the Professional Form Styling */
+.tournament-form-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 2rem;
+    grid-template-columns: 340px 1fr;
+    gap: 2.5rem;
     align-items: start;
 
-    @media (max-width: 992px) {
+    @media (max-width: 1100px) {
         grid-template-columns: 1fr;
     }
 }
@@ -32,125 +141,72 @@
     background: white;
     border-radius: 20px;
     padding: 2rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s ease;
-
-    &:hover {
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-        transform: translateY(-2px);
-    }
+    margin-bottom: 2rem;
 }
 
 .section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 2rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #94a3b8;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #f1f5f9;
+    gap: 0.75rem;
+    border-bottom: 1px solid #f8fafc;
     padding-bottom: 1rem;
 
     i {
-        color: #f59e0b; // Gold/Orange for tournaments
-    }
-}
-
-.logo-card {
-    text-align: center;
-
-    .logo-upload-wrapper {
-        padding: 1rem;
-        border-radius: 16px;
-        background: #f8fafc;
-        border: 2px dashed #e2e8f0;
+        color: #e11d48;
     }
 }
 
 .team-selection-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .team-checkbox-card {
     background: #f8fafc;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #f1f5f9;
     border-radius: 12px;
-    transition: all 0.2s ease;
+    padding: 0.75rem;
     cursor: pointer;
-    overflow: hidden;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 
     &:hover {
-        border-color: #cbd5e1;
-        transform: translateY(-2px);
+        border-color: #e11d48;
+        background: white;
     }
 
     &.selected {
-        background: rgba(245, 158, 11, 0.05);
-        border-color: #f59e0b;
+        background: white;
+        border-color: #e11d48;
+        box-shadow: 0 5px 15px rgba(225, 29, 72, 0.05);
 
         .team-name {
-            color: #f59e0b;
+            color: #1e293b;
             font-weight: 700;
         }
     }
 
-    .team-logo-sm {
-        width: 32px;
-        height: 32px;
+    .team-badge {
+        width: 36px;
+        height: 36px;
         object-fit: contain;
-        border-radius: 4px;
     }
 
     .team-name {
         font-size: 0.85rem;
-        color: #64748b;
-        font-weight: 500;
-    }
-}
-
-.custom-textarea {
-    .form-control {
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem;
-        background: #f8fafc;
-        transition: all 0.2s;
-
-        &:focus {
-            background: white;
-            border-color: #f59e0b;
-            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
-        }
-    }
-}
-
-.sticky-top {
-    top: 2rem;
-    z-index: 10;
-}
-
-.actions-footer {
-    padding-bottom: 4rem;
-}
-
-.animate-fade {
-    animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
+        color: #475569;
+        font-weight: 600;
     }
 }
 
@@ -161,28 +217,26 @@
     app-datepicker,
     app-textarea {
         .form-label {
-            font-size: 0.85rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
             color: #64748b !important;
+            text-transform: uppercase !important;
             margin-bottom: 0.5rem !important;
-            font-weight: 600 !important;
         }
 
         .form-control,
-        .form-select {
-            height: 50px !important;
-            border-radius: 12px !important;
-            border-width: 2px !important;
+        .form-select,
+        .mat-mdc-form-field-flex {
+            border-radius: 10px !important;
+            border: 2px solid #f1f5f9 !important;
+            background: #f8fafc !important;
+            height: 48px !important;
             font-weight: 500 !important;
-            border-color: #e2e880;
 
             &:focus {
-                border-color: #f59e0b !important;
-                box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1) !important;
+                border-color: #e11d48 !important;
+                background: white !important;
             }
-        }
-
-        textarea.form-control {
-            height: auto !important;
         }
     }
 }

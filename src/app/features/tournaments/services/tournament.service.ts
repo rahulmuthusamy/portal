@@ -36,11 +36,23 @@ export class TournamentService extends BaseCrudService<any> {
         return this.api.get(`${this.endpoint}/${tournamentId}/stats`);
     }
 
-    enrollTeam(tournamentId: number, teamId: number): Observable<any> {
-        return this.api.post(`${this.endpoint}/${tournamentId}/enroll`, { teamId });
+    registerTeam(tournamentId: number, teamId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/${tournamentId}/register-team`, { teamId });
     }
 
-    withdrawTeam(tournamentId: number, teamId: number): Observable<any> {
-        return this.api.delete(`${this.endpoint}/${tournamentId}/teams/${teamId}`);
+    getStandingsNew(tournamentId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${tournamentId}/standings-new`);
+    }
+
+    getRegisteredTeams(tournamentId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${tournamentId}/registered-teams`);
+    }
+
+    getTournamentMatchesNew(tournamentId: number): Observable<any> {
+        return this.api.get(`${this.endpoint}/${tournamentId}/matches`);
+    }
+
+    generateFixturesNew(tournamentId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/${tournamentId}/generate-fixtures`, {});
     }
 }

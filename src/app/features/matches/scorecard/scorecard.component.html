@@ -60,6 +60,15 @@
             </div>
 
             <div class="card-body p-0">
+                <!-- YouTube Live Stream -->
+                <div class="video-container shadow-sm border-bottom" *ngIf="youtubeUrl()">
+                    <div class="ratio ratio-16x9">
+                        <iframe [src]="youtubeUrl()" title="Match Live Stream" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+
                 <!-- Summary Tab -->
                 <div class="tab-content" *ngIf="activeTab() === 0">
                     <div class="p-4 text-center" *ngIf="!match().ResultNote && match().Status !== 'Live'">

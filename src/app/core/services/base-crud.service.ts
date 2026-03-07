@@ -27,4 +27,8 @@ export class BaseCrudService<T> {
     delete(id: number): Observable<void> {
         return this.api.delete<void>(`${this.endpoint}/${id}`);
     }
+
+    apiCall(method: 'get' | 'post' | 'put' | 'delete', url: string, data?: any): Observable<any> {
+        return (this.api as any)[method](url, data);
+    }
 }

@@ -5,6 +5,11 @@
     font-family: 'Inter', sans-serif;
 }
 
+.video-container {
+    background: #000;
+    overflow: hidden;
+}
+
 .match-hero {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: white;

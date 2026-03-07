@@ -1,86 +1,208 @@
 <div class="teams-form-container animate-fade">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="form-grid">
-            <!-- Left Column: Logo & Branding -->
+            <!-- Left Column: Team Profile (Personnel & Branding) -->
             <div class="sidebar-section">
-                <div class="premium-card logo-card sticky-top">
-                    <h5 class="section-title"><i class="bi bi-image me-2"></i>Team Logo</h5>
-                    <div class="logo-upload-wrapper">
-                        <app-image-upload [control]="form.get('LogoURL')!"
-                            [defaultUrl]="form.get('LogoURL')!.value"></app-image-upload>
-                        <p class="small text-muted mt-3">Upload a high-quality PNG or JPG (Recommended: 512x512px)</p>
+                <div class="sticky-wrapper">
+                    <!-- Logo Card -->
+                    <div class="premium-card logo-card mb-4">
+                        <div class="logo-upload-wrapper">
+                            <app-image-upload [control]="form.get('LogoURL')!"
+                                [defaultUrl]="form.get('LogoURL')!.value"></app-image-upload>
+                        </div>
+                        <app-input label="Team Name *" [control]="form.get('Name')!" placeholder="The Invincibles"
+                            type="text" icon="bi-shield-shaded" class="mb-3" />
+                        <app-input label="Slogan" [control]="form.get('Slogan')!" placeholder="Play with Pride"
+                            type="text" icon="bi-chat-quote" />
                     </div>
 
-                    <div class="mt-4">
-                        <app-input label="Team Slogan" [control]="form.get('Slogan')!"
-                            placeholder="e.g. Play Like a Pro" type="text" icon="bi-chat-quote" />
+                    <!-- Personnel Sheet -->
+                    <div class="premium-card personnel-sheet mb-4">
+                        <h6 class="sheet-title fw-bold text-uppercase mb-4">
+                            <i class="bi bi-person-lines-fill me-2 text-primary"></i>Command Post
+                        </h6>
+                        <div class="personnel-stack d-flex flex-column gap-3">
+                            <app-input label="Captain" [control]="form.get('Captain')!" placeholder="Skip's Name"
+                                type="text" icon="bi-person-badge" />
+                            <app-input label="Coach" [control]="form.get('Coach')!" placeholder="Coach Name" type="text"
+                                icon="bi-person-gear" />
+                            <app-input label="Owner" [control]="form.get('OwnerName')!" placeholder="Owner Name"
+                                type="text" icon="bi-briefcase" />
+                        </div>
+                    </div>
+
+                    <!-- Quick Details -->
+                    <div class="premium-card mb-4 bg-light shadow-none border-dashed">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <app-input label="Founded" [control]="form.get('Founded')!" placeholder="Year"
+                                    icon="bi-calendar3" />
+                            </div>
+                            <div class="col-6">
+                                <app-input label="Location" [control]="form.get('Location')!" placeholder="City"
+                                    icon="bi-geo-alt" />
+                            </div>
+                            <div class="col-12">
+                                <app-input label="Contact" [control]="form.get('Contact')!" placeholder="Phone/Email"
+                                    icon="bi-telephone" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Details Forms -->
+            <!-- Right Column: The Squad Room (Hero Section) -->
             <div class="main-content-section">
-                <!-- Basic Info -->
-                <div class="premium-card mb-4">
-                    <h5 class="section-title"><i class="bi bi-info-circle me-2"></i>Core Information</h5>
-                    <div class="row g-3">
-                        <div class="col-md-7">
-                            <app-input label="Team Name *" [control]="form.get('Name')!" placeholder="Enter Team Name"
-                                type="text" icon="bi-shield-check" />
+                <div class="premium-card squad-room-hero h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                        <div>
+                            <h4 class="fw-bold mb-1">Squad Room</h4>
+                            <p class="text-muted small mb-0">Build your legend by scouting the best talent.</p>
                         </div>
-                        <div class="col-md-5">
-                            <app-input label="Founded Year" [control]="form.get('Founded')!" placeholder="e.g. 2020"
-                                type="text" icon="bi-calendar-event" />
-                        </div>
-                        <div class="col-md-12">
-                            <app-input label="Location" [control]="form.get('Location')!" placeholder="City / Region"
-                                type="text" icon="bi-geo-alt" />
+                        <div class="d-flex gap-2" style="position: relative; z-index: 5;">
+                            <button type="button" class="btn btn-dark shadow-sm rounded-pill btn-sm px-4"
+                                (click)="quickRegisterForm.reset(); showQuickRegister = true;">
+                                <i class="bi bi-person-plus-fill me-2"></i>New Scout
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Personnel -->
-                <div class="premium-card mb-4">
-                    <h5 class="section-title"><i class="bi bi-people me-2"></i>Team Personnel</h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <app-input label="Captain Name *" [control]="form.get('Captain')!"
-                                placeholder="Current Captain" type="text" icon="bi-person-badge" />
+                    <!-- Market/Scout Search (Integrated Floating Top) -->
+                    <div class="scout-search-container mb-4 position-relative">
+                        <div class="input-group search-input-wrapper shadow-sm rounded-pill overflow-hidden border">
+                            <span class="input-group-text bg-white border-0 ps-3">
+                                <i class="bi bi-search text-primary"></i>
+                            </span>
+                            <input type="text" class="form-control border-0 py-2"
+                                placeholder="Locate player in the market by name or mobile..."
+                                [ngModel]="scoutSearchQuery()" (ngModelChange)="scoutSearchQuery.set($event)"
+                                [ngModelOptions]="{standalone: true}">
                         </div>
-                        <div class="col-md-6">
-                            <app-input label="Head Coach" [control]="form.get('Coach')!" placeholder="Head Coach Name"
-                                type="text" icon="bi-person-gear" />
-                        </div>
-                        <div class="col-md-6">
-                            <app-input label="Owner Name" [control]="form.get('OwnerName')!" placeholder="Owner Name"
-                                type="text" icon="bi-person-workspace" />
-                        </div>
-                        <div class="col-md-6">
-                            <app-input label="Contact Details" [control]="form.get('Contact')!"
-                                placeholder="Mobile or Email" type="text" icon="bi-telephone" />
+
+                        <!-- Market Results (Floating) -->
+                        <div class="search-results-floating shadow-lg rounded-4 mt-2 border bg-white animate-fade"
+                            *ngIf="scoutSearchQuery().length > 0">
+                            <div
+                                class="p-3 border-bottom bg-light small fw-bold text-muted px-4 d-flex justify-content-between rounded-top-4">
+                                <span>MARKET MATCHES</span>
+                                <span class="badge bg-primary rounded-pill">{{ filteredScouts().length }}</span>
+                            </div>
+
+                            <div class="market-list" style="max-height: 300px; overflow-y: auto;">
+                                <div *ngFor="let p of filteredScouts()"
+                                    class="market-item d-flex align-items-center p-3 border-bottom-dashed mx-2"
+                                    (mousedown)="toggleScout(p); scoutSearchQuery.set(''); $event.preventDefault()">
+                                    <img [src]="getPlayerImageUrl(p.PhotoURL)"
+                                        class="rounded-circle me-3 scout-thumb-mini shadow-sm border border-2 border-white">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark">{{ p.Name }}</div>
+                                        <div class="small text-muted opacity-75">{{ p.Role || 'Generic Player' }} • {{
+                                            p.Mobile }}</div>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                                        SCOUT <i class="bi bi-chevron-right ms-1"></i>
+                                    </button>
+                                </div>
+
+                                <div *ngIf="filteredScouts().length === 0" class="p-5 text-center text-muted">
+                                    <i class="bi bi-binoculars d-block fs-1 mb-2 opacity-25"></i>
+                                    No players found in the market.
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- About -->
-                <div class="premium-card mb-4">
-                    <h5 class="section-title"><i class="bi bi-journal-text me-2"></i>About the Team</h5>
-                    <div class="col-12">
-                        <div class="form-group custom-textarea">
-                            <label class="form-label fw-bold small text-uppercase opacity-75">Team Biography /
-                                Achievements</label>
-                            <textarea formControlName="Bio" class="form-control" rows="5"
-                                placeholder="Tell us more about the team's history and achievements..."></textarea>
+                    <!-- Quick Registration Drawer (Adorable Slide-down) -->
+                    <div class="quick-register-adorable mb-4 p-4 rounded-4 border bg-primary bg-opacity-10 animate-fade"
+                        *ngIf="showQuickRegister">
+                        <form [formGroup]="quickRegisterForm" class="row g-3">
+                            <div class="col-md-4">
+                                <app-input label="Full Name" [control]="quickRegisterForm.get('Name')!"
+                                    placeholder="Player Name" />
+                            </div>
+                            <div class="col-md-4">
+                                <app-input label="Mobile" [control]="quickRegisterForm.get('Mobile')!"
+                                    placeholder="Primary Contact" />
+                            </div>
+                            <div class="col-md-4">
+                                <app-input label="Father Name" [control]="quickRegisterForm.get('FatherName')!"
+                                    placeholder="Father's Name" />
+                            </div>
+                            <div class="col-12 d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-link text-muted"
+                                    (click)="showQuickRegister = false; quickRegisterForm.reset()">Close</button>
+                                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold"
+                                    (click)="quickRegisterPlayer()">
+                                    REGISTER & SCOUT
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Visual Field Board -->
+                    <div class="squad-board-visual flex-grow-1">
+                        <div class="row g-4 h-100">
+                            <!-- Selected Player Card -->
+                            <div class="col-6 col-md-4 col-xl-3" *ngFor="let p of teamRoster()">
+                                <div
+                                    class="player-jersey-card p-4 rounded-5 border text-center position-relative h-100 shadow-sm transition-all hover-up">
+                                    <button type="button"
+                                        class="btn btn-sm btn-light border-0 rounded-circle position-absolute top-0 end-0 m-3 shadow-sm hover-danger"
+                                        (click)="removeScout(p.PlayerID)">
+                                        <i class="bi bi-x fs-5"></i>
+                                    </button>
+                                    <div
+                                        class="profile-frame mb-3 mx-auto shadow-lg rounded-circle border border-4 border-white overflow-hidden">
+                                        <img [src]="getPlayerImageUrl(p.PhotoURL)" class="w-100 h-100 object-fit-cover">
+                                    </div>
+                                    <h6 class="fw-bold mb-1 text-dark text-truncate">{{ p.Name }}</h6>
+                                    <span
+                                        class="badge bg-primary bg-opacity-10 text-primary border-primary border-opacity-25 rounded-pill px-3 py-2 small"
+                                        style="font-size: 0.7rem;">
+                                        {{ p.Role || 'All-Rounder' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Adorable Empty Slots -->
+                            <div class="col-6 col-md-4 col-xl-3 animate-pulse"
+                                *ngFor="let i of [].constructor(Math.max(0, 8 - teamRoster().length)).fill(0)">
+                                <div
+                                    class="empty-jersey-slot rounded-5 border-dashed d-flex align-items-center justify-content-center p-5 h-100">
+                                    <div class="text-center opacity-50">
+                                        <i class="bi bi-plus-circle-dotted d-block fs-1 mb-2 text-muted"></i>
+                                        <div class="small fw-bold text-uppercase ls-1">Slot Open</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Actions -->
-                <div class="actions-footer mt-5 d-flex gap-3">
-                    <app-button [label]="isEdit ? 'Update Team Profile' : 'Register Team'" type="submit"
-                        class="w-100 flex-grow-1" [variant]="'primary'"></app-button>
-                    <button type="button" class="btn btn-outline-secondary px-5"
-                        (click)="router.navigate(['/kkk/teams-list'])">Cancel</button>
+                    <!-- Footer Persistence -->
+                    <div class="mt-auto pt-4 d-flex justify-content-between align-items-center border-top">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-group d-flex opacity-75">
+                                <img *ngFor="let p of teamRoster().slice(0, 3)" [src]="getPlayerImageUrl(p.PhotoURL)"
+                                    class="rounded-circle border border-2 border-white shadow-sm"
+                                    style="width: 30px; height: 30px; margin-left: -10px;">
+                                <div *ngIf="teamRoster().length > 3"
+                                    class="rounded-circle bg-dark text-white border border-2 border-white shadow-sm d-flex align-items-center justify-content-center fs-xs"
+                                    style="width: 30px; height: 30px; margin-left: -10px;">
+                                    +{{ teamRoster().length - 3 }}
+                                </div>
+                            </div>
+                            <span class="small fw-bold text-muted">{{ teamRoster().length }} Legends Scouted</span>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <button type="button" class="btn btn-outline-secondary px-4 rounded-pill fw-bold"
+                                (click)="router.navigate(['/kkk/teams-list'])">Discard</button>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold shadow-lg"
+                                [disabled]="loading">
+                                <span class="spinner-border spinner-border-sm me-2" *ngIf="loading"></span>
+                                {{ isEdit ? 'Sync Master' : 'Assemble Legend' }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

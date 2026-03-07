@@ -1,0 +1,260 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     BROADCAST DIRECTOR - Production Control Room
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="director-page">
+
+    <!-- ─── TOP BAR ─── -->
+    <header class="director-header">
+        <div class="header-left">
+            <div class="rec-dot" [class.recording]="isRecording()"></div>
+            <h1 class="header-title">BROADCAST DIRECTOR</h1>
+            <span class="match-chip" *ngIf="match()">
+                {{ match()?.TeamA?.Name }} vs {{ match()?.TeamB?.Name }}
+            </span>
+        </div>
+        <div class="header-right">
+            <span class="cam-count">📹 {{ cameras().length }} Camera(s)</span>
+            <button class="hdr-btn" [class.active]="isRecording()" (click)="toggleRecording()">
+                <span *ngIf="!isRecording()">⏺️ REC</span>
+                <span *ngIf="isRecording()">⏹️ STOP REC</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="director-body">
+        <!-- ═══════════════════════════════════════════════════════════
+             LEFT SIDE: PROGRAM OUTPUT (Main view going to viewers)
+             ═══════════════════════════════════════════════════════════ -->
+        <div class="program-section">
+            <div class="section-label">
+                <span class="label-dot live"></span> PROGRAM OUTPUT
+                <span class="layout-btns">
+                    <button class="layout-btn" [class.active]="layoutMode() === 'single'" (click)="setLayout('single')"
+                        title="Single Camera">▣</button>
+                    <button class="layout-btn" [class.active]="layoutMode() === 'pip'" (click)="setLayout('pip')"
+                        title="Picture-in-Picture">◫</button>
+                    <button class="layout-btn" [class.active]="layoutMode() === 'sideBySide'"
+                        (click)="setLayout('sideBySide')" title="Side by Side">⧉</button>
+                </span>
+            </div>
+
+            <!-- Program Monitor -->
+            <div class="program-monitor" [class.layout-pip]="layoutMode() === 'pip'"
+                [class.layout-split]="layoutMode() === 'sideBySide'">
+
+                <!-- Replay Mode -->
+                <div class="replay-overlay" *ngIf="isReplayMode()">
+                    <div class="replay-badge">
+                        <span class="replay-icon">🔄</span> INSTANT REPLAY
+                        <span class="replay-speed">× {{ replaySpeed() }}</span>
+                    </div>
+                    <video #replayVideo class="replay-video" autoplay></video>
+                    <button class="exit-replay-btn" (click)="exitReplay()">✕ EXIT REPLAY</button>
+                </div>
+
+                <!-- Main Camera Feed -->
+                <div class="main-feed" *ngIf="!isReplayMode()">
+                    <video *ngIf="getActiveStream()" [srcObject]="getActiveStream()!" autoplay playsinline muted
+                        class="feed-video main-video">
+                    </video>
+                    <div class="no-feed" *ngIf="!getActiveStream()">
+                        <div class="no-feed-icon">📡</div>
+                        <h3>No Camera Connected</h3>
+                        <p>Open the camera URL on your mobile phones to start streaming</p>
+                        <div class="url-box">
+                            <code>/camera/{{ matchId() }}?label=Front View</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PIP Feed (Small overlay) -->
+                <div class="pip-feed" *ngIf="layoutMode() === 'pip' && getPipStream() && !isReplayMode()">
+                    <video [srcObject]="getPipStream()!" autoplay playsinline muted class="feed-video pip-video"
+                        (click)="switchToCamera(pipCameraId()!)">
+                    </video>
+                    <div class="pip-label">{{ cameras() | json }}</div>
+                </div>
+
+                <!-- Side-by-Side Feed -->
+                <div class="split-feed" *ngIf="layoutMode() === 'sideBySide' && getPipStream() && !isReplayMode()">
+                    <video [srcObject]="getPipStream()!" autoplay playsinline muted class="feed-video split-video">
+                    </video>
+                </div>
+
+                <!-- ═══ SCORECARD OVERLAY (on top of video) ═══ -->
+                <div class="score-overlay" *ngIf="showScoreOverlay() && currentInnings()">
+                    <!-- Score Strip -->
+                    <div class="ov-strip">
+                        <div class="ov-team">{{ battingTeamName() }}</div>
+                        <div class="ov-score">{{ score() }}</div>
+                        <div class="ov-overs">({{ overs() }})</div>
+                        <div class="ov-divider"></div>
+                        <div class="ov-balls">
+                            <span *ngFor="let b of recentBalls()" class="ov-ball" [class.ov-w]="b === 'W'"
+                                [class.ov-4]="b === '4'" [class.ov-6]="b === '6'" [class.ov-dot]="b === '0'">{{ b
+                                }}</span>
+                        </div>
+                        <div class="ov-divider"></div>
+                        <div class="ov-crr">CRR <strong>{{ runRate() }}</strong></div>
+                    </div>
+
+                    <!-- Player Strip -->
+                    <div class="ov-players" *ngIf="striker()">
+                        <div class="ov-bat">
+                            🏏 {{ getPlayerName(striker()) }}* {{ striker()?.RunsScored || 0 }}({{ striker()?.BallsFaced
+                            || 0 }})
+                        </div>
+                        <div class="ov-bat dim" *ngIf="nonStriker()">
+                            {{ getPlayerName(nonStriker()) }} {{ nonStriker()?.RunsScored || 0 }}({{
+                            nonStriker()?.BallsFaced || 0 }})
+                        </div>
+                        <div class="ov-bowl" *ngIf="currentBowler()">
+                            ⚾ {{ getPlayerName(currentBowler()) }} {{ currentBowler()?.WicketsTaken || 0 }}/{{
+                            currentBowler()?.RunsConceded || 0 }}
+                        </div>
+                    </div>
+
+                    <!-- Target -->
+                    <div class="ov-target" *ngIf="target()">
+                        NEED {{ target()!.remaining }} | TARGET {{ target()!.target }}
+                    </div>
+                </div>
+
+                <!-- Event Flash -->
+                <div class="event-flash" *ngIf="showEvent()" [class.flash-four]="eventType() === 'FOUR'"
+                    [class.flash-six]="eventType() === 'SIX'" [class.flash-wicket]="eventType() === 'WICKET'">
+                    <div class="flash-text">{{ eventType() }}!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             RIGHT SIDE: CONTROL PANEL
+             ═══════════════════════════════════════════════════════════ -->
+        <div class="control-panel">
+
+            <!-- Camera Sources Preview -->
+            <div class="panel-section">
+                <div class="panel-title d-flex justify-content-between">
+                    <span>📹 CAMERA SOURCES</span>
+                    <button class="btn-refresh" (click)="refreshConnections()"
+                        title="Refresh All Connections">🔄</button>
+                </div>
+                <div class="camera-grid">
+                    <div *ngFor="let cam of cameras()" class="cam-preview"
+                        [class.active-cam]="cam.socketId === activeCameraId()" (click)="switchToCamera(cam.socketId)">
+                        <video *ngIf="cam.stream" [srcObject]="cam.stream" autoplay playsinline muted
+                            class="preview-video">
+                        </video>
+                        <div class="cam-offline" *ngIf="!cam.stream">
+                            <span>Connecting...</span>
+                        </div>
+                        <div class="cam-label-bar">
+                            <span class="cam-dot" [class.cam-live]="cam.isConnected"></span>
+                            <span class="cam-name">{{ cam.label }}</span>
+                            <span class="cam-state" [class.state-err]="cam.connectionState === 'failed'">{{
+                                cam.connectionState }}</span>
+                        </div>
+                        <div class="cam-actions">
+                            <button class="cam-act-btn" (click)="switchToCamera(cam.socketId); $event.stopPropagation()"
+                                title="Set as Main">
+                                🖥️
+                            </button>
+                            <button class="cam-act-btn" (click)="setPipCamera(cam.socketId); $event.stopPropagation()"
+                                title="Set as PIP" *ngIf="cam.socketId !== activeCameraId()">
+                                ◫
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- No cameras connected -->
+                    <div class="no-cameras" *ngIf="cameras().length === 0">
+                        <div class="no-cam-icon">📱</div>
+                        <p>No cameras connected yet</p>
+                        <div class="cam-url-hint">
+                            Open on Phone 1:<br>
+                            <code>/camera/{{ matchId() }}?label=Front View</code>
+                        </div>
+                        <div class="cam-url-hint">
+                            Open on Phone 2:<br>
+                            <code>/camera/{{ matchId() }}?label=Side View</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Replay Controls -->
+            <div class="panel-section">
+                <div class="panel-title">🔄 INSTANT REPLAY</div>
+                <div class="replay-controls">
+                    <div class="speed-row">
+                        <label class="speed-label">Speed:</label>
+                        <button class="speed-btn" [class.active]="replaySpeed() === 0.25"
+                            (click)="replaySpeed.set(0.25)">0.25×</button>
+                        <button class="speed-btn" [class.active]="replaySpeed() === 0.5"
+                            (click)="replaySpeed.set(0.5)">0.5×</button>
+                        <button class="speed-btn" [class.active]="replaySpeed() === 0.75"
+                            (click)="replaySpeed.set(0.75)">0.75×</button>
+                        <button class="speed-btn" [class.active]="replaySpeed() === 1"
+                            (click)="replaySpeed.set(1)">1×</button>
+                    </div>
+                    <button class="replay-btn" (click)="triggerReplay()"
+                        [disabled]="!replayAvailable() || isReplayMode()">
+                        🔄 PLAY REPLAY
+                    </button>
+                    <button class="replay-btn exit" *ngIf="isReplayMode()" (click)="exitReplay()">
+                        ✕ EXIT REPLAY
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overlay Controls -->
+            <div class="panel-section">
+                <div class="panel-title">📊 OVERLAY CONTROLS</div>
+                <div class="overlay-controls">
+                    <button class="ctrl-btn" [class.active]="showScoreOverlay()"
+                        (click)="showScoreOverlay.set(!showScoreOverlay())">
+                        {{ showScoreOverlay() ? '🟢' : '🔴' }} Overlay Visible
+                    </button>
+
+                    <div class="graphic-mode-toggle mt-2">
+                        <label class="small fw-bold d-block mb-1 text-muted">GRAPHIC STYLE:</label>
+                        <div class="btn-group w-100">
+                            <button class="ctrl-btn-sm" [class.active]="graphicMode() === 'compact'"
+                                (click)="setGraphicMode('compact')">
+                                📊 LIVE BAR
+                            </button>
+                            <button class="ctrl-btn-sm" [class.active]="graphicMode() === 'full'"
+                                (click)="setGraphicMode('full')">
+                                📋 FULL SCORECARD
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn-sync-score mt-2" (click)="loadMatchData()" title="Sync Score Now">🔄 Refresh
+                        Score Data</button>
+
+                    <div class="mt-3 pt-3 border-top border-secondary">
+                        <a [routerLink]="['/kkk/live-scoring', matchId()]" target="_blank" class="scorer-link-btn">
+                            🎮 LIVE SCORING PANEL
+                        </a>
+                    </div>
+                    <div class="ctrl-info">
+                        <span class="ctrl-label">Standalone Overlay URL:</span>
+                        <code class="ctrl-url">/overlay/{{ matchId() }}</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Event Triggers -->
+            <div class="panel-section">
+                <div class="panel-title">⚡ EVENT TRIGGERS</div>
+                <div class="event-buttons">
+                    <button class="evt-btn four" (click)="triggerEvent('FOUR')">FOUR!</button>
+                    <button class="evt-btn six" (click)="triggerEvent('SIX')">SIX!</button>
+                    <button class="evt-btn wicket" (click)="triggerEvent('WICKET')">WICKET!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

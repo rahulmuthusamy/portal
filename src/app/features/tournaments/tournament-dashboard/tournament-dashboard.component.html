@@ -1,30 +1,35 @@
 <div class="dashboard-wrapper animate-fade" *ngIf="!loading() && !error() && tournament() as t">
-    <!-- Full Width Hero Banner -->
-    <div class="hero-banner" [style.background-image]="'url(' + (t.BannerURL || 'assets/MV_4.jpeg') + ')'">
-        <div class="overlay"></div>
-        <div class="container-fluid px-md-5 h-100 position-relative">
-            <!-- Floating Info Card -->
-            <div class="tournament-identity d-flex align-items-end gap-4">
-                <div class="logo-wrapper shadow-lg">
-                    <img [src]="t.LogoURL || 'assets/logo.jpeg'" alt="Tournament Logo"
-                        class="img-fluid rounded-circle bg-white p-1">
+
+    <!-- 1. Hero Banner with Modern Gradient Overlay -->
+    <div class="hero-banner" [style.background-image]="'url(' + getImageUrl(t.BannerURL || 'assets/MV_4.jpeg') + ')'">
+        <div class="container-fluid h-100 position-relative">
+            <!-- Floating Identity Section -->
+            <div class="tournament-identity d-flex align-items-end gap-4 p-md-5 p-3">
+
+                <!-- Logo with White Border and Shadow -->
+                <div class="logo-wrapper">
+                    <img [src]="getImageUrl(t.LogoURL || 'assets/logo.jpeg')" alt="Tournament Logo">
                 </div>
-                <div class="info-content text-white mb-4">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <span [class]="getStatusBadgeClass(t.Status)">{{ t.Status }}</span>
-                        <span
-                            class="badge bg-white bg-opacity-25 backdrop-blur border border-white border-opacity-25">{{
-                            t.Type }}</span>
+
+                <!-- Text Content -->
+                <div class="info-content text-white mb-3 text-shadow-hero">
+                    <div class="d-flex align-items-center gap-2 mb-2 justify-content-md-start justify-content-center">
+                        <span [class]="getStatusBadgeClass(t.Status)"
+                            class="badge rounded-pill fw-bold text-uppercase px-3 py-2">{{ t.Status }}</span>
+                        <span class="badge blur-badge rounded-pill px-3 py-2">{{ t.Type }}</span>
                     </div>
-                    <h1 class="display-4 fw-black text-shadow mb-1">{{ t.Name }}</h1>
-                    <div class="d-flex flex-wrap gap-4 text-white-50 fs-5 mt-2">
+
+                    <h1 class="display-4 fw-black mb-1 lh-1">{{ t.Name }}</h1>
+
+                    <div
+                        class="d-flex flex-wrap gap-4 text-white-50 fs-6 mt-3 justify-content-md-start justify-content-center">
                         <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-calendar-event"></i>
-                            <span>{{ t.StartDate | date:'mediumDate' }} - {{ t.EndDate | date:'mediumDate' }}</span>
+                            <i class="bi bi-calendar-event text-warning"></i>
+                            <span class="text-white fw-bold">{{ t.StartDate | date:'mediumDate' }}</span>
                         </div>
                         <div class="d-flex align-items-center gap-2" *ngIf="t.VenueName">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>{{ t.VenueName }}, {{ t.City }}</span>
+                            <i class="bi bi-geo-alt text-danger"></i>
+                            <span class="text-white fw-bold">{{ t.VenueName }}, {{ t.City }}</span>
                         </div>
                     </div>
                 </div>
@@ -32,157 +37,137 @@
         </div>
     </div>
 
-    <!-- Main Navigation Bar -->
-    <div class="nav-bar-sticky bg-white shadow-sm border-bottom sticky-top z-3">
-        <div class="container-fluid px-md-5">
-            <ul class="nav nav-underline custom-nav gap-4">
+    <!-- 2. Sticky Navigation Bar -->
+    <div class="nav-bar-sticky">
+        <div class="container-fluid">
+            <ul class="nav custom-nav">
                 <li class="nav-item">
-                    <a class="nav-link py-3 active-tab-border" [class.active]="activeTab() === 'overview'"
-                        (click)="setActiveTab('overview')">
-                        <i class="bi bi-grid mb-1 d-block d-md-none fs-5"></i>
-                        <span class="d-none d-md-block">Overview</span>
+                    <a class="nav-link" [class.active]="activeTab() === 'overview'" (click)="setActiveTab('overview')">
+                        <i class="bi bi-grid-fill"></i> Overview
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link py-3 active-tab-border" [class.active]="activeTab() === 'matches'"
-                        (click)="setActiveTab('matches')">
-                        <i class="bi bi-calendar-range mb-1 d-block d-md-none fs-5"></i>
-                        <span class="d-none d-md-block">Matches</span>
+                    <a class="nav-link" [class.active]="activeTab() === 'matches'" (click)="setActiveTab('matches')">
+                        <i class="bi bi-calendar-check-fill"></i> Matches
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link py-3 active-tab-border" [class.active]="activeTab() === 'standings'"
+                    <a class="nav-link" [class.active]="activeTab() === 'standings'"
                         (click)="setActiveTab('standings')">
-                        <i class="bi bi-list-ol mb-1 d-block d-md-none fs-5"></i>
-                        <span class="d-none d-md-block">Standings</span>
+                        <i class="bi bi-list-ol"></i> Standings
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link py-3 active-tab-border" [class.active]="activeTab() === 'stats'"
-                        (click)="setActiveTab('stats')">
-                        <i class="bi bi-bar-chart mb-1 d-block d-md-none fs-5"></i>
-                        <span class="d-none d-md-block">Stats</span>
+                    <a class="nav-link" [class.active]="activeTab() === 'stats'" (click)="setActiveTab('stats')">
+                        <i class="bi bi-bar-chart-fill"></i> Stats
                     </a>
                 </li>
-                <li class="nav-item ms-auto">
-                    <a class="nav-link py-3 active-tab-border" [class.active]="activeTab() === 'admin'"
-                        (click)="setActiveTab('admin')">
-                        <i class="bi bi-gear mb-1 d-block d-md-none fs-5"></i>
-                        <span class="d-none d-md-block">Manage</span>
+                <li class="nav-item ms-md-auto">
+                    <a class="nav-link" [class.active]="activeTab() === 'admin'" (click)="setActiveTab('admin')">
+                        <i class="bi bi-gear-fill"></i> Manage
                     </a>
                 </li>
             </ul>
         </div>
     </div>
 
-    <!-- Dashboard Content -->
-    <div class="container-fluid px-md-5 py-4 bg-light min-vh-100">
+    <!-- 3. Main Content Area -->
+    <div class="container-fluid px-md-5 py-4 min-vh-100">
 
         <!-- OVERVIEW TAB -->
         <div class="tab-pane fade show active" *ngIf="activeTab() === 'overview'">
             <div class="row g-4">
-                <!-- Left Column: Details & Standings Preview -->
+                <!-- Left Column: Key Stats & Info -->
                 <div class="col-lg-8">
-                    <!-- Key Stats Grid -->
+                    <!-- Metrics Grid -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-3 col-6">
-                            <div class="stat-card-modern bg-white p-3 rounded-4 shadow-sm h-100">
-                                <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card-modern">
+                                <div class="icon-box bg-primary bg-opacity-10 text-primary">
                                     <i class="bi bi-people-fill"></i>
                                 </div>
-                                <div class="value fw-bold fs-4">{{ t.Teams?.length || 0 }}</div>
-                                <div class="label text-muted small">Teams Joined</div>
+                                <div class="value">{{ t.Teams?.length || 0 }}</div>
+                                <div class="label">Teams</div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <div class="stat-card-modern bg-white p-3 rounded-4 shadow-sm h-100">
-                                <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card-modern">
+                                <div class="icon-box bg-success bg-opacity-10 text-success">
                                     <i class="bi bi-check-circle-fill"></i>
                                 </div>
-                                <div class="value fw-bold fs-4">{{ getCompletedMatchesCount() }}</div>
-                                <div class="label text-muted small">Matches Done</div>
+                                <div class="value">{{ getCompletedMatchesCount() }}</div>
+                                <div class="label">Matches</div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <div class="stat-card-modern bg-white p-3 rounded-4 shadow-sm h-100">
-                                <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card-modern">
+                                <div class="icon-box bg-warning bg-opacity-10 text-warning">
                                     <i class="bi bi-lightning-fill"></i>
                                 </div>
-                                <div class="value fw-bold fs-4">{{ getTotalRuns() }}</div>
-                                <div class="label text-muted small">Total Runs</div>
+                                <div class="value">{{ getTotalRuns() }}</div>
+                                <div class="label">Run Fest</div>
                             </div>
                         </div>
-                        <div class="col-md-3 col-6">
-                            <div class="stat-card-modern bg-white p-3 rounded-4 shadow-sm h-100">
-                                <div class="icon-box bg-info bg-opacity-10 text-info rounded-circle mb-2">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card-modern">
+                                <div class="icon-box bg-danger bg-opacity-10 text-danger">
                                     <i class="bi bi-trophy-fill"></i>
                                 </div>
-                                <div class="value fw-bold fs-4 text-truncate">{{ t.MatchFormat }}</div>
-                                <div class="label text-muted small">Format</div>
+                                <div class="value text-truncate">{{ t.MatchFormat }}</div>
+                                <div class="label">Format</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tournament Details -->
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <!-- Compact Info & Description -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
                         <div class="card-body p-4">
-                            <h5 class="fw-bold mb-3">About Tournament</h5>
-                            <div class="row g-3">
-                                <div class="col-sm-6 col-md-4">
-                                    <small class="text-muted d-block text-uppercase"
-                                        style="font-size: 0.75rem; letter-spacing: 1px;">Format</small>
-                                    <span class="fw-bold text-dark">{{ t.MatchFormat }} ({{ t.OversPerMatch }}
-                                        Overs)</span>
+                            <h5 class="fw-bold mb-4">Tournament Details</h5>
+                            <div class="row g-4">
+                                <div class="col-6 col-md-3">
+                                    <small class="text-uppercase text-muted fw-bold d-block mb-1"
+                                        style="font-size: 0.7rem;">Organizer</small>
+                                    <!-- <div class="fw-bold text-dark">{{ t.Organizer || 'Village Cricket' }}</div> -->
                                 </div>
-                                <div class="col-sm-6 col-md-4">
-                                    <small class="text-muted d-block text-uppercase"
-                                        style="font-size: 0.75rem; letter-spacing: 1px;">Location</small>
-                                    <span class="fw-bold text-dark">{{ t.VenueName || 'TBD' }}, {{ t.City }}</span>
+                                <div class="col-6 col-md-3">
+                                    <small class="text-uppercase text-muted fw-bold d-block mb-1"
+                                        style="font-size: 0.7rem;">Prize Pool</small>
+                                    <!-- <div class="fw-bold text-success">{{ t.PrizePool || 'TBA' }}</div> -->
                                 </div>
-                                <div class="col-sm-6 col-md-4">
-                                    <small class="text-muted d-block text-uppercase"
-                                        style="font-size: 0.75rem; letter-spacing: 1px;">Entry Fee</small>
-                                    <span class="fw-bold text-dark">{{ t.RegistrationFee ? (t.RegistrationFee |
-                                        currency:'INR') : 'Free' }}</span>
+                                <div class="col-6 col-md-3">
+                                    <small class="text-uppercase text-muted fw-bold d-block mb-1"
+                                        style="font-size: 0.7rem;">Entry Fee</small>
+                                    <div class="fw-bold text-dark">{{ t.RegistrationFee ? (t.RegistrationFee |
+                                        currency:'INR') : 'Free' }}</div>
                                 </div>
-                                <div class="col-sm-6 col-md-4">
-                                    <small class="text-muted d-block text-uppercase"
-                                        style="font-size: 0.75rem; letter-spacing: 1px;">Contact</small>
-                                    <span class="fw-bold text-dark">{{ t.ContactPhone || t.ContactEmail || 'N/A'
-                                        }}</span>
+                                <div class="col-6 col-md-3">
+                                    <small class="text-uppercase text-muted fw-bold d-block mb-1"
+                                        style="font-size: 0.7rem;">Contact</small>
+                                    <div class="fw-bold text-dark">{{ t.ContactPhone || 'N/A' }}</div>
                                 </div>
-                                <div class="col-sm-6 col-md-4">
-                                    <small class="text-muted d-block text-uppercase"
-                                        style="font-size: 0.75rem; letter-spacing: 1px;">Registration</small>
-                                    <span class="badge" [class.bg-success]="t.IsRegistrationOpen"
-                                        [class.bg-danger]="!t.IsRegistrationOpen">
-                                        {{ t.IsRegistrationOpen ? 'OPEN' : 'CLOSED' }}
-                                    </span>
-                                </div>
-                                <div class="col-12" *ngIf="t.Description">
-                                    <hr class="my-2 opacity-10">
-                                    <small class="text-muted d-block text-uppercase mb-1"
-                                        style="font-size: 0.75rem; letter-spacing: 1px;">Description</small>
-                                    <p class="mb-0 text-secondary">{{ t.Description }}</p>
+                                <div class="col-12 border-top pt-3 mt-2" *ngIf="t.Description">
+                                    <p class="text-secondary mb-0 small lh-lg">{{ t.Description }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Points Table Preview -->
+                    <!-- Points Table Teaser -->
                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                         <div
-                            class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold mb-0">Points Table</h5>
-                            <button class="btn btn-link text-decoration-none fw-bold"
-                                (click)="setActiveTab('standings')">View Full <i class="bi bi-arrow-right"></i></button>
+                            class="card-header bg-white p-4 border-0 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0">Standings</h5>
+                            <button class="btn btn-sm btn-light rounded-pill fw-bold text-primary px-3"
+                                (click)="setActiveTab('standings')">
+                                See All <i class="bi bi-arrow-right ms-1"></i>
+                            </button>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light text-uppercase small letter-spacing-1">
+                            <table class="table align-middle mb-0 custom-table">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th class="ps-4 py-3">Team</th>
-                                        <th class="text-center">M</th>
+                                        <th class="ps-4">Team</th>
+                                        <th class="text-center">P</th> // Played
                                         <th class="text-center">W</th>
                                         <th class="text-center">L</th>
                                         <th class="text-center">NRR</th>
@@ -192,17 +177,21 @@
                                 <tbody>
                                     <tr *ngFor="let team of standings().slice(0, 5)">
                                         <td class="ps-4 fw-bold text-dark">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <span class="badge bg-light text-dark border">{{ 1 }}</span>
-                                                {{ team.Team?.Name || 'Unknown' }}
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img [src]="getImageUrl(team.Team?.LogoURL || 'assets/logo.jpeg')"
+                                                    class="rounded-circle" width="24" height="24">
+                                                {{ team.Team?.Name }}
                                             </div>
                                         </td>
-                                        <td class="text-center">{{ team.MatchesPlayed }}</td>
-                                        <td class="text-center text-success fw-bold bg-success bg-opacity-10 rounded">{{
-                                            team.Won }}</td>
-                                        <td class="text-center text-danger">{{ team.Lost }}</td>
-                                        <td class="text-center font-monospace small">{{ team.NetRunRate }}</td>
-                                        <td class="text-center pe-4 fw-black fs-5 text-primary">{{ team.Points }}</td>
+                                        <td class="text-center text-muted fw-bold">{{ team.MatchesPlayed }}</td>
+                                        <td class="text-center text-success fw-bold">{{ team.Won }}</td>
+                                        <td class="text-center text-danger fw-bold">{{ team.Lost }}</td>
+                                        <td class="text-center small font-monospace">{{ team.NetRunRate }}</td>
+                                        <td class="text-center pe-4 fw-black text-primary">{{ team.Points }}</td>
+                                    </tr>
+                                    <tr *ngIf="standings().length === 0">
+                                        <td colspan="6" class="text-center py-4 text-muted small">No standings available
+                                            yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -210,43 +199,48 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Recent Matches -->
+                <!-- Right Column: Matches -->
                 <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                        <div class="card-header bg-white border-0 p-4">
-                            <h5 class="fw-bold mb-0">Upcoming Matches</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item p-4 border-light match-hover-effect"
-                                    *ngFor="let match of getUpcomingMatches().slice(0, 4)">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span
-                                            class="badge bg-primary bg-opacity-10 text-primary border-primary border-opacity-10">{{
-                                            match.MatchType }}</span>
-                                        <small class="text-muted fw-bold">{{ match.MatchDate | date:'MMM d, h:mm a'
-                                            }}</small>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Upcoming</h5>
+                        <button class="btn btn-link btn-sm text-decoration-none" (click)="setActiveTab('matches')">View
+                            Schedule</button>
+                    </div>
+
+                    <div class="match-list d-flex flex-column gap-3">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden"
+                            *ngFor="let match of getUpcomingMatches().slice(0, 3)">
+                            <div class="card-body p-3"> <!-- Compact padding -->
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-light text-dark border" style="font-size: 0.65rem;">{{
+                                        match.MatchType }}</span>
+                                    <small class="text-danger fw-bold" style="font-size: 0.75rem;">{{ match.MatchDate |
+                                        date:'MMM d, h:mm a' }}</small>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between py-2">
+                                    <div class="text-center" style="width: 40%">
+                                        <div class="fw-bold text-truncate">{{ match.TeamA?.Name }}</div>
                                     </div>
-                                    <div class="match-teams d-flex flex-column gap-2 mb-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fw-bold fs-5">{{ match.TeamA?.Name }}</span>
-                                            <!-- <img [src]="match.TeamA?.LogoURL" class="team-logo-xs"> -->
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fw-bold fs-5">{{ match.TeamB?.Name }}</span>
-                                            <!-- <img [src]="match.TeamB?.LogoURL" class="team-logo-xs"> -->
-                                        </div>
-                                    </div>
-                                    <div class="d-grid">
-                                        <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold"
-                                            [routerLink]="['/kkk/scorecard', match.MatchID]">View Match Center</button>
+                                    <div class="text-muted fw-bold small">VS</div>
+                                    <div class="text-center" style="width: 40%">
+                                        <div class="fw-bold text-truncate">{{ match.TeamB?.Name }}</div>
                                     </div>
                                 </div>
-                                <div class="text-center p-5 text-muted" *ngIf="getUpcomingMatches().length === 0">
-                                    <i class="bi bi-calendar-x display-1 opacity-25 mb-3"></i>
-                                    <p class="mb-0">No upcoming matches</p>
+
+                                <div class="mt-2 text-center">
+                                    <button class="btn btn-outline-primary btn-sm rounded-pill w-100 py-1"
+                                        style="font-size: 0.8rem;" [routerLink]="['/kkk/scorecard', match.MatchID]">
+                                        Match Center
+                                    </button>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="text-center py-5 text-muted bg-white rounded-4 shadow-sm"
+                            *ngIf="getUpcomingMatches().length === 0">
+                            <i class="bi bi-calendar-event display-4 opacity-25 mb-2"></i>
+                            <p class="mb-0 small fw-bold">No upcoming matches</p>
                         </div>
                     </div>
                 </div>
@@ -256,44 +250,65 @@
         <!-- MATCHES TAB -->
         <div class="tab-pane fade show active" *ngIf="activeTab() === 'matches'">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold mb-0">Match Schedule</h4>
-                <button class="btn btn-primary shadow-sm" (click)="generateFixtures()" *ngIf="matches().length === 0">
-                    <i class="bi bi-magic me-2"></i>Generate Fixtures
+                <div>
+                    <h4 class="fw-bold mb-1">Match Schedule</h4>
+                    <p class="text-muted small mb-0">Complete fixture list for {{ t.Name }}</p>
+                </div>
+                <button class="btn btn-primary rounded-pill shadow-sm fw-bold" (click)="generateFixtures()"
+                    *ngIf="matches().length === 0">
+                    <i class="bi bi-shuffle me-2"></i>Auto-Generate
                 </button>
             </div>
 
             <div class="row g-4">
                 <div class="col-md-6 col-lg-4" *ngFor="let match of matches()">
-                    <div class="card border-0 shadow-sm rounded-4 h-100 match-card">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="badge bg-light text-dark border">{{ match.MatchType }}</span>
-                                <span [class]="getMatchStatusClass(match.Status)">{{ match.Status }}</span>
+                    <div class="card match-card h-100 position-relative">
+                        <span [class]="getMatchStatusClass(match.Status)" class="match-status-badge">{{ match.Status
+                            }}</span>
+                        <div class="card-body p-4 text-center">
+                            <div class="text-uppercase text-muted fw-bold small mb-3">{{ match.MatchType }}</div>
+
+                            <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
+                                <div class="text-center" style="width: 100px;">
+                                    <img [src]="getImageUrl(match.TeamA?.LogoURL || 'assets/logo.jpeg')"
+                                        class="rounded-circle mb-2 shadow-sm" width="56" height="56">
+                                    <div class="fw-bold lh-sm">{{ match.TeamA?.Name }}</div>
+                                </div>
+                                <div class="h3 fw-black text-muted mb-0">VS</div>
+                                <div class="text-center" style="width: 100px;">
+                                    <img [src]="getImageUrl(match.TeamB?.LogoURL || 'assets/logo.jpeg')"
+                                        class="rounded-circle mb-2 shadow-sm" width="56" height="56">
+                                    <div class="fw-bold lh-sm">{{ match.TeamB?.Name }}</div>
+                                </div>
                             </div>
-                            <div class="text-center mb-4">
-                                <div class="fs-4 fw-bold mb-1">{{ match.TeamA?.Name }}</div>
-                                <div class="text-muted small mb-1">vs</div>
-                                <div class="fs-4 fw-bold">{{ match.TeamB?.Name }}</div>
+
+                            <div class="bg-light rounded-3 p-2 mb-3">
+                                <div class="d-flex align-items-center justify-content-center gap-2 text-dark fw-bold">
+                                    <i class="bi bi-calendar-event"></i>
+                                    {{ match.MatchDate | date:'mediumDate' }}
+                                </div>
+                                <div class="small text-muted mt-1">{{ match.MatchDate | date:'shortTime' }}</div>
                             </div>
-                            <div class="text-center text-muted small bg-light rounded-pill py-2 mb-3">
-                                <i class="bi bi-calendar me-2"></i>{{ match.MatchDate | date:'fullDate' }}
-                            </div>
-                            <div class="d-grid">
-                                <button class="btn btn-primary" [routerLink]="['/kkk/scorecard', match.MatchID]">View
-                                    Scorecard</button>
-                            </div>
+
+                            <button class="btn btn-primary w-100 rounded-pill fw-bold"
+                                [routerLink]="['/kkk/scorecard', match.MatchID]">
+                                View Details
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- STANDINGS TAB -->
+        <!-- Other tabs (Standings, Stats, Admin) follow similar pattern... keeping brief for specific request -->
+        <!-- STANDINGS TAB (Reusing structure) -->
         <div class="tab-pane fade show active" *ngIf="activeTab() === 'standings'">
+            <!-- ... Previous Table Structure ... -->
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                 <div class="card-header bg-white p-4 border-0">
-                    <h4 class="fw-bold mb-0">Tournament Standings</h4>
+                    <h4 class="fw-bold mb-0">Full Standings</h4>
                 </div>
+                <!-- ... Table ... -->
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 custom-table">
                         <thead class="bg-light text-secondary">
@@ -311,7 +326,11 @@
                         <tbody>
                             <tr *ngFor="let team of standings(); let i = index">
                                 <td class="ps-4 text-muted fw-bold">#{{ i + 1 }}</td>
-                                <td class="fw-bold">{{ team.Team?.Name }}</td>
+                                <td class="fw-bold">
+                                    <img [src]="getImageUrl(team.Team?.LogoURL || 'assets/logo.jpeg')"
+                                        class="rounded-circle me-2" width="32" height="32">
+                                    {{ team.Team?.Name }}
+                                </td>
                                 <td class="text-center">{{ team.MatchesPlayed }}</td>
                                 <td class="text-center text-success">{{ team.Won }}</td>
                                 <td class="text-center text-danger">{{ team.Lost }}</td>
@@ -325,47 +344,51 @@
             </div>
         </div>
 
-        <!-- STATS TAB -->
+        <!-- STATS & ADMIN can remain similar but wrapped in the new container fluid structure -->
         <div class="tab-pane fade show active" *ngIf="activeTab() === 'stats'">
+            <!-- Reuse existing layout but with new card classes -->
             <div class="row g-4" *ngIf="stats() as s">
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                        <div class="card-header bg-gradient-orange text-white p-4"> <!-- Custom class needed -->
-                            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-bar-chart-fill me-2"></i>Most Runs</h4>
+                        <div class="card-header bg-white p-4 border-bottom">
+                            <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-bar-chart-fill me-2"></i>Top Run
+                                Getters</h5>
                         </div>
                         <div class="list-group list-group-flush">
                             <div class="list-group-item p-3 d-flex justify-content-between align-items-center"
                                 *ngFor="let p of s.topScorers; let i = index">
                                 <div class="d-flex align-items-center gap-3">
-                                    <span class="badge rounded-circle bg-light text-dark fs-6"
-                                        style="width:30px;height:30px;display:flex;align-items:center;justify-content:center">{{i+1}}</span>
+                                    <div class="fw-bold text-muted h5 mb-0">#{{i+1}}</div>
                                     <div>
-                                        <div class="fw-bold">{{ p.player?.FirstName }} {{ p.player?.LastName }}</div>
+                                        <div class="fw-bold text-dark">{{ p.player?.FirstName }} {{ p.player?.LastName
+                                            }}</div>
                                         <div class="small text-muted">{{ p.team?.Name }}</div>
                                     </div>
                                 </div>
-                                <div class="fs-4 fw-bold text-primary">{{ p.runs }}</div>
+                                <div class="h5 fw-black text-primary mb-0">{{ p.runs }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Wickets Column -->
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                        <div class="card-header bg-gradient-purple text-white p-4">
-                            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-bullseye me-2"></i>Most Wickets</h4>
+                        <div class="card-header bg-white p-4 border-bottom">
+                            <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-bullseye me-2"></i>Top Wicket Takers
+                            </h5>
                         </div>
                         <div class="list-group list-group-flush">
                             <div class="list-group-item p-3 d-flex justify-content-between align-items-center"
                                 *ngFor="let p of s.topWicketTakers; let i = index">
                                 <div class="d-flex align-items-center gap-3">
-                                    <span class="badge rounded-circle bg-light text-dark fs-6"
-                                        style="width:30px;height:30px;display:flex;align-items:center;justify-content:center">{{i+1}}</span>
+                                    <div class="fw-bold text-muted h5 mb-0">#{{i+1}}</div>
                                     <div>
-                                        <div class="fw-bold">{{ p.player?.FirstName }} {{ p.player?.LastName }}</div>
+                                        <div class="fw-bold text-dark">{{ p.player?.FirstName }} {{ p.player?.LastName
+                                            }}</div>
                                         <div class="small text-muted">{{ p.team?.Name }}</div>
                                     </div>
                                 </div>
-                                <div class="fs-4 fw-bold text-success">{{ p.wickets }}</div>
+                                <div class="h5 fw-black text-danger mb-0">{{ p.wickets }}</div>
                             </div>
                         </div>
                     </div>
@@ -373,45 +396,40 @@
             </div>
         </div>
 
-        <!-- ADMIN TAB -->
         <div class="tab-pane fade show active" *ngIf="activeTab() === 'admin'">
-            <div class="card border-0 shadow-sm rounded-4 p-5">
-                <h4 class="fw-bold mb-4">Admin Controls</h4>
-                <div class="d-flex gap-3">
-                    <button class="btn btn-lg btn-outline-primary" (click)="generateFixtures()">
-                        <i class="bi bi-calendar-plus me-2"></i>Generate Fixtures
-                    </button>
-                    <button class="btn btn-lg btn-outline-danger" (click)="closeRegistration()">
-                        <i class="bi bi-x-circle me-2"></i>Close Registration
-                    </button>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h5 class="fw-bold mb-3">Add Team</h5>
+                        <div class="d-flex flex-column gap-3">
+                            <select class="form-select form-select-lg rounded-3 bg-light border-0" #teamSelect>
+                                <option value="" disabled selected>-- Select Team --</option>
+                                <option *ngFor="let team of allTeams()" [value]="team.TeamID">{{ team.Name }}</option>
+                            </select>
+                            <button class="btn btn-primary btn-lg rounded-pill fw-bold w-100"
+                                (click)="registerTeam(+teamSelect.value)">
+                                Enroll Team
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h5 class="fw-bold mb-3">Actions</h5>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-outline-primary btn-lg rounded-pill fw-bold text-start ps-4"
+                                (click)="generateFixtures()" [disabled]="matches().length > 0">
+                                <i class="bi bi-calendar-plus me-2"></i> Generate Match Fixtures
+                            </button>
+                            <button class="btn btn-outline-danger btn-lg rounded-pill fw-bold text-start ps-4"
+                                (click)="closeRegistration()" *ngIf="t.IsRegistrationOpen">
+                                <i class="bi bi-x-circle me-2"></i> Close Registration
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-    </div>
-</div>
-
-<!-- Loading State -->
-<div class="text-center py-5 mt-5" *ngIf="loading() && !error()">
-    <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem;">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-    <h5 class="mt-4 text-muted fw-normal">Loading tournament experience...</h5>
-</div>
-
-<!-- Error State -->
-<div class="container py-5 mt-5 text-center px-4" *ngIf="error()">
-    <div class="mb-4">
-        <i class="bi bi-exclamation-triangle-fill text-warning display-1"></i>
-    </div>
-    <h3 class="fw-bold text-dark mb-2">Something went wrong</h3>
-    <p class="text-muted mb-4 fs-5">{{ error() }}</p>
-    <div class="d-flex gap-3 justify-content-center">
-        <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold" (click)="retry()">
-            <i class="bi bi-arrow-clockwise me-2"></i>Retry
-        </button>
-        <button class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-bold" routerLink="/kkk/tournaments-list">
-            Back to List
-        </button>
     </div>
 </div>

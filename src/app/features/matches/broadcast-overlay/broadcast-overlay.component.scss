@@ -1,0 +1,667 @@
+// ============================================================
+// BROADCAST OVERLAY — OBS / YouTube Live Stream Scorecard
+// ============================================================
+// This component is designed to run as a "Browser Source" in OBS.
+// It has a fully TRANSPARENT background.
+// Recommended OBS settings: Width: 1920, Height: 1080
+// URL: http://localhost:4200/overlay/{matchId}
+// ============================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap');
+
+// ── Variables ──
+$primary: #0057b8;
+$primary-light: #1a73e8;
+$accent: #ffcc00;
+$dark: #0d1117;
+$dark-glass: rgba(13, 17, 23, 0.92);
+$white: #ffffff;
+$red: #e53935;
+$green: #00c853;
+$orange: #ff9100;
+$purple: #9c27b0;
+$font-primary: 'Oswald', 'Inter', sans-serif;
+$font-body: 'Inter', sans-serif;
+$border-glow: 0 0 20px rgba(0, 87, 184, 0.4);
+
+// ── Host ──
+:host {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: transparent !important;
+    font-family: $font-body;
+}
+
+// ── Overlay Root ──
+.broadcast-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    padding: 0 24px 20px 24px;
+    pointer-events: none;
+    font-family: $font-body;
+}
+
+// ════════════════════════════════════════════════════════════════
+// MAIN SCORE STRIP
+// ════════════════════════════════════════════════════════════════
+.score-strip {
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.strip-main {
+    display: flex;
+    align-items: stretch;
+    background: $dark-glass;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), $border-glow;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+// ── Team Badge ──
+.team-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    min-width: 140px;
+    position: relative;
+    overflow: hidden;
+
+    &.batting {
+        background: linear-gradient(135deg, $primary, $primary-light);
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20px;
+            width: 60px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.08);
+            transform: skewX(-15deg);
+        }
+    }
+}
+
+.team-abbr {
+    font-family: $font-primary;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: $white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+// ── Score Block ──
+.score-block {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.score-runs {
+    font-family: $font-primary;
+    font-weight: 800;
+    font-size: 36px;
+    color: $white;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.score-overs {
+    font-family: $font-body;
+    font-weight: 500;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+}
+
+// ── Divider ──
+.strip-divider {
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.15), transparent);
+    margin: 8px 0;
+}
+
+// ── Recent Balls ──
+.recent-balls-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 20px;
+    gap: 4px;
+}
+
+.balls-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.balls-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.ball-pip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: $white;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0 4px;
+    font-family: $font-body;
+    line-height: 1;
+
+    &.dot-pip {
+        color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    &.four-pip {
+        background: linear-gradient(135deg, $primary, #2196f3);
+        color: $white;
+        box-shadow: 0 0 8px rgba(33, 150, 243, 0.4);
+        animation: pipPulse 0.6s ease;
+    }
+
+    &.six-pip {
+        background: linear-gradient(135deg, $purple, #ce93d8);
+        color: $white;
+        box-shadow: 0 0 8px rgba(156, 39, 176, 0.4);
+        animation: pipPulse 0.6s ease;
+    }
+
+    &.wicket-pip {
+        background: linear-gradient(135deg, $red, #ef5350);
+        color: $white;
+        box-shadow: 0 0 8px rgba(229, 57, 53, 0.4);
+        animation: pipPulse 0.6s ease;
+    }
+
+    &.extra-pip {
+        background: rgba($orange, 0.25);
+        color: $orange;
+        border: 1px solid rgba($orange, 0.3);
+    }
+}
+
+// ── Run Rate ──
+.rate-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 24px;
+}
+
+.rate-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.rate-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    text-transform: uppercase;
+}
+
+.rate-value {
+    font-family: $font-primary;
+    font-weight: 700;
+    font-size: 20px;
+    color: $white;
+
+    &.req {
+        color: $accent;
+    }
+}
+
+// ── Target Strip ──
+.target-strip {
+    display: flex;
+    justify-content: center;
+    padding: 6px 20px;
+    background: linear-gradient(90deg, rgba($accent, 0.15), rgba($accent, 0.25), rgba($accent, 0.15));
+    border-radius: 0 0 12px 12px;
+    margin-top: -1px;
+}
+
+.target-text {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: $accent;
+    font-family: $font-primary;
+}
+
+// ════════════════════════════════════════════════════════════════
+// PLAYER INFO BAR
+// ════════════════════════════════════════════════════════════════
+.player-bar {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    margin-bottom: 6px;
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.batsmen-section,
+.bowler-section {
+    background: $dark-glass;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.batsmen-section {
+    flex: 1;
+    max-width: 400px;
+}
+
+.bowler-section {
+    min-width: 280px;
+    margin-left: auto;
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+
+    &.striker-row {
+        background: rgba($primary, 0.15);
+        border-left: 3px solid $primary;
+    }
+
+    &.non-striker-row {
+        border-left: 3px solid transparent;
+    }
+
+    &.bowler-row {
+        background: rgba($red, 0.08);
+        border-left: 3px solid $red;
+    }
+}
+
+.player-indicator {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+
+    &.dim {
+        opacity: 0.3;
+    }
+}
+
+.player-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: $white;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.dim {
+        color: rgba(255, 255, 255, 0.45);
+        font-weight: 400;
+    }
+}
+
+.on-strike {
+    color: $accent;
+    font-weight: 900;
+    margin-left: 2px;
+}
+
+.player-stat {
+    font-family: $font-primary;
+    font-weight: 700;
+    font-size: 16px;
+    color: $white;
+    white-space: nowrap;
+
+    &.dim {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 14px;
+    }
+
+    small {
+        font-family: $font-body;
+        font-weight: 400;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.35);
+        margin-left: 2px;
+    }
+}
+
+// ── Waiting State ──
+.waiting-section {
+    background: $dark-glass;
+    backdrop-filter: blur(20px);
+    border-radius: 10px;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.waiting-dot {
+    width: 8px;
+    height: 8px;
+    background: $accent;
+    border-radius: 50%;
+    box-shadow: 0 0 10px $accent;
+    animation: blink 1.5s ease infinite;
+}
+
+.waiting-text {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+// ════════════════════════════════════════════════════════════════
+// PARTNERSHIP BAR
+// ════════════════════════════════════════════════════════════════
+.partnership-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 16px;
+    margin-bottom: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pship-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.35);
+    text-transform: uppercase;
+}
+
+.pship-value {
+    font-family: $font-primary;
+    font-weight: 600;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+// ════════════════════════════════════════════════════════════════
+// EVENT FLASH (FOUR / SIX / WICKET)
+// ════════════════════════════════════════════════════════════════
+.event-flash {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    animation: eventPop 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: none;
+}
+
+.event-flash-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 30px 60px;
+    border-radius: 20px;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+}
+
+.four .event-flash-inner {
+    background: linear-gradient(135deg, rgba($primary, 0.9), rgba(33, 150, 243, 0.85));
+    box-shadow: 0 0 60px rgba($primary, 0.6), 0 0 120px rgba($primary, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.six .event-flash-inner {
+    background: linear-gradient(135deg, rgba($purple, 0.9), rgba(206, 147, 216, 0.85));
+    box-shadow: 0 0 60px rgba($purple, 0.6), 0 0 120px rgba($purple, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.wicket .event-flash-inner {
+    background: linear-gradient(135deg, rgba($red, 0.9), rgba(239, 83, 80, 0.85));
+    box-shadow: 0 0 60px rgba($red, 0.6), 0 0 120px rgba($red, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.event-icon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.event-label {
+    font-family: $font-primary;
+    font-weight: 900;
+    font-size: 64px;
+    color: $white;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+// ════════════════════════════════════════════════════════════════
+// FULL SCORECARD OVERLAY (Standard Format)
+// ════════════════════════════════════════════════════════════════
+.full-scorecard-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 1400px;
+    z-index: 9998;
+    animation: fullScoreFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fs-card {
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 87, 184, 0.2);
+    color: $white;
+}
+
+.fs-team-name {
+    font-family: $font-primary;
+    font-weight: 900;
+    font-size: 48px;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    color: $white;
+}
+
+.fs-total {
+    font-family: $font-primary;
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 1;
+    color: $accent;
+}
+
+.fs-table {
+    border-collapse: collapse;
+
+    th {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        font-family: $font-body;
+        letter-spacing: 1px;
+    }
+
+    tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+}
+
+.fs-name {
+    font-size: 18px;
+    color: $white;
+}
+
+.fs-howout {
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.fs-runs {
+    font-family: $font-primary;
+    font-size: 24px;
+    color: $white;
+}
+
+@keyframes fullScoreFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -45%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+// ════════════════════════════════════════════════════════════════
+// ANIMATIONS
+// ════════════════════════════════════════════════════════════════
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pipPulse {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes eventPop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    75% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+// Media query for smaller OBS windows 
+@media (max-width: 1280px) {
+    .broadcast-overlay {
+        padding: 0 16px 12px 16px;
+    }
+
+    .score-runs {
+        font-size: 28px;
+    }
+
+    .team-abbr {
+        font-size: 14px;
+    }
+
+    .event-label {
+        font-size: 48px;
+    }
+
+    .player-bar {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .batsmen-section {
+        max-width: 100%;
+    }
+
+    .bowler-section {
+        margin-left: 0;
+    }
+}

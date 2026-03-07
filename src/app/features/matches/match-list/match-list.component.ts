@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatchService } from '../services/match.service';
 import { Match } from '../models/match.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-match-list',
@@ -45,7 +46,9 @@ import { Match } from '../models/match.model';
               <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
                 <div class="team text-center flex-fill">
                   <div class="team-logo-wrapper mb-2">
-                    <img [src]="match.TeamA?.LogoURL || 'assets/logo.jpeg'" class="team-logo">
+                    <img [src]="getImageUrl(match.TeamA?.LogoURL)" 
+                         class="team-logo" 
+                         (error)="onImgError($event)">
                   </div>
                   <h6 class="mb-0 fw-bold">{{ match.TeamA?.Name || 'Team A' }}</h6>
                 </div>
@@ -54,7 +57,9 @@ import { Match } from '../models/match.model';
 
                 <div class="team text-center flex-fill">
                   <div class="team-logo-wrapper mb-2">
-                    <img [src]="match.TeamB?.LogoURL || 'assets/logo.jpeg'" class="team-logo">
+                    <img [src]="getImageUrl(match.TeamB?.LogoURL)" 
+                         class="team-logo" 
+                         (error)="onImgError($event)">
                   </div>
                   <h6 class="mb-0 fw-bold">{{ match.TeamB?.Name || 'Team B' }}</h6>
                 </div>
@@ -66,18 +71,47 @@ import { Match } from '../models/match.model';
               </div>
 
               <div class="match-actions d-grid gap-2">
-                <button *ngIf="match.Status === 'Live'" class="btn btn-primary w-100 py-2 fw-black pulse-btn shadow-sm" [routerLink]="['/kkk/live-scoring', match.MatchID]">
-                   <span class="live-dot me-2"></span> LIVE SCORING
-                </button>
+                <div class="d-flex gap-2">
+                  <button *ngIf="match.Status === 'Live'" class="btn btn-primary flex-fill py-2 fw-black pulse-btn shadow-sm" [routerLink]="['/kkk/live-scoring', match.MatchID]">
+                    <span class="live-dot me-2"></span> LIVE SCORING
+                  </button>
+                  <button *ngIf="match.Status === 'Live'" class="btn btn-danger flex-fill py-2 fw-black shadow-sm" [routerLink]="['/broadcast', match.MatchID]">
+                    <i class="bi bi-broadcast me-2"></i> BROADCAST
+                  </button>
+                </div>
+
                 <button *ngIf="match.Status === 'Scheduled'" class="btn btn-dark w-100 py-2 fw-black shadow-sm" [routerLink]="['/kkk/live-scoring', match.MatchID]">
                   START SCORING
                 </button>
+                
+                <!-- Squad Selection (Only if teams are assigned) -->
+                <div class="d-flex gap-2" *ngIf="match.Status !== 'Completed'">
+                  <ng-container *ngIf="match.TeamA_ID && match.TeamB_ID; else assignTeamsBtn">
+                    <button class="btn btn-sm btn-outline-primary flex-fill fw-bold" [routerLink]="['/kkk/match-squad', match.MatchID, match.TeamA_ID]">
+                      SQUAD A
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary flex-fill fw-bold" [routerLink]="['/kkk/match-squad', match.MatchID, match.TeamB_ID]">
+                      SQUAD B
+                    </button>
+                  </ng-container>
+                  <ng-template #assignTeamsBtn>
+                    <button class="btn btn-sm btn-warning w-100 fw-bold" [routerLink]="['/kkk/match-form', match.MatchID]">
+                      <i class="bi bi-pencil-square me-1"></i> ASSIGN TEAMS
+                    </button>
+                  </ng-template>
+                </div>
+
                 <button *ngIf="match.Status === 'Completed'" class="btn btn-outline-dark w-100 py-2 fw-bold" [routerLink]="['/kkk/scorecard', match.MatchID]">
                   VIEW FULL SCORECARD
                 </button>
-                <button *ngIf="match.Status !== 'Completed'" class="btn btn-link btn-sm text-muted text-decoration-none" [routerLink]="['/kkk/scorecard', match.MatchID]">
-                   Go to scoreboard
-                </button>
+                <div class="d-flex justify-content-between align-items-center mt-2 px-1">
+                  <button *ngIf="match.Status !== 'Completed'" class="btn btn-link btn-sm text-muted text-decoration-none p-0" [routerLink]="['/kkk/scorecard', match.MatchID]">
+                    Go to scoreboard
+                  </button>
+                  <a *ngIf="match.Status === 'Live'" class="btn btn-link btn-sm text-danger text-decoration-none p-0 fw-bold" [routerLink]="['/camera', match.MatchID]" [queryParams]="{label: 'Main Cam'}">
+                    Connect Camera 📱
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -157,6 +191,7 @@ import { Match } from '../models/match.model';
 export class MatchListComponent implements OnInit {
   matches = signal<Match[]>([]);
   filter = signal<'all' | 'Live' | 'Scheduled' | 'Completed'>('all');
+  protected environment = environment;
 
   constructor(private matchService: MatchService) { }
 
@@ -174,5 +209,17 @@ export class MatchListComponent implements OnInit {
     if (this.filter() === 'all') return this.matches();
     return this.matches().filter(m => m.Status === this.filter());
   };
+
+  getImageUrl(url: string | undefined): string {
+    if (!url) return 'assets/logo.jpeg';
+    if (url.startsWith('http') || url.startsWith('assets')) return url;
+
+    const baseUrl = environment.apiUrl;
+    return baseUrl + url;
+  }
+
+  onImgError(event: Event): void {
+    (event.target as HTMLImageElement).src = 'assets/logo.jpeg';
+  }
 }
 

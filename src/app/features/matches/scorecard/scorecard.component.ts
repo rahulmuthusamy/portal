@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatchService } from '../services/match.service';
 import { interval, Subscription, switchMap, startWith } from 'rxjs';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
    selector: 'app-scorecard',
@@ -14,12 +15,35 @@ import { interval, Subscription, switchMap, startWith } from 'rxjs';
 export class ScorecardComponent implements OnInit, OnDestroy {
    private route = inject(ActivatedRoute);
    private matchService = inject(MatchService);
+   private sanitizer = inject(DomSanitizer);
 
    matchId = signal<number | null>(null);
    match = signal<any>(null);
    innings = signal<any[]>([]);
    activeTab = signal<number>(0); // 0 for Summary, 1 for Innings 1, 2 for Innings 2
    loading = signal(true);
+
+   // Extract YouTube ID and create Safe URL
+   youtubeUrl = computed<SafeResourceUrl | null>(() => {
+      const url = this.match()?.StreamURL;
+      if (!url) return null;
+
+      let videoId = '';
+      if (url.includes('youtu.be/')) {
+         videoId = url.split('youtu.be/')[1].split('?')[0];
+      } else if (url.includes('youtube.com/watch?v=')) {
+         videoId = url.split('v=')[1].split('&')[0];
+      } else if (url.includes('youtube.com/embed/')) {
+         videoId = url.split('embed/')[1].split('?')[0];
+      } else if (url.includes('youtube.com/live/')) {
+         videoId = url.split('live/')[1].split('?')[0];
+      }
+
+      if (videoId) {
+         return this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`);
+      }
+      return null;
+   });
 
    private pollingSub?: Subscription;
 
@@ -39,12 +63,12 @@ export class ScorecardComponent implements OnInit, OnDestroy {
       // Poll every 15 seconds if the match is live
       this.pollingSub = interval(15000).pipe(
          startWith(0),
-         switchMap(() => this.matchService.getScorecard(this.matchId()!))
+         switchMap(() => this.matchService.generateScorecard(this.matchId()!))
       ).subscribe({
          next: (res: any) => {
             const data = res.data || res;
             this.match.set(data.match);
-            this.innings.set(data.innings || []);
+            this.innings.set(data.scorecards || []);
 
             // If match is not live and we have data, we can stop polling (optional)
             if (data.match?.Status !== 'Live' && this.innings().length > 0) {

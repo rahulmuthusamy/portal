@@ -1,0 +1,115 @@
+<!-- Camera Source - Mobile Phone Page -->
+<div class="camera-page">
+
+    <!-- Header -->
+    <div class="cam-header">
+        <div class="cam-header-inner">
+            <div class="status-dot" [class.live]="isStreaming() && isConnected()"></div>
+            <span class="cam-title">{{ cameraLabel() }}</span>
+            <span class="match-badge" *ngIf="matchId()">Match #{{ matchId() }}</span>
+        </div>
+    </div>
+
+    <!-- Video Preview -->
+    <div class="video-wrapper">
+        <video #localVideo autoplay playsinline muted [class.active]="isStreaming()" [class.mirror]="!useRearCamera()">
+        </video>
+
+        <!-- Overlay when not streaming -->
+        <div class="video-placeholder" *ngIf="!isStreaming()">
+            <div class="placeholder-icon">📹</div>
+            <h3>Camera Ready</h3>
+            <p>Tap "Start Streaming" to begin broadcasting</p>
+        </div>
+
+        <!-- Live indicator -->
+        <div class="live-badge" *ngIf="isStreaming() && isConnected()">
+            <span class="pulse-dot"></span> LIVE
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-card" *ngIf="errorMessage()">
+        <i class="error-icon">⚠️</i>
+        <p>{{ errorMessage() }}</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-section">
+        <!-- Setup (before streaming) -->
+        <div class="setup-controls" *ngIf="!isStreaming()">
+            <!-- Camera Label -->
+            <div class="control-group">
+                <label class="control-label">Camera Name</label>
+                <input type="text" class="control-input" [ngModel]="cameraLabel()"
+                    (ngModelChange)="cameraLabel.set($event)" placeholder="e.g. Front View, Side View, Stump Cam">
+            </div>
+
+            <!-- Camera Selection -->
+            <div class="control-group">
+                <label class="control-label">Camera Direction</label>
+                <div class="toggle-row">
+                    <button class="toggle-btn" [class.active]="useRearCamera()" (click)="useRearCamera.set(true)">
+                        🎥 Rear (Main)
+                    </button>
+                    <button class="toggle-btn" [class.active]="!useRearCamera()" (click)="useRearCamera.set(false)">
+                        🤳 Front (Selfie)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quality -->
+            <div class="control-group">
+                <label class="control-label">Video Quality</label>
+                <div class="toggle-row triple">
+                    <button class="toggle-btn" [class.active]="videoQuality() === 'low'"
+                        (click)="videoQuality.set('low')">
+                        360p
+                    </button>
+                    <button class="toggle-btn" [class.active]="videoQuality() === 'medium'"
+                        (click)="videoQuality.set('medium')">
+                        720p
+                    </button>
+                    <button class="toggle-btn" [class.active]="videoQuality() === 'high'"
+                        (click)="videoQuality.set('high')">
+                        1080p
+                    </button>
+                </div>
+            </div>
+
+            <!-- Start Button -->
+            <button class="start-btn" (click)="startCamera()">
+                <span class="btn-icon">🔴</span>
+                START STREAMING
+            </button>
+        </div>
+
+        <!-- Live Controls (while streaming) -->
+        <div class="live-controls" *ngIf="isStreaming()">
+            <button class="action-btn flip-btn" (click)="toggleCamera()">
+                🔄 Flip Camera
+            </button>
+            <button class="action-btn" (click)="updateLabel()">
+                🏷️ Refresh Label
+            </button>
+            <button class="action-btn stop-btn" (click)="stopStream()">
+                ⏹️ Stop Streaming
+            </button>
+        </div>
+        <div class="live-controls mt-2" *ngIf="isStreaming()">
+            <button class="action-btn reconnect-btn" (click)="connectSocket()">
+                📡 Re-sync with Director
+            </button>
+        </div>
+    </div>
+
+    <!-- Connection Info -->
+    <div class="info-footer" *ngIf="isStreaming()">
+        <p class="info-text">
+            📡 Connected as <strong>{{ cameraLabel() }}</strong>
+        </p>
+        <p class="info-sub">
+            Keep this page open while streaming. The director will see your camera feed.
+        </p>
+    </div>
+</div>

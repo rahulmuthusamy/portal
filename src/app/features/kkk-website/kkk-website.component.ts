@@ -304,8 +304,10 @@ export class KkkWebsiteComponent implements OnInit {
   currentLightboxIndex = signal(0);
   currentLightboxImages = signal<{ src: string; caption: string }[]>([]);
 
-  get currentLightboxImage() {
-    return this.currentLightboxImages()[this.currentLightboxIndex()];
+  get currentLightboxImage(): { src: string; caption: string } | undefined {
+    const images = this.currentLightboxImages();
+    const index = this.currentLightboxIndex();
+    return images && images.length > 0 ? images[index] : undefined;
   }
 
   // Open lightbox with dynamic image

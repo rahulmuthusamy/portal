@@ -1,0 +1,181 @@
+<div class="broadcast-overlay" [class.loading]="loading()">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN SCORE STRIP (Live Compact Mode)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="score-strip" *ngIf="graphicMode() === 'compact'">
+        <!-- Team Info & Score -->
+        <div class="strip-main">
+            <!-- Batting Team Badge -->
+            <div class="team-badge batting">
+                <span class="team-abbr">{{ battingTeamName() }}</span>
+            </div>
+
+            <!-- Score Block -->
+            <div class="score-block">
+                <span class="score-runs">{{ score() }}</span>
+                <span class="score-overs">({{ overs() }}/{{ maxOvers() }})</span>
+            </div>
+
+            <!-- Divider -->
+            <div class="strip-divider"></div>
+
+            <!-- Current Over / Recent Balls -->
+            <div class="recent-balls-section">
+                <span class="balls-label">THIS OVER</span>
+                <div class="balls-row">
+                    <span *ngFor="let b of recentBalls()" class="ball-pip" [class.wicket-pip]="b === 'W'"
+                        [class.four-pip]="b === '4'" [class.six-pip]="b === '6'" [class.dot-pip]="b === '0'"
+                        [class.extra-pip]="b.includes('Wd') || b.includes('Nb')">
+                        {{ b }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="strip-divider"></div>
+
+            <!-- Run Rate -->
+            <div class="rate-section">
+                <div class="rate-item">
+                    <span class="rate-label">CRR</span>
+                    <span class="rate-value">{{ runRate() }}</span>
+                </div>
+                <div class="rate-item" *ngIf="requiredRunRate()">
+                    <span class="rate-label">RRR</span>
+                    <span class="rate-value req">{{ requiredRunRate() }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target Info (2nd innings) -->
+        <div class="target-strip" *ngIf="target()">
+            <span class="target-text">
+                TARGET: {{ target()!.target }} | NEED {{ target()!.remaining }} RUNS
+            </span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PLAYER INFO BAR (Above the score strip - Compact Mode Only)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="player-bar" *ngIf="graphicMode() === 'compact'">
+        <!-- Batsmen -->
+        <div class="batsmen-section" *ngIf="striker()">
+            <div class="player-row striker-row">
+                <span class="player-indicator">🏏</span>
+                <span class="player-name">{{ getStrikerName() }}<span class="on-strike">*</span></span>
+                <span class="player-stat">{{ striker()?.RunsScored || 0 }}<small>({{ striker()?.BallsFaced || 0
+                        }})</small></span>
+            </div>
+            <div class="player-row non-striker-row" *ngIf="nonStriker()">
+                <span class="player-indicator dim"></span>
+                <span class="player-name dim">{{ getNonStrikerName() }}</span>
+                <span class="player-stat dim">{{ nonStriker()?.RunsScored || 0 }}<small>({{ nonStriker()?.BallsFaced ||
+                        0 }})</small></span>
+            </div>
+        </div>
+
+        <!-- Bowler -->
+        <div class="bowler-section" *ngIf="currentBowler()">
+            <div class="player-row bowler-row">
+                <span class="player-indicator">⚾</span>
+                <span class="player-name">{{ getBowlerName() }}</span>
+                <span class="player-stat">{{ currentBowler()?.WicketsTaken || 0 }}/{{ currentBowler()?.RunsConceded || 0
+                    }} <small>({{ currentBowler()?.OversBowled || '0.0' }})</small></span>
+            </div>
+        </div>
+
+        <!-- WAITING STATE -->
+        <div class="waiting-section" *ngIf="!striker() && !currentBowler()">
+            <span class="waiting-dot"></span>
+            <span class="waiting-text">WAITING FOR PLAYERS TO BE SELECTED...</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PARTNERSHIP BAR
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="partnership-bar" *ngIf="partnership() && graphicMode() === 'compact'">
+        <span class="pship-label">PARTNERSHIP</span>
+        <span class="pship-value">{{ partnership()!.runs }} ({{ partnership()!.balls }})</span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         FULL INNINGS SCORECARD (Standard Format)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="full-scorecard-overlay" *ngIf="graphicMode() === 'full'">
+        <div class="fs-card py-5 px-5 rounded-5">
+            <div class="fs-header border-bottom border-secondary mb-4 pb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fs-team-name mb-0">{{ battingTeamName() }}</h2>
+                        <p class="fs-subtitle mb-0 text-muted">{{ match()?.MatchFormat }} | INNINGS {{
+                            currentInnings()?.InningsNumber }}</p>
+                    </div>
+                    <div class="text-end">
+                        <h1 class="fs-total mb-0">
+                            {{ score() }}
+                        </h1>
+                        <p class="fs-overs mb-0 text-muted">{{ overs() }} / {{ maxOvers() }} OVERS</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fs-body">
+                <table class="fs-table w-100">
+                    <thead>
+                        <tr class="text-muted small text-uppercase fw-bold">
+                            <th class="py-2">Batter</th>
+                            <th class="py-2">Status</th>
+                            <th class="py-2 text-center">R</th>
+                            <th class="py-2 text-center">B</th>
+                            <th class="py-2 text-center">4s</th>
+                            <th class="py-2 text-center">6s</th>
+                            <th class="py-2 text-end">SR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let p of currentInnings()?.batting || currentInnings()?.battingStats"
+                            class="border-bottom border-light border-opacity-10">
+                            <td class="py-3 fs-name fw-bold">{{ p.Player?.Name || p.Name }}</td>
+                            <td class="py-3 text-muted fs-howout small">{{ p.Dismissal || (p.PlayerID ===
+                                striker()?.PlayerID || p.PlayerID === nonStriker()?.PlayerID ? 'not out' : '-') }}</td>
+                            <td class="py-3 text-center fs-runs fw-black">{{ p.RunsScored || 0 }}</td>
+                            <td class="py-3 text-center text-muted">{{ p.BallsFaced || 0 }}</td>
+                            <td class="py-3 text-center">{{ p.Fours || 0 }}</td>
+                            <td class="py-3 text-center">{{ p.Sixes || 0 }}</td>
+                            <td class="py-3 text-end text-muted">{{ p.StrikeRate || '-' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FOW -->
+            <div class="fs-fow mt-5" *ngIf="currentInnings()?.fow?.length">
+                <h6 class="text-muted small text-uppercase fw-black mb-3">Fall of Wickets</h6>
+                <div class="fs-fow-list d-flex flex-wrap gap-2">
+                    <span *ngFor="let w of currentInnings().fow"
+                        class="badge bg-light bg-opacity-10 border border-white border-opacity-10 py-2 px-3 rounded-pill text-white fw-bold">
+                        {{ w.score }}/{{ w.wicketNumber }} <small class="fw-normal opacity-50 ms-1">({{ w.overs }}
+                            ov)</small>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         EVENT FLASH (FOUR / SIX / WICKET)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="event-flash" *ngIf="showEvent()" [class.four]="eventType() === 'FOUR'"
+        [class.six]="eventType() === 'SIX'" [class.wicket]="eventType() === 'WICKET'">
+        <div class="event-flash-inner">
+            <span class="event-icon" *ngIf="eventType() === 'FOUR'">🔥</span>
+            <span class="event-icon" *ngIf="eventType() === 'SIX'">🚀</span>
+            <span class="event-icon" *ngIf="eventType() === 'WICKET'">☝️</span>
+            <h1 class="event-label">{{ eventType() }}</h1>
+        </div>
+    </div>
+
+</div>

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TournamentService } from '../services/tournament.service';
 import { TeamsService } from '@features/teams/services/teams.service';
 import { ToastService } from '@shared/services/toast.service';
-import { ButtonComponent, ImageUploadComponent, InputComponent, SelectComponent, TextareaComponent, DatepickerComponent } from '@shared/forms/form-controls';
+import { ImageUploadComponent, InputComponent, SelectComponent, DatepickerComponent } from '@shared/forms/form-controls';
 import { environment } from '@environments/environment';
 
 @Component({
@@ -17,9 +17,7 @@ import { environment } from '@environments/environment';
     RouterModule,
     ImageUploadComponent,
     InputComponent,
-    ButtonComponent,
     SelectComponent,
-    TextareaComponent,
     DatepickerComponent
   ],
   templateUrl: './tournament-form.component.html',
@@ -249,31 +247,39 @@ export class TournamentFormComponent implements OnInit {
     const formVal = this.tournamentForm.getRawValue();
     const payload = new FormData();
 
-    // Handle files
+    // Handle File Uploads (Logo & Banner)
     if (formVal.LogoURL instanceof File) {
       payload.append('logo', formVal.LogoURL);
     } else if (formVal.LogoURL) {
       payload.append('LogoURL', formVal.LogoURL);
+    } else {
+      payload.append('LogoURL', '');
     }
 
     if (formVal.BannerURL instanceof File) {
       payload.append('banner', formVal.BannerURL);
     } else if (formVal.BannerURL) {
       payload.append('BannerURL', formVal.BannerURL);
+    } else {
+      payload.append('BannerURL', '');
     }
 
-    // Append other fields
+    // Append all other form fields to FormData
     Object.keys(formVal).forEach(key => {
+      // Skip already handled file fields and null values
       if (key !== 'LogoURL' && key !== 'BannerURL' && formVal[key] !== null && formVal[key] !== undefined) {
+        // Prevent sending empty strings for optional dates which cause DB errors
+        if ((key === 'RegistrationStartDate' || key === 'RegistrationEndDate') && formVal[key] === '') {
+          return;
+        }
         payload.append(key, formVal[key]);
       }
     });
 
-    // Append teams
+    // Handle Team Selection (Send as a proper JSON string or multiple entries)
     const teamIds = this.selectedTeamIds();
     if (teamIds.length > 0) {
-      // Many-to-many teams are usually handled by sending an array or comma-separated string
-      // We'll send it as a JSON string and handle it in the service/backend if needed
+      // Backend usually expects 'teams' to be a JSON string or individual entries
       payload.append('teams', JSON.stringify(teamIds));
     }
 
@@ -283,12 +289,12 @@ export class TournamentFormComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.toast.success(`Tournament ${this.isEdit ? 'updated' : 'created'} successfully!`);
+        this.toast.success(`Tournament ${this.isEdit ? 'updated' : 'synchronized'} successfully!`);
         this.router.navigate(['/kkk/tournaments-list']);
       },
       error: (err) => {
-        console.error(err);
-        this.toast.error('Failed to save tournament');
+        console.error('Submission Error:', err);
+        this.toast.error(err.error?.message || 'Failed to save tournament details');
         this.isSubmitting.set(false);
       }
     });
