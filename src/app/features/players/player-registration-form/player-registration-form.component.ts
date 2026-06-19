@@ -5,6 +5,8 @@ import { SHARED_FORM_COMPONENTS } from '@shared/forms/form-controls';
 import { PlayerService } from '../services/players.service';
 import { ToastService } from '@shared/services/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuctionSessionService } from '@features/auction/services/auction-session.service';
+import { map } from 'rxjs';
 
 
 @Component({
@@ -68,10 +70,19 @@ export class PlayerRegistrationFormComponent {
   private toast = inject(ToastService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
+  private auctionSessionService = inject(AuctionSessionService)
   redirectUrl: string = '/kkk/players-list';
+  auctionSessions: any[] = [];
 
   ngOnInit(): void {
     this.InitForm();
+    
+    this.auctionSessionService.getAll().pipe(
+      map((response: any) => (response?.data?.sessions || []).map((s: any) => ({ label: s.Name, value: s.SessionID })))
+    ).subscribe(sessions => {
+      this.auctionSessions = sessions;
+    });
+    
     const id = this.route.snapshot.paramMap.get('id')!;;
     if (id) {
       this.isEdit = true;
@@ -86,33 +97,34 @@ export class PlayerRegistrationFormComponent {
     });
   }
 
-  InitForm() {
+InitForm() {
     this.form = this.fb.group({
       PlayerID: [],
       Name: ['', Validators.required],
       FatherName: ['', Validators.required],
       Mobile: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
-      Email: [''],
+      Email: ['', [Validators.required, Validators.email]],
       DOB: ['', Validators.required],
       Age: [{ value: '', disabled: true }],
-      Address: [''],
+      Address: ['', Validators.required],
       Role: ['', Validators.required],
       BattingStyle: ['', Validators.required],
-      BowlingStyle: [''],
-      BattingPosition: [''],
+      BowlingStyle: ['', Validators.required],
+      BattingPosition: ['', Validators.required],
       CanKeep: [false],
       CanCaptain: [false],
       CanField: [false],
       Height: [''],
       Weight: [''],
-      JerseySize: [''],
+      JerseySize: ['', Validators.required],
       PreviousTeam: [''],
       Experience: [''],
       Notes: [''],
       Bio: [''],
       Nickname: [''],
-      EmergencyContact: [''],
-      PhotoURL: ['']
+      EmergencyContact: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
+      PhotoURL: [''],
+      AuctionSession: ['', Validators.required]
     });
   }
 

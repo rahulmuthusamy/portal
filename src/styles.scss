@@ -2,21 +2,36 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family: Roboto, sans-serif;
-  background-color: #f4f6f9;
+  font-family: 'Inter', Roboto, sans-serif;
+  background-color: #f0f9ff;
 }
 
 :root {
-  --primary-color: #6366f1;
-  --sidebar-bg: #ffffff;
-  --text-color: #1f2937;
-  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --primary-color: #0ea5e9;
+  --primary-dark: #0284c7;
+  --secondary-color: #f59e0b;
+  --sidebar-bg: #0c4a6e;
+  --text-color: #1e293b;
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .full-width {
   width: 100%;
   display: block;
   box-sizing: border-box;
+}
+
+.form-actions-sticky {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--main-bg, #f9fafb); /* Match main background to blend in */
+  padding: 1.5rem 0;
+  border-top: 1px solid #e5e7eb;
+  z-index: 100;
+  margin-top: 2rem;
+  
+  /* Add a soft glow above the footer to show it's floating over content */
+  box-shadow: 0 -10px 20px -10px var(--main-bg, #f9fafb);
 }
 
 /* Global styles for snackbar messages */
@@ -68,6 +83,28 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Professional Animations */
+.animate-fade {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Card styles for content pages */
+.content-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
 }
 

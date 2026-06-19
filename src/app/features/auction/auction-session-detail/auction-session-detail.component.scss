@@ -1,0 +1,800 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+// ─── Design Tokens ───
+$bg-deep: #06080f;
+$bg-surface: #0c1021;
+$bg-card: #111827;
+$bg-glass: rgba(17, 24, 39, 0.65);
+$border: rgba(99, 102, 241, 0.12);
+$border-hover: rgba(99, 102, 241, 0.3);
+$text-primary: #f1f5f9;
+$text-secondary: #94a3b8;
+$text-muted: #64748b;
+$accent: #6366f1;
+$accent-light: #818cf8;
+$green: #10b981;
+$green-dark: #059669;
+$gold: #f59e0b;
+$cyan: #06b6d4;
+$purple: #a78bfa;
+$red: #ef4444;
+$radius-sm: 8px;
+$radius-md: 14px;
+$radius-lg: 20px;
+$radius-xl: 24px;
+
+// ─── Global ───
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.session-dashboard {
+  font-family: 'Inter', sans-serif;
+  background: $bg-deep;
+  min-height: 100vh;
+  color: $text-primary;
+  position: relative;
+  overflow-x: hidden;
+}
+
+// ─── Background Particles ───
+.bg-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+
+  .particle {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.08;
+    animation: float 20s ease-in-out infinite;
+
+    &:nth-child(1) { background: $accent; top: 5%; left: 10%; animation-delay: 0s; }
+    &:nth-child(2) { background: $purple; top: 30%; right: 5%; animation-delay: -5s; width: 400px; height: 400px; }
+    &:nth-child(3) { background: $cyan; bottom: 10%; left: 30%; animation-delay: -10s; }
+    &:nth-child(4) { background: $green; top: 60%; left: 60%; animation-delay: -15s; width: 200px; height: 200px; }
+    &:nth-child(5) { background: $gold; top: 80%; right: 20%; animation-delay: -8s; width: 250px; height: 250px; }
+    &:nth-child(6) { background: $red; top: 15%; right: 40%; animation-delay: -12s; width: 180px; height: 180px; }
+  }
+}
+
+// ─── Glassmorphism ───
+.glass-card {
+  background: $bg-glass;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    border-color: $border-hover;
+    box-shadow: 0 8px 40px rgba(99, 102, 241, 0.08);
+  }
+}
+
+// ─── Hero Header ───
+.hero-header {
+  position: relative;
+  z-index: 1;
+  padding: 32px 40px;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0%, transparent 100%);
+  border-bottom: 1px solid $border;
+
+  .hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .hero-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .session-icon {
+    font-size: 44px;
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+    border-radius: $radius-md;
+    border: 1px solid $border;
+  }
+
+  .session-meta {
+    .session-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, $text-primary 0%, $accent-light 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .session-subtitle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .year-badge {
+      background: rgba(99, 102, 241, 0.12);
+      color: $accent-light;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 14px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      &.status-upcoming {
+        background: rgba(234, 179, 8, 0.1);
+        color: $gold;
+        border: 1px solid rgba(234, 179, 8, 0.25);
+        .status-dot { background: $gold; }
+      }
+
+      &.status-live {
+        background: rgba(239, 68, 68, 0.1);
+        color: $red;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        .status-dot { background: $red; animation: pulse-dot 1.4s ease-in-out infinite; }
+      }
+
+      &.status-completed {
+        background: rgba(100, 116, 139, 0.1);
+        color: $text-muted;
+        border: 1px solid rgba(100, 116, 139, 0.25);
+        .status-dot { background: $text-muted; }
+      }
+    }
+  }
+}
+
+// ─── Action Button ───
+.action-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+
+  &.primary {
+    background: linear-gradient(135deg, $accent 0%, #7c3aed 100%);
+    color: white;
+    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+
+    .btn-glow {
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(135deg, $accent 0%, #7c3aed 50%, $accent 100%);
+      border-radius: inherit;
+      z-index: -1;
+      opacity: 0;
+      filter: blur(12px);
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.45);
+      .btn-glow { opacity: 1; }
+    }
+
+    &:active { transform: translateY(0); }
+    &:disabled {
+      background: $bg-card;
+      color: $text-muted;
+      box-shadow: none;
+      cursor: not-allowed;
+      &:hover { transform: none; }
+    }
+  }
+
+  &.accent {
+    background: linear-gradient(135deg, $green-dark, $green);
+    color: white;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+    font-size: 13px;
+    padding: 10px 20px;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+    }
+
+    &:disabled {
+      background: $bg-card;
+      color: $text-muted;
+      box-shadow: none;
+      cursor: not-allowed;
+      &:hover { transform: none; }
+    }
+  }
+
+  .btn-icon { font-size: 18px; }
+}
+
+// ─── Stats Strip ───
+.stats-strip {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 16px 20px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: $bg-glass;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    padding: 18px 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      border-color: $border-hover;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-icon {
+      font-size: 28px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(99, 102, 241, 0.08);
+      border-radius: $radius-sm;
+    }
+
+    .stat-body {
+      .stat-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: $text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .stat-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: $text-primary;
+
+        &.gold { color: $gold; }
+        &.purple { color: $purple; }
+        &.cyan { color: $cyan; }
+      }
+    }
+  }
+}
+
+// ─── Tab Container ───
+.tab-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px 40px;
+
+  @media (max-width: 768px) {
+    padding: 0 20px 24px;
+  }
+}
+
+.tab-nav {
+  position: relative;
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  background: $bg-card;
+  border-radius: $radius-md;
+  padding: 4px;
+  border: 1px solid $border;
+
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-muted;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+
+    .tab-icon { font-size: 18px; }
+
+    .tab-count {
+      background: rgba(100, 116, 139, 0.2);
+      color: $text-muted;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    &.active {
+      color: white;
+      .tab-count {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+    }
+  }
+
+  .tab-indicator {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: linear-gradient(135deg, $accent, #7c3aed);
+    border-radius: 10px;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+
+    &.right {
+      transform: translateX(calc(100% + 4px));
+    }
+  }
+}
+
+// ─── Tab Panel ───
+.tab-panel {
+  animation: fadeSlideUp 0.35s ease;
+}
+
+// ─── Add Bar ───
+.add-bar {
+  padding: 20px;
+  margin-bottom: 24px;
+
+  .add-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    &.three-col {
+      .select-wrap { flex: 2; }
+      .price-field { flex: 1; }
+    }
+  }
+
+  .select-wrap {
+    flex: 1;
+  }
+
+  // Override Angular Material theming for dark mode
+  .custom-field {
+    width: 100%;
+
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background: rgba(17, 24, 39, 0.8) !important;
+        border-radius: $radius-sm !important;
+      }
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(99, 102, 241, 0.2) !important;
+      }
+      .mat-mdc-form-field-focus-indicator { display: none; }
+      .mdc-floating-label { color: $text-muted !important; }
+      .mat-mdc-select-value-text,
+      .mat-mdc-input-element { color: $text-primary !important; }
+      .mat-mdc-select-arrow { color: $text-muted !important; }
+    }
+  }
+}
+
+// ─── Teams Grid ───
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.team-card {
+  padding: 20px;
+  animation: fadeSlideUp 0.5s ease both;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .team-card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .team-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(99, 102, 241, 0.25);
+    flex-shrink: 0;
+    background: $bg-card;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .team-info {
+    flex: 1;
+    min-width: 0;
+
+    .team-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+
+  .meta-chip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+
+    &.budget-chip {
+      background: rgba(16, 185, 129, 0.1);
+      color: $green;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    &.player-chip {
+      background: rgba(99, 102, 241, 0.1);
+      color: $accent-light;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+  }
+
+  .budget-progress {
+    .progress-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, $green-dark, $green);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    .progress-label {
+      font-size: 10px;
+      color: $text-muted;
+      font-weight: 600;
+    }
+  }
+}
+
+// ─── Players Grid ───
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.player-card {
+  padding: 16px;
+  animation: fadeSlideUp 0.4s ease both;
+
+  &:hover { transform: translateY(-3px); }
+
+  &.sold {
+    opacity: 0.6;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .player-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .player-avatar-wrap {
+    .player-avatar-placeholder {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, $accent, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+  }
+
+  .player-info {
+    flex: 1;
+    min-width: 0;
+
+    .player-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: $text-primary;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-role-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: $accent-light;
+      background: rgba(99, 102, 241, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .player-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+
+    .price-tag {
+      .price-label {
+        display: block;
+        font-size: 10px;
+        color: $text-muted;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .price-value {
+        font-size: 16px;
+        font-weight: 800;
+        color: $green;
+      }
+    }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.st-available {
+        background: rgba(99, 102, 241, 0.1);
+        color: $accent-light;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+      &.st-sold {
+        background: rgba(16, 185, 129, 0.1);
+        color: $green;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      &.st-unsold {
+        background: rgba(239, 68, 68, 0.1);
+        color: $red;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+    }
+  }
+}
+
+// ─── Remove Button ───
+.remove-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.08);
+  color: rgba(239, 68, 68, 0.5);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: $red;
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: scale(1.05);
+  }
+}
+
+// ─── Empty State ───
+.empty-state {
+  padding: 56px 32px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: $text-secondary;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-muted;
+    max-width: 360px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}
+
+// ─── Loading ───
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: $bg-deep;
+  z-index: 1000;
+
+  .loader-ring {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid rgba(99, 102, 241, 0.15);
+    border-top-color: $accent;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-text {
+    font-size: 14px;
+    color: $text-muted;
+    font-weight: 500;
+  }
+}
+
+// ─── Animations ───
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -30px) scale(1.1); }
+  50% { transform: translate(-20px, 20px) scale(0.95); }
+  75% { transform: translate(15px, 15px) scale(1.05); }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ─── Responsive ───
+@media (max-width: 640px) {
+  .hero-header {
+    padding: 20px;
+    .hero-content { flex-direction: column; align-items: flex-start; }
+    .session-meta .session-title { font-size: 22px; }
+    .hero-right { width: 100%; .action-btn { width: 100%; justify-content: center; } }
+  }
+
+  .stats-strip {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    .stat-card { padding: 14px; }
+  }
+
+  .add-bar .add-bar-inner {
+    flex-direction: column;
+    &.three-col { flex-direction: column; .select-wrap, .price-field { flex: none; width: 100%; } }
+  }
+}

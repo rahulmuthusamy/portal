@@ -18,7 +18,6 @@ import { SidebarComponent } from 'app/layouts/sidebar/sidebar.component';
     RouterModule,
     FormsModule,
     HeaderComponent,
-    FooterComponent,
     SidebarComponent,
     CommonModule,
     BreadcrumbComponent],

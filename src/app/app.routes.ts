@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { AuthLayoutComponent } from '@features/auth/auth-layout/auth-layout.component';
+import { authGuard } from '@core/guards/auth.guard';
 
 export const routes: Routes = [
 
@@ -12,6 +13,16 @@ export const routes: Routes = [
     {
         path: 'polling',
         loadComponent: () => import('@features/polling/components/polling-page.component').then(m => m.PollingPageComponent),
+    },
+    // ── Owner Dashboard (standalone, shown after login) ──
+    {
+        path: 'owner-dashboard',
+        loadComponent: () => import('./features/auction/owner-dashboard/owner-dashboard.component').then(m => m.OwnerDashboardComponent),
+    },
+    // ── Owner Auction Live View (standalone, no admin layout) ──
+    {
+        path: 'auction-live',
+        loadComponent: () => import('./features/auction/owner-auction-live/owner-auction-live.component').then(m => m.OwnerAuctionLiveComponent),
     },
     // ── Broadcast System (All standalone, no layout wrapper) ──
     // Scorecard Overlay for OBS: http://localhost:4200/overlay/{matchId}
@@ -37,13 +48,17 @@ export const routes: Routes = [
                 path: 'login',
                 loadComponent: () => import('@features/auth/login/login.component').then(m => m.LoginComponent),
             },
+            {
+                path: 'register',
+                loadComponent: () => import('@features/auth/register/register.component').then(m => m.RegisterComponent),
+            }
         ]
     },
 
     {
         path: 'kkk',
         component: MainLayoutComponent,
-        // canActivate: [AuthGuard], // TODO: Uncomment when AuthGuard is ready
+        canActivate: [authGuard],
         children: [
             // --- Defaults ---
             { path: '', redirectTo: 'players-list', pathMatch: 'full' },
@@ -77,9 +92,19 @@ export const routes: Routes = [
                 loadComponent: () => import('@features/auction/auction-session-form/auction-session-form.component').then(m => m.AuctionSessionFormComponent),
             },
             {
+                path: 'auction-session-detail/:id',
+                data: { breadcrumb: 'Manage Session' },
+                loadComponent: () => import('@features/auction/auction-session-detail/auction-session-detail.component').then(m => m.AuctionSessionDetailComponent),
+            },
+            {
                 path: 'auction-room',
                 data: { breadcrumb: 'Live Auction Room' },
                 loadComponent: () => import('@features/auction/auction-room/auction-room.component').then(m => m.AuctionRoomComponent),
+            },
+            {
+                path: 'auction-report/:id',
+                data: { breadcrumb: 'Auction Report' },
+                loadComponent: () => import('@features/auction/auction-report/auction-report.component').then(m => m.AuctionReportComponent),
             },
 
             // --- Teams Management ---
@@ -87,6 +112,11 @@ export const routes: Routes = [
                 path: 'teams-list',
                 data: { breadcrumb: 'Teams' },
                 loadComponent: () => import('@features/teams/teams/teams.component').then(m => m.TeamsComponent),
+            },
+            {
+                path: 'pending-owners',
+                data: { breadcrumb: 'Pending Registrations' },
+                loadComponent: () => import('@features/teams/pending-owners/pending-owners.component').then(m => m.PendingOwnersComponent),
             },
             {
                 path: 'teams-form',

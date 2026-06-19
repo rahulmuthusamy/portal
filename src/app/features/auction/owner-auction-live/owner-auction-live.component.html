@@ -1,0 +1,205 @@
+<!-- Owner Auction Live View -->
+<div class="auction-live-page">
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" *ngIf="notification()" [class.visible]="notification()">
+    {{ notification() }}
+  </div>
+
+  <!-- Header -->
+  <header class="auction-header">
+    <div class="header-left">
+      <div class="logo-mark">🏏</div>
+      <div class="header-info">
+        <h1 class="session-name">{{ sessionInfo()?.name ?? 'Auction Room' }}</h1>
+        <span class="session-badge" [class]="auctionStatus()">
+          {{ auctionStatus() === 'live' ? '🔴 LIVE' : auctionStatus() === 'ended' ? '🏁 ENDED' : '⏳ WAITING' }}
+        </span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="team-chip" *ngIf="myTeam()">
+        <img [src]="getTeamLogoUrl(myTeam()?.logo)" [alt]="myTeamName" class="team-logo-small">
+        <span>{{ myTeamName }}</span>
+        <span class="budget-badge">₹{{ (myTeam()?.remainingBudget ?? 0).toLocaleString() }}</span>
+      </div>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <div class="loading-screen" *ngIf="loading()">
+    <div class="spinner"></div>
+    <p>Connecting to auction...</p>
+  </div>
+
+  <!-- Waiting State -->
+  <div class="waiting-screen" *ngIf="!loading() && auctionStatus() === 'waiting'">
+    <div class="waiting-card">
+      <div class="waiting-icon">⏰</div>
+      <h2>{{ statusMessage() }}</h2>
+      <p>Your team <strong>{{ myTeamName }}</strong> is registered and ready!</p>
+      <p class="budget-info">Starting Budget: <strong>₹{{ (myTeam()?.remainingBudget ?? 0).toLocaleString() }}</strong></p>
+      <div class="pulse-ring"></div>
+    </div>
+  </div>
+
+  <!-- No Session / Error State -->
+  <div class="waiting-screen" *ngIf="!loading() && !sessionId()">
+    <div class="waiting-card error-card">
+      <div class="waiting-icon">⚠️</div>
+      <h2>{{ statusMessage() }}</h2>
+    </div>
+  </div>
+
+<!-- Main Auction Content -->
+    <div class="auction-content" *ngIf="!loading() && auctionStatus() === 'live'">
+    <div class="auction-grid">
+
+      <!-- Left: Current Player -->
+      <div class="player-section">
+
+        <!-- Ended State -->
+        <div class="ended-card" *ngIf="auctionStatus() === 'ended'">
+          <div class="ended-icon">🏁</div>
+          <h2>Auction Ended</h2>
+          <p>Your final squad is shown on the right.</p>
+        </div>
+
+        <!-- Active Player Card -->
+        <div class="player-card" *ngIf="currentPlayer()">
+          <div class="player-image-wrapper">
+            <img [src]="getPlayerImageUrl(currentPlayer()?.photo)" [alt]="currentPlayer()?.name" class="player-photo">
+            <div class="player-role-tag">{{ currentPlayer()?.role }}</div>
+          </div>
+
+          <div class="player-details">
+            <h2 class="player-name">{{ currentPlayer()?.name }}</h2>
+
+            <div class="player-tags">
+              <span class="tag" *ngIf="currentPlayer()?.battingStyle">{{ currentPlayer()?.battingStyle }}</span>
+              <span class="tag" *ngIf="currentPlayer()?.bowlingStyle">{{ currentPlayer()?.bowlingStyle }}</span>
+              <span class="tag captain" *ngIf="currentPlayer()?.canCaptain">⭐ Captain</span>
+            </div>
+
+            <!-- Timer -->
+            <div class="timer-section" *ngIf="currentPlayer()?.status === 'live'">
+              <div class="timer-bar-wrap">
+                <div class="timer-bar" [style.width.%]="timerPercent" [class.danger]="secondsLeft() <= 10"></div>
+              </div>
+              <div class="timer-text" [class.danger]="secondsLeft() <= 10">{{ secondsLeft() }}s</div>
+            </div>
+
+            <!-- Bid Info -->
+            <div class="bid-info">
+              <div class="bid-stat">
+                <label>Base Price</label>
+                <span class="price">₹{{ (currentPlayer()?.basePrice ?? 0).toLocaleString() }}</span>
+              </div>
+              <div class="bid-stat current">
+                <label>Current Bid</label>
+                <span class="price highlight">₹{{ (currentPlayer()?.currentBid ?? currentPlayer()?.basePrice ?? 0).toLocaleString() }}</span>
+              </div>
+            </div>
+
+            <!-- Leading Team -->
+            <div class="leading-team" [class.my-team]="isHighestBidder()">
+              <span class="leading-label">{{ isHighestBidder() ? '🏆 You are leading!' : '👥 Leading:' }}</span>
+              <span class="leading-name">{{ getHighestBidTeamName() }}</span>
+            </div>
+
+            <!-- BID BUTTON -->
+            <div class="bid-action" *ngIf="currentPlayer()?.status === 'live'">
+              <button
+                class="bid-btn"
+                [class.can-bid]="canBid()"
+                [class.leading]="isHighestBidder()"
+                [disabled]="!canBid()"
+                (click)="placeBid()">
+                <span *ngIf="isHighestBidder()">✅ You're Leading</span>
+                <span *ngIf="!isHighestBidder() && canBid()">BID ₹{{ nextBidAmount.toLocaleString() }}</span>
+                <span *ngIf="!canBid() && !isHighestBidder() && !myTeam()">Registering your team...</span>
+                <span *ngIf="!canBid() && !isHighestBidder() && myTeam() && (myTeam()?.remainingBudget ?? 0) < nextBidAmount">Insufficient Budget</span>
+                <span *ngIf="!canBid() && !isHighestBidder() && myTeam() && (myTeam()?.remainingBudget ?? 0) >= nextBidAmount">Waiting...</span>
+              </button>
+              <div class="next-bid-hint" *ngIf="canBid()">Next bid: ₹{{ nextBidAmount.toLocaleString() }}</div>
+            </div>
+
+            <!-- Waiting for player to start -->
+            <div class="player-waiting" *ngIf="currentPlayer()?.status !== 'live'">
+              <div class="dots-loader"><span></span><span></span><span></span></div>
+              <p>Waiting for admin to start bidding on {{ currentPlayer()?.name }}...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- No player yet -->
+        <div class="no-player-card" *ngIf="!currentPlayer() && auctionStatus() === 'live'">
+          <div class="waiting-icon">🏏</div>
+          <h3>Waiting for next player...</h3>
+        </div>
+
+        <!-- Bid History -->
+        <div class="bid-history" *ngIf="bidHistory().length > 0">
+          <h4>Recent Bids</h4>
+          <div class="bid-entry" *ngFor="let bid of bidHistory()" [class.my-bid]="bid.teamId === myTeamId">
+            <span class="bid-team-name">{{ bid.teamName ?? ('Team ' + bid.teamId) }}</span>
+            <span class="bid-amount">₹{{ bid.bidAmount?.toLocaleString() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: My Team Dashboard -->
+      <div class="dashboard-section">
+
+        <!-- My Team Stats -->
+        <div class="team-stats-card" *ngIf="myTeam()">
+          <h3>{{ myTeamName }}</h3>
+          <div class="stats-row">
+            <div class="stat">
+              <label>Budget Left</label>
+              <div class="stat-value green">₹{{ (myTeam()?.remainingBudget ?? 0).toLocaleString() }}</div>
+            </div>
+            <div class="stat">
+              <label>Players</label>
+              <div class="stat-value">{{ myTeam()?.playersCount ?? 0 }} / {{ sessionInfo()?.maxPlayersPerTeam ?? 15 }}</div>
+            </div>
+          </div>
+          <!-- Budget progress -->
+          <div class="budget-bar-wrap">
+            <div class="budget-bar"
+              [style.width.%]="((myTeam()?.remainingBudget ?? 0) / (sessionInfo()?.maxBudget ?? 1)) * 100">
+            </div>
+          </div>
+        </div>
+
+        <!-- My Squad -->
+        <div class="my-squad">
+          <h4>My Squad ({{ mySquad().length }})</h4>
+          <div class="squad-empty" *ngIf="mySquad().length === 0">
+            <p>No players yet. Win some bids!</p>
+          </div>
+          <div class="squad-player" *ngFor="let p of mySquad()">
+            <img [src]="getPlayerImageUrl(p.playerPhoto)" [alt]="p.playerName" class="squad-photo">
+            <div class="squad-info">
+              <div class="squad-name">{{ p.playerName }}</div>
+              <div class="squad-role">{{ p.playerRole }}</div>
+            </div>
+            <div class="squad-price">₹{{ (p.soldPrice ?? 0).toLocaleString() }}</div>
+          </div>
+        </div>
+
+        <!-- Other Teams Summary -->
+        <div class="other-teams">
+          <h4>All Teams</h4>
+          <div class="team-row" *ngFor="let team of allTeams()" [class.my-team-row]="team.teamId === myTeamId">
+            <img [src]="getTeamLogoUrl(team.logo)" [alt]="team.name" class="team-logo-xs">
+            <span class="team-name-sm">{{ team.name }}</span>
+            <span class="team-budget-sm">₹{{ (team.remainingBudget ?? 0).toLocaleString() }}</span>
+            <span class="team-count-sm">{{ team.playersCount ?? 0 }}P</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

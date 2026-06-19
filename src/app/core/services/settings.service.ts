@@ -1,19 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ApiService } from '@core/services/api.service';
 import { Observable } from 'rxjs';
-import { environment } from '@environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SettingsService {
-    private apiUrl = `${environment.apiUrl}/settings`;
+    private endpoint = '/settings';
 
-    constructor(private http: HttpClient) { }
+    constructor(private api: ApiService) { }
 
-    // App Settings
     getAppSettings(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/app-settings`);
+        return this.api.get(`${this.endpoint}/app-settings`);
     }
 
     updateAppSettings(data: any, logoFile?: File): Observable<any> {
@@ -22,19 +20,18 @@ export class SettingsService {
         if (logoFile) {
             formData.append('logo', logoFile);
         }
-        return this.http.put(`${this.apiUrl}/app-settings`, formData);
+        return this.api.put(`${this.endpoint}/app-settings`, formData);
     }
 
-    // Gallery
     getGallery(params?: any): Observable<any> {
-        return this.http.get(`${this.apiUrl}/gallery`, { params });
+        return this.api.get(`${this.endpoint}/gallery`, params);
     }
 
     addGalleryImage(data: any, file: File): Observable<any> {
         const formData = new FormData();
         Object.keys(data).forEach(key => formData.append(key, data[key]));
         formData.append('file', file);
-        return this.http.post(`${this.apiUrl}/gallery`, formData);
+        return this.api.post(`${this.endpoint}/gallery`, formData);
     }
 
     updateGalleryImage(id: number, data: any, file?: File): Observable<any> {
@@ -43,23 +40,22 @@ export class SettingsService {
         if (file) {
             formData.append('file', file);
         }
-        return this.http.put(`${this.apiUrl}/gallery/${id}`, formData);
+        return this.api.put(`${this.endpoint}/gallery/${id}`, formData);
     }
 
     deleteGalleryImage(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/gallery/${id}`);
+        return this.api.delete(`${this.endpoint}/gallery/${id}`);
     }
 
-    // Carousel
     getCarousel(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/carousel`);
+        return this.api.get(`${this.endpoint}/carousel`);
     }
 
     addCarouselImage(data: any, file: File): Observable<any> {
         const formData = new FormData();
         Object.keys(data).forEach(key => formData.append(key, data[key]));
         formData.append('file', file);
-        return this.http.post(`${this.apiUrl}/carousel`, formData);
+        return this.api.post(`${this.endpoint}/carousel`, formData);
     }
 
     updateCarouselImage(id: number, data: any, file?: File): Observable<any> {
@@ -68,23 +64,22 @@ export class SettingsService {
         if (file) {
             formData.append('file', file);
         }
-        return this.http.put(`${this.apiUrl}/carousel/${id}`, formData);
+        return this.api.put(`${this.endpoint}/carousel/${id}`, formData);
     }
 
     deleteCarouselImage(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/carousel/${id}`);
+        return this.api.delete(`${this.endpoint}/carousel/${id}`);
     }
 
-    // Sponsors
     getSponsors(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/sponsors`);
+        return this.api.get(`${this.endpoint}/sponsors`);
     }
 
     addSponsor(data: any, file: File): Observable<any> {
         const formData = new FormData();
         Object.keys(data).forEach(key => formData.append(key, data[key]));
         formData.append('file', file);
-        return this.http.post(`${this.apiUrl}/sponsors`, formData);
+        return this.api.post(`${this.endpoint}/sponsors`, formData);
     }
 
     updateSponsor(id: number, data: any, file?: File): Observable<any> {
@@ -93,45 +88,41 @@ export class SettingsService {
         if (file) {
             formData.append('file', file);
         }
-        return this.http.put(`${this.apiUrl}/sponsors/${id}`, formData);
+        return this.api.put(`${this.endpoint}/sponsors/${id}`, formData);
     }
 
     deleteSponsor(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/sponsors/${id}`);
+        return this.api.delete(`${this.endpoint}/sponsors/${id}`);
     }
 
-    // Gallery Categories
     addGalleryCategory(categoryName: string): Observable<any> {
-        // In a real app, this might be a separate table
-        // For now, we'll just return success and let the frontend update signals
         return new Observable(observer => {
             observer.next({ success: true, category: categoryName });
             observer.complete();
         });
     }
 
-    // Polls
     getPolls(): Observable<any> {
-        return this.http.get(`${environment.apiUrl}/polls`);
+        return this.api.get('/polls');
     }
 
     createPoll(pollData: any): Observable<any> {
-        return this.http.post(`${environment.apiUrl}/polls`, pollData);
+        return this.api.post('/polls', pollData);
     }
 
     votePoll(pollId: number, optionId: number, playerId: number): Observable<any> {
-        return this.http.post(`${environment.apiUrl}/polls/${pollId}/vote/${optionId}`, { playerId });
+        return this.api.post(`/polls/${pollId}/vote/${optionId}`, { playerId });
     }
 
     getPlayers(): Observable<any> {
-        return this.http.get(`${environment.apiUrl}/players-master`);
+        return this.api.get('/players-master');
     }
 
     togglePollStatus(id: number): Observable<any> {
-        return this.http.patch(`${environment.apiUrl}/polls/${id}/toggle`, {});
+        return this.api.patch(`/polls/${id}/toggle`, {});
     }
 
     deletePoll(id: number): Observable<any> {
-        return this.http.delete(`${environment.apiUrl}/polls/${id}`);
+        return this.api.delete(`/polls/${id}`);
     }
 }

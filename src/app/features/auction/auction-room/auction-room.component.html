@@ -14,7 +14,8 @@
                 <h1 class="m-0 text-gradient">Live Auction Room</h1>
             </div>
             <div class="session-id">
-                Session #{{ sessionId() }}
+                <span class="badge bg-primary me-2">{{ sessionInfo()?.name }}</span>
+                <span>Session #{{ sessionId() }}</span>
             </div>
         </div>
     </div>
@@ -23,24 +24,28 @@
         <div class="row">
             <!-- Left Column: Current Player & Bidding -->
             <div class="col-lg-8">
-                <mat-card class="player-card premium-card mb-4" *ngIf="currentPlayer()">
+                <mat-card class="player-card premium-card mb-4" *ngIf="currentPlayer() && currentPlayer().status === 'live'">
                     <div class="row g-0">
                         <div class="col-md-4">
                             <div class="image-wrapper">
-                                <img [src]="getPlayerImageUrl(currentPlayer()?.PhotoURL)" alt="Player"
+                                <img [src]="getPlayerImageUrl(currentPlayer()?.photo)" alt="Player"
                                     class="player-img">
-                                <div class="player-role-badge shadow">{{ currentPlayer()?.Role }}</div>
+                                <div class="player-role-badge shadow">{{ currentPlayer()?.role }}</div>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <mat-card-content class="p-4">
-                                <h2 class="player-name text-gradient m-0">{{ currentPlayer()?.Name }}</h2>
-                                <div class="player-meta mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h2 class="player-name text-gradient m-0">{{ currentPlayer()?.name }}</h2>
+                                    <div class="timer-badge" [class.danger]="secondsLeft() <= 10">
+                                        <mat-icon>timer</mat-icon> {{ secondsLeft() }}s
+                                    </div>
+                                </div>
+                                <div class="player-meta mb-3 mt-2">
                                     <mat-chip-set>
-                                        <mat-chip>{{ currentPlayer()?.BattingStyle }}</mat-chip>
-                                        <mat-chip>{{ currentPlayer()?.BowlingStyle }}</mat-chip>
-                                        <mat-chip color="primary" selected
-                                            *ngIf="currentPlayer()?.CanCaptain">Captain</mat-chip>
+                                        <mat-chip *ngIf="currentPlayer()?.battingStyle">{{ currentPlayer()?.battingStyle }}</mat-chip>
+                                        <mat-chip *ngIf="currentPlayer()?.bowlingStyle">{{ currentPlayer()?.bowlingStyle }}</mat-chip>
+                                        <mat-chip color="primary" selected *ngIf="currentPlayer()?.canCaptain">Captain</mat-chip>
                                     </mat-chip-set>
                                 </div>
 
@@ -51,16 +56,16 @@
                                     </div>
                                     <div class="current-bid text-end">
                                         <label>Current Bid</label>
-                                        <div class="price highlight">₹{{ highestBid() || 0 }}</div>
-                                        <div class="bid-team" [class.no-bid]="!highestBidTeam()">
-                                            {{ highestBidTeam()?.teamName || 'Waiting for Bids...' }}
+                                        <div class="price highlight">₹{{ currentPlayer()?.currentBid || 0 }}</div>
+                                        <div class="bid-team" [class.no-bid]="!currentPlayer()?.highestBidTeamId">
+                                            {{ currentPlayer()?.highestBidTeamId ? getHighestBidTeamName() : 'Waiting for Bids...' }}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="admin-controls mt-4" *ngIf="true"> <!-- Assuming admin for now -->
+                                <div class="admin-controls mt-4">
                                     <button mat-raised-button color="accent" class="me-2" (click)="sellPlayer()"
-                                        [disabled]="!highestBidTeam()">
+                                        [disabled]="!currentPlayer()?.highestBidTeamId">
                                         <mat-icon>gavel</mat-icon> SOLD
                                     </button>
                                     <button mat-stroked-button color="warn" (click)="markUnsold()">
@@ -72,37 +77,29 @@
                     </div>
                 </mat-card>
 
-                <div class="no-player-state" *ngIf="!currentPlayer()">
-                    <mat-card class="premium-card p-5 text-center">
-                        <mat-icon class="huge-icon">hourglass_empty</mat-icon>
-                        <h2>Waiting for next player...</h2>
-                        <p>The auctioneer will start the next player soon.</p>
-                    </mat-card>
-                </div>
-
-                <!-- Bidding Panel -->
-                <mat-card class="teams-grid-card premium-card">
-                    <mat-card-header>
-                        <mat-card-title>Quick Bidding Panel</mat-card-title>
-                        <mat-card-subtitle>Place bids on behalf of teams</mat-card-subtitle>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class="row">
-                            <div class="col-md-4 col-sm-6 mb-3" *ngFor="let team of auctionTeams()">
-                                <div class="team-bid-box shadow-sm"
-                                    [class.winning]="highestBidTeam()?.teamId === team.teamId">
-                                    <div class="team-info">
-                                        <h4 class="m-0">{{ team.teamName }}</h4>
-                                        <div class="budget">Budget: ₹{{ team.remainingBudget }}</div>
-                                    </div>
-                                    <button mat-flat-button color="primary" class="w-100" (click)="placeBid(team)">
-                                        Bid +₹100
-                                    </button>
-                                </div>
-                            </div>
+                <!-- Next player waiting state / Admin start state -->
+                <mat-card class="premium-card mb-4" *ngIf="currentPlayer() && currentPlayer().status !== 'live'">
+                    <mat-card-content class="p-4 text-center">
+                        <h3>Up Next: {{ currentPlayer()?.name }} ({{ currentPlayer()?.role }})</h3>
+                        <p>Base Price: ₹{{ currentPlayer()?.basePrice }}</p>
+                        <div class="mt-3">
+                            <button mat-raised-button color="primary" class="me-2" (click)="startPlayer()">
+                                <mat-icon>play_arrow</mat-icon> START BIDDING
+                            </button>
+                            <button mat-stroked-button (click)="skipPlayer()">
+                                <mat-icon>skip_next</mat-icon> SKIP PLAYER
+                            </button>
                         </div>
                     </mat-card-content>
                 </mat-card>
+
+                <div class="no-player-state" *ngIf="!currentPlayer()">
+                    <mat-card class="premium-card p-5 text-center">
+                        <mat-icon class="huge-icon">hourglass_empty</mat-icon>
+                        <h2>Auction Ended or No Players</h2>
+                        <p>There are no more players available in the pool.</p>
+                    </mat-card>
+                </div>
             </div>
 
             <!-- Right Column: History & Stats -->
@@ -116,10 +113,10 @@
                             <mat-list-item *ngFor="let bid of bidHistory()">
                                 <mat-icon matListItemIcon color="primary">history</mat-icon>
                                 <div matListItemTitle class="fw-bold">₹{{ bid.bidAmount }}</div>
-                                <div matListItemLine>{{ bid.teamName }}</div>
+                                <div matListItemLine>{{ bid.teamName || 'Team ' + bid.teamId }}</div>
                             </mat-list-item>
                             <div *ngIf="bidHistory().length === 0" class="p-4 text-center text-muted">
-                                No bid history yet.
+                                No bid history yet for current player.
                             </div>
                         </mat-list>
                     </mat-card-content>
@@ -132,11 +129,11 @@
                     <mat-card-content>
                         <div class="team-summary mb-3" *ngFor="let team of auctionTeams()">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="small fw-bold">{{ team.teamName }}</span>
-                                <span class="small badge bg-primary">{{ team.playerCount }} / 15</span>
+                                <span class="small fw-bold">{{ team.name || 'Team ' + team.teamId }}</span>
+                                <span class="small badge bg-primary">{{ team.playersCount || 0 }} / {{ sessionInfo()?.maxPlayersPerTeam || 15 }}</span>
                             </div>
                             <mat-progress-bar mode="determinate"
-                                [value]="(team.playerCount / 15) * 100"></mat-progress-bar>
+                                [value]="((team.playersCount || 0) / (sessionInfo()?.maxPlayersPerTeam || 15)) * 100"></mat-progress-bar>
                         </div>
                     </mat-card-content>
                 </mat-card>

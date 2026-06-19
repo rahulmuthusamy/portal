@@ -1,51 +1,118 @@
-<div *ngIf="currentPlayer" class="auction-dashboard">
-  <!-- Player Info Section -->
-  <div class="player-section">
-    <img [src]="currentPlayer.photo" alt="Player" class="player-img" />
-    <div class="player-details">
-      <h2>{{ currentPlayer.name }}</h2>
-      <p><strong>Base Price:</strong> ₹{{ currentPlayer.basePrice }}</p>
-      <p><strong>Role:</strong> {{ currentPlayer.role }}</p>
-      <p><strong>Country:</strong> {{ currentPlayer.country }}</p>
+<!-- Loading State -->
+<div *ngIf="loading()" class="loading-overlay">
+  <mat-spinner diameter="50"></mat-spinner>
+  <p>Loading Dashboard...</p>
+</div>
+
+<!-- Session Selection State (If owner arrived without a sessionId) -->
+<div *ngIf="!loading() && selectingSession()" class="session-selection-container container mt-5">
+  <mat-card class="premium-card">
+    <mat-card-header>
+      <mat-card-title>Select Auction Session</mat-card-title>
+      <mat-card-subtitle>Choose a live or upcoming auction session to join</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let s of availableSessions()" (click)="selectSession(s.SessionID)" class="session-item pointer">
+          <mat-icon matListItemIcon color="primary">gavel</mat-icon>
+          <div matListItemTitle>{{ s.Name }} ({{ s.Year }})</div>
+          <div matListItemLine>Status: {{ s.Status | titlecase }}</div>
+        </mat-list-item>
+        <div *ngIf="availableSessions().length === 0" class="p-3 text-center text-muted">
+          No live or upcoming sessions found.
+        </div>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Team Selection State (If owner arrived without a teamId) -->
+<div *ngIf="!loading() && !selectingSession() && selectingTeam()" class="team-selection-container container mt-5">
+  <mat-card class="premium-card">
+    <mat-card-header>
+      <mat-card-title>Select Your Team</mat-card-title>
+      <mat-card-subtitle>Choose your team to enter the live auction room</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-list>
+        <mat-list-item *ngFor="let t of availableTeams()" (click)="selectTeam(t.teamId)" class="team-item pointer">
+          <mat-icon matListItemIcon color="primary">shield</mat-icon>
+          <div matListItemTitle>{{ t.name || 'Team ' + t.teamId }}</div>
+          <div matListItemLine>Budget: ₹{{ t.remainingBudget }}</div>
+        </mat-list-item>
+        <div *ngIf="availableTeams().length === 0" class="p-3 text-center text-muted">
+          No teams found in this session.
+        </div>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Main Dashboard State -->
+<div *ngIf="!loading() && !selectingTeam()" class="auction-dashboard">
+  
+  <div *ngIf="currentPlayer(); else noPlayerState">
+    <!-- Player Info Section -->
+    <div class="player-section">
+      <img [src]="getPlayerImageUrl(currentPlayer().photo)" alt="Player" class="player-img" />
+      <div class="player-details">
+        <h2>{{ currentPlayer().name }}</h2>
+        <p><strong>Base Price:</strong> ₹{{ currentPlayer().basePrice }}</p>
+        <p><strong>Role:</strong> {{ currentPlayer().role }}</p>
+        <p><strong>Country:</strong> {{ currentPlayer().country }}</p>
+      </div>
+    </div>
+
+    <!-- Auction Info Section -->
+    <div class="auction-info">
+      <div class="current-bid">
+        <h3>Current Bid</h3>
+        <p>₹{{ highestBid() }}</p>
+        <p>By: <strong>{{ highestBidTeamName() }}</strong></p>
+      </div>
+      <div class="timer-container">
+        <svg class="timer-ring" viewBox="0 0 36 36">
+          <path class="timer-track" d="M18 2.0845
+           a 15.9155 15.9155 0 0 1 0 31.831
+           a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="timer-progress" [attr.stroke-dasharray]="progress() + ', 100'" d="M18 2.0845
+           a 15.9155 15.9155 0 0 1 0 31.831
+           a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <text x="18" y="20.35" class="timer-text">{{ timer() }}s</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Action Panel -->
+    <div class="action-panel">
+      <button mat-raised-button color="primary" class="bid-btn w-100" [disabled]="!canBid()" (click)="placeBid()">
+        Place ₹{{ nextBid }} Bid
+      </button>
+      <div class="your-budget mt-3 text-center">
+        <p class="m-0"><strong>Your Budget:</strong> ₹{{ team().budget }}</p>
+      </div>
+    </div>
+
+    <!-- Optional: Bid History -->
+    <div class="bid-history mt-4" *ngIf="bidHistory().length">
+      <h3>Bid History</h3>
+      <ul>
+        <li *ngFor="let bid of bidHistory()">
+          ₹{{ bid.amount }} - {{ bid.team }} ({{ bid.time | date:'shortTime' }})
+        </li>
+      </ul>
     </div>
   </div>
 
-  <!-- Auction Info Section -->
-  <div class="auction-info">
-    <div class="current-bid">
-      <h3>Current Bid</h3>
-      <p>₹{{ highestBid }}</p>
-      <p>By: <strong>{{ highestBidTeam }}</strong></p>
-    </div>
-    <div class="timer-container">
-      <svg class="timer-ring" viewBox="0 0 36 36">
-        <path class="timer-track" d="M18 2.0845
-         a 15.9155 15.9155 0 0 1 0 31.831
-         a 15.9155 15.9155 0 0 1 0 -31.831" />
-        <path class="timer-progress" [attr.stroke-dasharray]="progress + ', 100'" d="M18 2.0845
-         a 15.9155 15.9155 0 0 1 0 31.831
-         a 15.9155 15.9155 0 0 1 0 -31.831" />
-        <text x="18" y="20.35" class="timer-text">{{ timer }}s</text>
-      </svg>
-    </div>
+  <ng-template #noPlayerState>
+    <mat-card class="premium-card p-5 text-center mt-4">
+      <mat-icon class="huge-icon">hourglass_empty</mat-icon>
+      <h2>Waiting for next player...</h2>
+      <p>The auctioneer has not started bidding on a player yet.</p>
+      <div class="your-budget mt-3 text-center">
+        <p class="m-0"><strong>Your Remaining Budget:</strong> ₹{{ team().budget }}</p>
+      </div>
+    </mat-card>
+  </ng-template>
 
-  </div>
-
-  <!-- Action Panel -->
-  <div class="action-panel">
-    <button [disabled]="!canBid()" (click)="placeBid()">Place ₹{{ nextBid }} Bid</button>
-    <div class="your-budget">
-      <p><strong>Your Budget:</strong> ₹{{ team.budget }}</p>
-    </div>
-  </div>
-
-  <!-- Optional: Bid History -->
-  <div class="bid-history" *ngIf="bidHistory.length">
-    <h3>Bid History</h3>
-    <ul>
-      <li *ngFor="let bid of bidHistory">
-        ₹{{ bid.amount }} - {{ bid.team }} ({{ bid.time | date:'shortTime' }})
-      </li>
-    </ul>
-  </div>
 </div>

@@ -1,9 +1,6 @@
 <mat-sidenav-container class="sidenav-container">
   <!-- Sidebar -->
   <mat-sidenav #drawer mode="side" [opened]="sidebarOpen" class="sidenav" fixedInViewport>
-    <!-- <div class="sidebar-header">
-      <img src="assets/logo.png" alt="Logo" class="logo" alt="RAHUL" />
-    </div> -->
     <app-sidebar [visible]="sidebarOpen"></app-sidebar>
   </mat-sidenav>
 
@@ -11,14 +8,14 @@
   <mat-sidenav-content>
     <!-- Header -->
     <app-header (toggleSidebar)="toggleSidebar()"></app-header>
-    <app-breadcrumb></app-breadcrumb> <!-- breadcrumb added here -->
+    <app-breadcrumb></app-breadcrumb>
 
     <!-- Main router content -->
-    <div class="main-content">
+    <div class="main-content animate-fade">
       <router-outlet></router-outlet>
     </div>
 
     <!-- Footer -->
-    <app-footer></app-footer>
+    <!-- <app-footer></app-footer> -->
   </mat-sidenav-content>
 </mat-sidenav-container>

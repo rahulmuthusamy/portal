@@ -42,15 +42,15 @@
                                 placeholder="Primary Contact" type="text"></app-mobile-input>
                         </div>
                         <div class="col-md-6">
-                            <app-email label="Email Address" [control]="form.get('Email')!" placeholder="Primary email"
+                            <app-email label="Email Address *" [control]="form.get('Email')!" placeholder="Primary email"
                                 type="email"></app-email>
                         </div>
                         <div class="col-md-6">
-                            <app-input label="Emergency Contact" [control]="form.get('EmergencyContact')!"
+                            <app-input label="Emergency Contact *" [control]="form.get('EmergencyContact')!"
                                 placeholder="Relative/Friend Mobile" type="text" icon="bi-telephone-plus" />
                         </div>
                         <div class="col-12">
-                            <app-textarea label="Residential Address" [control]="form.get('Address')!"
+                            <app-textarea label="Residential Address *" [control]="form.get('Address')!"
                                 placeholder="Complete address for records" [rows]="2"></app-textarea>
                         </div>
                     </div>
@@ -69,11 +69,11 @@
                                 [options]="battingStyles"></app-select>
                         </div>
                         <div class="col-md-6">
-                            <app-select label="Bowling Style" [control]="form.get('BowlingStyle')!"
+                            <app-select label="Bowling Style *" [control]="form.get('BowlingStyle')!"
                                 [options]="bowlingStyles"></app-select>
                         </div>
                         <div class="col-md-6">
-                            <app-select label="Batting Position" [control]="form.get('BattingPosition')!"
+                            <app-select label="Batting Position *" [control]="form.get('BattingPosition')!"
                                 [options]="battingPositions"></app-select>
                         </div>
 
@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <!-- Physical Stats -->
+<!-- Physical Stats -->
                 <div class="premium-card mb-4">
                     <h5 class="section-title"><i class="bi bi-heart-pulse me-2"></i>Physical Stats & Kit</h5>
                     <div class="row g-3">
@@ -138,8 +138,19 @@
                                 type="number" icon="bi-speedometer2" />
                         </div>
                         <div class="col-md-4">
-                            <app-select label="Jersey Size" [control]="form.get('JerseySize')!"
+                            <app-select label="Jersey Size *" [control]="form.get('JerseySize')!"
                                 [options]="jerseySizes"></app-select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auction Session -->
+                <div class="premium-card mb-4">
+                    <h5 class="section-title"><i class="bi bi-hammer me-2"></i>Auction Session</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <app-select label="Auction Session *" [control]="form.get('AuctionSession')!"
+                                [options]="auctionSessions"></app-select>
                         </div>
                     </div>
                 </div>

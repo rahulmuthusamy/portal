@@ -1,19 +1,20 @@
 <mat-toolbar class="header-toolbar bg-white border-bottom px-4">
-  <!-- Left: Sidebar Toggle & Page Title (Optional) -->
+  <!-- Left: Sidebar Toggle & Page Title -->
   <div class="d-flex align-items-center">
     <button mat-icon-button (click)="toggleSidebar.emit()" class="me-2 text-dark">
       <mat-icon>menu</mat-icon>
     </button>
-    <!-- Breadcrumb or Page Title can go here -->
-    <!-- <h6 class="m-0 fw-bold text-dark">Dashboard</h6> -->
   </div>
 
   <!-- Center: Search Bar -->
   <div class="flex-grow-1 d-flex justify-content-center mx-4">
-    <div class="search-bar position-relative d-none d-md-block w-100" style="max-width: 400px;">
+    <div class="search-bar position-relative d-none d-md-block w-100" style="max-width: 500px;">
       <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-      <input type="text" class="form-control rounded-pill border-0 bg-light ps-5 py-2"
-        placeholder="Search players, teams..." style="font-size: 0.9rem;">
+      <input type="text" class="form-control rounded-pill border-0 bg-light ps-5 py-2 pe-5"
+        placeholder="Search or command..." style="font-size: 0.9rem;">
+      <div class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted border rounded px-2 bg-white" style="font-size: 0.7rem; padding-top: 2px; padding-bottom: 2px;">
+        ⌘K
+      </div>
     </div>
   </div>
 
@@ -26,32 +27,34 @@
         style="width: 10px; height: 10px; top: 10px !important; right: 8px !important;"></span>
     </button>
 
-    <!-- User Profile Dropdown -->
     <div class="dropdown ms-2">
       <button mat-button [matMenuTriggerFor]="userMenu"
-        class="d-flex align-items-center px-2 py-1 rounded-pill hover-bg-light">
-        <div class="avatar bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-          style="width: 32px; height: 32px; font-size: 0.8rem;">
-          AD
+        class="rounded-pill hover-bg-light" style="height: auto; padding: 4px 8px; min-width: auto;">
+        <div class="d-flex align-items-center" style="white-space: nowrap;">
+          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0"
+            style="width: 32px; height: 32px; font-size: 0.85rem; font-weight: 600; background-color: var(--primary-color);">
+            {{ (user$ | async)?.email?.charAt(0)?.toUpperCase() || 'A' }}
+          </div>
+          <span class="d-none d-sm-inline-block text-dark fw-medium small me-1 text-truncate" style="max-width: 150px;">
+            {{ (user$ | async)?.email || 'Admin' }}
+          </span>
+          <mat-icon class="icon-sm text-muted ms-1">expand_more</mat-icon>
         </div>
-        <span class="d-none d-sm-block text-dark fw-medium small me-1">Admin</span>
-        <mat-icon class="icon-sm text-muted">expand_more</mat-icon>
       </button>
     </div>
   </div>
 
-  <!-- Menu Dropdown -->
   <mat-menu #userMenu="matMenu" class="mt-2">
-    <button mat-menu-item>
+    <button mat-menu-item routerLink="/kkk/settings">
       <mat-icon>person_outline</mat-icon>
       <span>My Profile</span>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item routerLink="/kkk/settings">
       <mat-icon>settings</mat-icon>
       <span>Settings</span>
     </button>
     <mat-divider></mat-divider>
-    <button mat-menu-item class="text-danger">
+    <button mat-menu-item class="text-danger" (click)="logout()">
       <mat-icon class="text-danger">logout</mat-icon>
       <span>Logout</span>
     </button>

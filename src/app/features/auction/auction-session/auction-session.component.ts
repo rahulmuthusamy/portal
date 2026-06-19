@@ -40,9 +40,9 @@ export class AuctionSessionComponent implements OnInit {
       key: 'actions',
       label: 'Actions',
       actions: [
-        {
-          text: 'Edit', type: 'Edit', class: 'btn-outline-info'
-        }
+        { text: 'Manage', type: 'Manage', class: 'btn-outline-primary' },
+        { text: 'Edit', type: 'Edit', class: 'btn-outline-info' },
+        { text: 'Report', type: 'Report', class: 'btn-outline-success' }
       ]
     }
   ]
@@ -58,6 +58,10 @@ export class AuctionSessionComponent implements OnInit {
     if (event.type === 'Edit') {
       sessionStorage.setItem('SessionID', event.row.SessionID);
       this.router.navigate(['/kkk/auction-session-form'])
+    } else if (event.type === 'Manage') {
+      this.router.navigate(['/kkk/auction-session-detail', event.row.SessionID]);
+    } else if (event.type === 'Report') {
+      this.router.navigate(['/kkk/auction-report', event.row.SessionID]);
     }
   }
 

@@ -1,0 +1,101 @@
+.owner-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.8rem;
+  }
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.dashboard-content {
+  display: grid;
+  gap: 1.2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    color: #0ea5e9;
+  }
+}
+
+.team-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0.5rem 0;
+}
+
+.auction-info .cta-btn {
+  display: inline-block;
+  margin-top: 0.8rem;
+  background: #0ea5e9;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.squad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.squad-player {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  .player-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .player-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .player-name { font-weight: 600; }
+  .player-role { font-size: 0.8rem; color: #64748b; }
+  .player-price { font-size: 0.85rem; color: #0284c7; }
+}
+
+.player-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0.5rem 0;
+}

@@ -1,0 +1,58 @@
+<div class="owner-dashboard">
+  <div class="dashboard-header">
+    <h1>Owner Dashboard</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="loading" *ngIf="loading">Loading dashboard...</div>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+
+  <div class="dashboard-content" *ngIf="!loading && !error">
+    <section class="card owner-info" *ngIf="ownerData">
+      <h2>Your Profile</h2>
+      <p><strong>Name:</strong> {{ ownerData.fullName }}</p>
+      <p><strong>Contact:</strong> {{ ownerData.contactNumber }}</p>
+      <p><strong>Verification:</strong> {{ ownerData.verificationStatus }}</p>
+      <p><strong>Payment:</strong> {{ ownerData.feePaymentStatus }}</p>
+    </section>
+
+    <section class="card team-info" *ngIf="teamData">
+      <h2>{{ teamData.name }}</h2>
+      <img [src]="getTeamLogo(teamData.logoUrl)" [alt]="teamData.name" class="team-logo">
+      <p><strong>Location:</strong> {{ teamData.location }}</p>
+      <p *ngIf="teamData.slogan"><strong>Slogan:</strong> {{ teamData.slogan }}</p>
+    </section>
+
+    <section class="card auction-info" *ngIf="auctionSession">
+      <h2>Auction: {{ auctionSession.name }}</h2>
+      <p><strong>Status:</strong> {{ auctionSession.status }}</p>
+      <p><strong>Max Budget:</strong> ₹{{ auctionSession.maxBudget | number }}</p>
+      <p><strong>Max Players:</strong> {{ auctionSession.maxPlayersPerTeam }}</p>
+      <a routerLink="/auction-live" class="cta-btn">Enter Auction Room</a>
+    </section>
+
+    <section class="card squad-info" *ngIf="squad.length">
+      <h2>Your Squad ({{ squad.length }})</h2>
+      <div class="squad-list">
+        <div class="squad-player" *ngFor="let p of squad">
+          <img [src]="getPlayerPhoto(p.photo)" [alt]="p.name" class="player-photo">
+          <div class="player-details">
+            <span class="player-name">{{ p.name }}</span>
+            <span class="player-role">{{ p.role }}</span>
+            <span class="player-price">₹{{ p.soldPrice | number }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card player-info" *ngIf="playerProfile">
+      <h2>Your Player Profile</h2>
+      <img [src]="getPlayerPhoto(playerProfile.photo)" [alt]="playerProfile.name" class="player-avatar">
+      <p><strong>Name:</strong> {{ playerProfile.name }}</p>
+      <p><strong>Role:</strong> {{ playerProfile.role }}</p>
+      <p *ngIf="playerProfile.battingStyle"><strong>Batting:</strong> {{ playerProfile.battingStyle }}</p>
+      <p *ngIf="playerProfile.bowlingStyle"><strong>Bowling:</strong> {{ playerProfile.bowlingStyle }}</p>
+    </section>
+  </div>
+</div>

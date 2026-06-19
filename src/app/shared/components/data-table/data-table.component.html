@@ -1,36 +1,31 @@
 <div class="table-responsive" [style.max-height]="config.height || '60vh'" style="overflow-y: auto;">
-  <table class="table table-bordered text-center align-middle">
-    <thead class="table-light sticky-top" style="z-index: 0;">
+  <table class="table custom-table align-middle">
+    <thead class="sticky-top bg-white" style="z-index: 1;">
       <tr>
-        <th *ngFor="let col of config.columns" class="text-center">
-          <div *ngIf="col.searchable" class="form-floating text-center">
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="filters[col.key]"
-              (input)="applyFilters()" placeholder="{{ col.label }}" />
-            <label class="w-100 text-center" style="font-size: 0.8rem;">
-              {{ col.label }}
-            </label>
+        <th *ngFor="let col of config.columns" class="text-start text-muted text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em; padding-bottom: 12px; border-bottom: 2px solid #f3f4f6;">
+          <div *ngIf="col.searchable" class="d-flex flex-column gap-1">
+            <span>{{ col.label }}</span>
+            <input type="text" class="form-control form-control-sm border-0 bg-light rounded-1 px-2 py-1" [(ngModel)]="filters[col.key]"
+              (input)="applyFilters()" placeholder="Filter..." style="font-size: 0.75rem;" />
           </div>
-          <div *ngIf="!col.searchable" class="form-floating text-center">
-            <input type="text" class="form-control form-control-sm" (input)="applyFilters()"
-              placeholder="{{ col.label }}" disabled />
-            <label class="w-100 text-center" style="font-size: 0.8rem;">
-              {{ col.label }}
-            </label>
+          <div *ngIf="!col.searchable" class="d-flex flex-column gap-1">
+            <span>{{ col.label }}</span>
+            <div style="height: 26px;"></div> <!-- Spacer to match input height -->
           </div>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of pagedData">
-        <td *ngFor="let col of config.columns" [ngClass]="!col.actions ? row.rowClass : ''">
+      <tr *ngFor="let row of pagedData" class="table-row-hover">
+        <td *ngFor="let col of config.columns" [ngClass]="!col.actions ? row.rowClass : ''" class="text-start py-3" style="border-bottom: 1px solid #f3f4f6; color: #374151; font-size: 0.875rem;">
 
           <ng-container *ngIf="col.render">
             <span [innerHTML]="col.render(row)"></span>
           </ng-container>
           <ng-container *ngFor="let action of col.actions">
-            <button *ngIf="!action.condition || action.condition(row)" class="btn btn-sm me-1"
-              [disabled]="action.isDisabled" [ngClass]="action.class || 'btn-outline-primary'"
-              (click)="onActionClick({ type: action.type, row })" [title]="action?.title || ''">
+            <button *ngIf="!action.condition || action.condition(row)" class="btn btn-sm btn-icon me-1 rounded-circle"
+              [disabled]="action.isDisabled" [ngClass]="action.class || 'text-primary'"
+              (click)="onActionClick({ type: action.type, row })" [title]="action?.title || ''" style="background: transparent; border: none;">
 
               <ng-container [ngSwitch]="action.type">
                 <svg *ngSwitchCase="'Edit'" [title]="action.type" xmlns="http://www.w3.org/2000/svg" width="16"
@@ -75,7 +70,20 @@
                   <path
                     d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
                   <title>{{action?.title ?? 'Cancel'}}</title>
+                </svg>
 
+                <svg *ngSwitchCase="'Manage'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                    d="M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM6 4a6 6 0 1 1 6 6 6 6 0 0 1-6-6zm.25 2.25a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75zM9.75 4a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75zM5.75 8a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75zM11.25 8a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75z" />
+                </svg>
+
+                <svg *ngSwitchCase="'Report'" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="currentColor" class="bi bi-file-earmark-bar-graph" viewBox="0 0 16 16">
+                  <path
+                    d="M14 14V4.5L9 1h-.375a1 1 0 0 0-.75.25L7 2.5l-.375-.25A1 1 0 0 0 6 .5H5a1 1 0 0 0-1 1v2H1.5a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H15V4.5z" />
+                  <path fill-rule="evenodd"
+                    d="M4.5 12a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1h-10a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1h-10a.5.5 0 0 1-.5-.5z" />
                 </svg>
               </ng-container>
             </button>
@@ -101,8 +109,8 @@
           </ng-container>
 
           <ng-container *ngIf="col.type === 'image'">
-            <img [src]="row[col.key] || 'assets/avatars/default.jpg'" class="table-img shadow-sm"
-              style="width: 50px; height: 50px; border-radius: 8px; object-fit: contain;">
+            <img [src]="row[col.key] || 'assets/avatars/default.jpg'" class="table-img shadow-sm border"
+              style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
           </ng-container>
 
           <!-- <ng-container *ngIf="col.isSelect && (!col.condition || col.condition(row))">

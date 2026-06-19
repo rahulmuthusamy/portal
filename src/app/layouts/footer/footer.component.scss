@@ -1,5 +1,17 @@
-.footer {
-  justify-content: center;
-  height: 56px;
-  font-size: 14px;
+.app-footer {
+  background: #252a31;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  .footer-content {
+    max-width: 100%;
+  }
+
+  a {
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #ffd700 !important;
+    }
+  }
 }

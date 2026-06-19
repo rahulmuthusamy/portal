@@ -1,30 +1,55 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
+    private baseUrl = environment.apiUrl;
+
     constructor(private http: HttpClient) { }
 
-    get<T>(url: string, params?: any): Observable<T> {
-        return this.http.get<T>(url, { params });
+    private normalizeOptions(optionsOrParams?: any): any {
+        if (!optionsOrParams) {
+            return {};
+        }
+
+        const isOptionsObject =
+            optionsOrParams.params !== undefined ||
+            optionsOrParams.headers !== undefined ||
+            optionsOrParams.withCredentials !== undefined;
+
+        return isOptionsObject
+            ? optionsOrParams
+            : { params: optionsOrParams };
     }
 
-    post<T>(url: string, body: any, params?: any): Observable<T> {
-        return this.http.post<T>(url, body, { params });
+    get<T>(url: string, paramsOrOptions?: any): Observable<T> {
+        const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
+        const options = this.normalizeOptions(paramsOrOptions);
+        return this.http.get<any>(fullUrl, options as any) as Observable<T>;
+    }
+
+    post<T>(url: string, body: any, optionsOrParams?: any): Observable<T> {
+        const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
+        const options = this.normalizeOptions(optionsOrParams);
+        return this.http.post<any>(fullUrl, body, options as any) as Observable<T>;
     }
 
     put<T>(url: string, body: any): Observable<T> {
-        return this.http.put<T>(url, body);
+        const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
+        return this.http.put<any>(fullUrl, body) as Observable<T>;
     }
 
     delete<T>(url: string): Observable<T> {
-        return this.http.delete<T>(url);
+        const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
+        return this.http.delete<any>(fullUrl) as Observable<T>;
     }
 
     patch<T>(url: string, body: any): Observable<T> {
-        return this.http.patch<T>(url, body);
+        const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
+        return this.http.patch<any>(fullUrl, body) as Observable<T>;
     }
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseCrudService } from '@core/services/base-crud.service';
 import { ApiService } from '@core/services/api.service';
-import { environment } from '@environments/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -9,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class TeamsService extends BaseCrudService<any> {
     constructor(api: ApiService) {
-        super(api, `${environment.apiUrl}/teams`);
+        super(api, '/teams');
     }
 
     addPlayerToTeam(teamId: number, playerId: number): Observable<any> {

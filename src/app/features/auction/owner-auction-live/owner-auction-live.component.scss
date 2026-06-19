@@ -1,0 +1,341 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.auction-live-page {
+  font-family: 'Inter', sans-serif;
+  background: #0a0f1a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ── Toast ── */
+.toast-notification {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  &.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ── Header ── */
+.auction-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #0f172a;
+  border-bottom: 1px solid #1e293b;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    .logo-mark { font-size: 28px; }
+    .header-info {
+      .session-name { font-size: 18px; font-weight: 700; color: #f8fafc; }
+      .session-badge {
+        font-size: 11px; font-weight: 700; padding: 2px 10px;
+        border-radius: 20px; letter-spacing: 0.5px;
+        &.live { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; animation: pulse 1.5s infinite; }
+        &.waiting { background: rgba(234,179,8,0.2); color: #fbbf24; border: 1px solid #ca8a04; }
+        &.ended { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid #475569; }
+      }
+    }
+  }
+
+  .header-right {
+    display: flex; align-items: center; gap: 12px;
+    .team-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: #1e293b; border-radius: 8px; padding: 6px 14px;
+      border: 1px solid #334155;
+      .team-logo-small { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+      span { font-size: 13px; font-weight: 600; }
+      .budget-badge {
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white; font-size: 12px; font-weight: 700;
+        padding: 2px 8px; border-radius: 6px;
+      }
+    }
+    .logout-btn {
+      background: transparent; border: 1px solid #475569;
+      color: #94a3b8; padding: 6px 14px; border-radius: 8px;
+      cursor: pointer; font-size: 13px;
+      &:hover { border-color: #ef4444; color: #f87171; }
+    }
+  }
+}
+
+/* ── Loading ── */
+.loading-screen {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  .spinner {
+    width: 48px; height: 48px; border: 3px solid #334155;
+    border-top-color: #6366f1; border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  p { color: #64748b; }
+}
+
+/* ── Waiting ── */
+.waiting-screen {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  .waiting-card {
+    text-align: center; padding: 48px; max-width: 480px;
+    background: #0f172a; border: 1px solid #1e293b; border-radius: 24px;
+    position: relative;
+    &.error-card { border-color: #7f1d1d; }
+    .waiting-icon { font-size: 56px; margin-bottom: 16px; }
+    h2 { font-size: 20px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; }
+    p { color: #64748b; font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+    .budget-info { color: #94a3b8; strong { color: #10b981; } }
+    .pulse-ring {
+      position: absolute; top: 50%; left: 50%;
+      width: 200px; height: 200px;
+      border: 2px solid rgba(99,102,241,0.2);
+      border-radius: 50%;
+      transform: translate(-50%,-50%);
+      animation: pulse-ring 2s ease-out infinite;
+      pointer-events: none;
+    }
+  }
+}
+
+/* ── Main Grid ── */
+.auction-content { flex: 1; padding: 20px; }
+.auction-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Player Card ── */
+.player-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1px solid #334155;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+
+  .player-image-wrapper {
+    position: relative; flex-shrink: 0;
+    .player-photo {
+      width: 140px; height: 160px;
+      border-radius: 16px; object-fit: cover;
+      border: 2px solid #334155;
+    }
+    .player-role-tag {
+      position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white; font-size: 11px; font-weight: 700;
+      padding: 3px 12px; border-radius: 20px; white-space: nowrap;
+    }
+  }
+
+  .player-details { flex: 1; }
+
+  .player-name {
+    font-size: 26px; font-weight: 800; color: #f8fafc;
+    background: linear-gradient(135deg, #6366f1, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+
+  .player-tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+    .tag {
+      background: #1e293b; border: 1px solid #334155;
+      color: #94a3b8; font-size: 12px; padding: 3px 10px; border-radius: 6px;
+      &.captain { border-color: #ca8a04; color: #fbbf24; background: rgba(234,179,8,0.1); }
+    }
+  }
+}
+
+/* ── Timer ── */
+.timer-section {
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+  .timer-bar-wrap {
+    flex: 1; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden;
+    .timer-bar {
+      height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      border-radius: 4px; transition: width 0.9s linear;
+      &.danger { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    }
+  }
+  .timer-text {
+    font-size: 20px; font-weight: 800; color: #6366f1; min-width: 40px; text-align: right;
+    &.danger { color: #ef4444; animation: pulse 0.5s infinite; }
+  }
+}
+
+/* ── Bid Info ── */
+.bid-info {
+  display: flex; gap: 24px; margin-bottom: 12px;
+  .bid-stat {
+    label { display: block; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .price { font-size: 20px; font-weight: 700; color: #94a3b8; }
+    &.current .price.highlight {
+      font-size: 28px; font-weight: 900;
+      background: linear-gradient(135deg, #10b981, #059669);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+/* ── Leading Team ── */
+.leading-team {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  padding: 8px 14px; background: #1e293b; border-radius: 8px; border: 1px solid #334155;
+  &.my-team { border-color: #059669; background: rgba(16,185,129,0.1); }
+  .leading-label { font-size: 12px; color: #64748b; }
+  .leading-name { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+}
+
+/* ── BID BUTTON ── */
+.bid-action {
+  .bid-btn {
+    width: 100%; padding: 16px;
+    font-size: 18px; font-weight: 800; letter-spacing: 1px;
+    border: none; border-radius: 14px; cursor: pointer;
+    background: #1e293b; color: #475569;
+    transition: all 0.2s ease;
+
+    &.can-bid {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+      animation: bid-pulse 1.5s ease-in-out infinite;
+      &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.5); }
+      &:active { transform: translateY(0); }
+    }
+
+    &.leading {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      animation: none;
+    }
+
+    &:disabled { cursor: not-allowed; opacity: 0.7; }
+  }
+  .next-bid-hint { text-align: center; color: #64748b; font-size: 12px; margin-top: 6px; }
+}
+
+/* ── Player Waiting ── */
+.player-waiting {
+  text-align: center; padding: 16px; color: #64748b;
+  .dots-loader {
+    display: flex; justify-content: center; gap: 6px; margin-bottom: 8px;
+    span {
+      width: 8px; height: 8px; background: #6366f1; border-radius: 50%;
+      animation: dots 1.2s infinite;
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+  }
+}
+
+/* ── Bid History ── */
+.bid-history {
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 16px;
+  h4 { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 12px; }
+  .bid-entry {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid #1e293b;
+    &:last-child { border: none; }
+    &.my-bid { .bid-team-name { color: #6366f1; font-weight: 700; } }
+    .bid-team-name { font-size: 13px; color: #94a3b8; }
+    .bid-amount { font-size: 14px; font-weight: 700; color: #10b981; }
+  }
+}
+
+/* ── No Player / Ended ── */
+.no-player-card, .ended-card {
+  text-align: center; padding: 48px;
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 20px;
+  margin-bottom: 16px;
+  .waiting-icon, .ended-icon { font-size: 48px; margin-bottom: 16px; }
+  h2, h3 { color: #94a3b8; }
+}
+
+/* ── Dashboard ── */
+.dashboard-section { display: flex; flex-direction: column; gap: 16px; }
+
+.team-stats-card {
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px;
+  h3 { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 14px; }
+  .stats-row { display: flex; gap: 24px; margin-bottom: 12px;
+    .stat { label { font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 4px; }
+      .stat-value { font-size: 22px; font-weight: 800; color: #f1f5f9; &.green { color: #10b981; } }
+    }
+  }
+  .budget-bar-wrap { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden;
+    .budget-bar { height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 3px; transition: width 0.5s ease; }
+  }
+}
+
+.my-squad {
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px; max-height: 320px; overflow-y: auto;
+  h4 { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 12px; }
+  .squad-empty { text-align: center; color: #475569; padding: 24px; }
+  .squad-player {
+    display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #1e293b;
+    &:last-child { border: none; }
+    .squad-photo { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .squad-info { flex: 1; .squad-name { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+      .squad-role { font-size: 11px; color: #64748b; } }
+    .squad-price { font-size: 13px; font-weight: 700; color: #10b981; }
+  }
+}
+
+.other-teams {
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 20px;
+  h4 { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 12px; }
+  .team-row {
+    display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #1e293b;
+    &:last-child { border: none; }
+    &.my-team-row { background: rgba(99,102,241,0.05); border-radius: 8px; padding: 8px;
+      .team-name-sm { color: #a78bfa; } }
+    .team-logo-xs { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+    .team-name-sm { flex: 1; font-size: 13px; color: #94a3b8; }
+    .team-budget-sm { font-size: 12px; color: #10b981; font-weight: 600; }
+    .team-count-sm { font-size: 11px; color: #64748b; margin-left: 6px; }
+  }
+}
+
+/* ── Animations ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes pulse-ring { 0% { transform: translate(-50%,-50%) scale(0.5); opacity: 0.8; } 100% { transform: translate(-50%,-50%) scale(1.5); opacity: 0; } }
+@keyframes bid-pulse { 0%,100% { box-shadow: 0 4px 20px rgba(99,102,241,0.4); } 50% { box-shadow: 0 4px 32px rgba(99,102,241,0.7); } }
+@keyframes dots { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }

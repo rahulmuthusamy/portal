@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,10 +7,13 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 import { Inject } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { AuthService } from '@core/services/auth.service';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
-
+ 
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -26,6 +29,9 @@ import { MatDividerModule } from '@angular/material/divider';
 export class HeaderComponent {
   @Output() toggleSidebar = new EventEmitter<void>();
   currentTheme: 'light-theme' | 'dark-theme' = 'light-theme';
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  user$ = this.auth.user$;
 
   constructor(@Inject(DOCUMENT) private document: Document) { }
 
@@ -33,5 +39,9 @@ export class HeaderComponent {
     this.document.body.classList.remove('light-theme', 'dark-theme');
     this.document.body.classList.add(theme);
     this.currentTheme = theme;
+  }
+
+  logout(): void {
+    this.auth.logout();
   }
 }

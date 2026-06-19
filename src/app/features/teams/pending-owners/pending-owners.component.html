@@ -1,0 +1,71 @@
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mat-h2 m-0 text-uppercase fw-bold" style="color: var(--primary-color);">Pending Registrations</h2>
+        <button mat-flat-button color="primary" (click)="loadPendingOwners()">
+            <mat-icon>refresh</mat-icon> Refresh
+        </button>
+    </div>
+
+    <mat-card class="mat-elevation-z3">
+        <mat-card-content *ngIf="loading()" class="d-flex justify-content-center p-5">
+            <mat-spinner diameter="40"></mat-spinner>
+        </mat-card-content>
+
+        <mat-card-content *ngIf="!loading() && pendingOwners().length === 0" class="text-center p-5">
+            <mat-icon class="text-muted" style="font-size: 48px; width: 48px; height: 48px;">inbox</mat-icon>
+            <h3 class="mat-h3 mt-3 text-muted">No pending team registrations.</h3>
+        </mat-card-content>
+
+        <table mat-table [dataSource]="pendingOwners()" class="w-100" *ngIf="!loading() && pendingOwners().length > 0">
+            <!-- Owner Name Column -->
+            <ng-container matColumnDef="ownerName">
+                <th mat-header-cell *matHeaderCellDef> Owner Name </th>
+                <td mat-cell *matCellDef="let owner">
+                    <div class="fw-bold">{{ owner.FullName }}</div>
+                </td>
+            </ng-container>
+
+            <!-- Contact Column -->
+            <ng-container matColumnDef="contact">
+                <th mat-header-cell *matHeaderCellDef> Contact </th>
+                <td mat-cell *matCellDef="let owner">
+                    {{ owner.ContactNumber }}
+                </td>
+            </ng-container>
+
+            <!-- Team Name Column -->
+            <ng-container matColumnDef="teamName">
+                <th mat-header-cell *matHeaderCellDef> Proposed Team Name </th>
+                <td mat-cell *matCellDef="let owner">
+                    <span class="badge bg-warning text-dark fs-6">{{ owner.Team?.Name }}</span>
+                </td>
+            </ng-container>
+
+            <!-- Location Column -->
+            <ng-container matColumnDef="location">
+                <th mat-header-cell *matHeaderCellDef> Location </th>
+                <td mat-cell *matCellDef="let owner">
+                    {{ owner.Team?.Location || '-' }}
+                </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="text-end"> Actions </th>
+                <td mat-cell *matCellDef="let owner" class="text-end">
+                    <button mat-flat-button color="primary" class="me-2 rounded-pill px-4"
+                        (click)="verifyOwner(owner.OwnerID, 'approved')">
+                        <mat-icon>check_circle</mat-icon> APPROVE
+                    </button>
+                    <button mat-stroked-button color="warn" class="rounded-pill"
+                        (click)="verifyOwner(owner.OwnerID, 'rejected')">
+                        <mat-icon>cancel</mat-icon> Reject
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-bg"></tr>
+        </table>
+    </mat-card>
+</div>

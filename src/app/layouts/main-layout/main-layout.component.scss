@@ -1,23 +1,24 @@
 .sidenav-container {
   height: 100vh;
-  background: #f4f6f9;
+  background: var(--main-bg, #f9fafb);
   display: flex;
   flex-direction: column;
 }
 
 .sidenav {
-  width: 240px;
-  background-color: #6892e5; 
+  width: 250px;
+  background: var(--sidebar-bg);
   color: white;
   border-right: none;
   transition: none;  
 }
 
 .sidebar-header {
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo {
@@ -26,23 +27,34 @@
 }
 
 .main-content {
-  padding: 24px;
-  font-family: Roboto, sans-serif;
-  color: #333;
+  padding: 32px 48px;
+  font-family: 'Inter', Roboto, sans-serif;
+  color: var(--text-color);
+  background-color: transparent;
+  flex: 1;
+  min-height: calc(100vh - 64px - 56px);
 }
- 
+
 app-footer {
-   color: white;
-   text-align: center;
+  background: transparent;
+  color: #9ca3af;
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
 }
+
 mat-sidenav-content {
-  background-color: #f5f6fa;
+  background-color: var(--main-bg, #f9fafb);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-.main-content {
+.content-card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   padding: 24px;
-  flex: 1;
+  margin-bottom: 24px;
 }

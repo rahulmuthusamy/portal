@@ -7,41 +7,75 @@ import { ApiService } from './api.service';
     providedIn: 'root'
 })
 export class AuthService {
+    private readonly TOKEN_KEY = 'auth_token';
+    private readonly USER_KEY = 'auth_user';
+
     private tokenSubject = new BehaviorSubject<string | null>(null);
     private userSubject = new BehaviorSubject<any | null>(null);
 
     token$ = this.tokenSubject.asObservable();
     user$ = this.userSubject.asObservable();
 
-    constructor(private api: ApiService, private router: Router) { }
+    constructor(private api: ApiService, private router: Router) {
+        const savedToken = localStorage.getItem(this.TOKEN_KEY);
+        const savedUser = localStorage.getItem(this.USER_KEY);
+
+        if (savedToken) {
+            this.tokenSubject.next(savedToken);
+        }
+
+        if (savedUser) {
+            this.userSubject.next(JSON.parse(savedUser));
+        }
+    }
 
     login(credentials: any): Observable<any> {
         return this.api.post('/auth/login', credentials).pipe(
             tap((res: any) => {
-                this.setSession(res.token, res.user);
+                const token = res?.data?.accessToken ?? res?.accessToken ?? null;
+                const user = res?.data?.user ?? res?.user ?? null;
+                this.setSession(token, user);
             })
         );
+    }
+
+    register(data: any): Observable<any> {
+        return this.api.post('/auth/register', data);
     }
 
     restoreSession(): Observable<any> {
         return this.api.post('/auth/refresh', {}, { withCredentials: true }).pipe(
             tap((res: any) => {
-                this.setSession(res?.accessToken, res);
+                const token = res?.data?.accessToken ?? res?.accessToken ?? null;
+                const user = res?.data?.user ?? res?.user ?? null;
+                this.setSession(token, user);
             })
         );
     }
 
     logout(): void {
-        this.tokenSubject.next(null);
-        this.userSubject.next(null);
-        this.api.post('/auth/logout', {}).subscribe(() => {
-            this.router.navigate(['/login']);
-        });
-    }
+    this.setSession(null, null);
+    this.api.post('/auth/logout', {}).subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login'])
+    });
+  }
 
-    setSession(token: string, user: any): void {
+    setSession(token: string | null, user: any): void {
         this.tokenSubject.next(token);
         this.userSubject.next(user);
+
+        if (token) {
+            localStorage.setItem(this.TOKEN_KEY, token);
+        } else {
+            localStorage.removeItem(this.TOKEN_KEY);
+        }
+
+        if (user) {
+            localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+        } else {
+            localStorage.removeItem(this.USER_KEY);
+        }
     }
 
     getToken(): string | null {

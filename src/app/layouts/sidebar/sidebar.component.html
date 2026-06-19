@@ -1,18 +1,18 @@
 <div class="sidebar-container">
   <!-- Logo Section -->
   <div class="logo-section d-flex align-items-center mb-4 px-3 pt-3">
-    <div class="logo-icon bg-warning rounded-circle d-flex align-items-center justify-content-center me-3"
-      style="width: 40px; height: 40px;">
-      <i class="bi bi-trophy-fill text-dark fs-5"></i>
+    <div class="logo-icon bg-white rounded-circle d-flex align-items-center justify-content-center me-3"
+      style="width: 32px; height: 32px;">
+      <i class="bi bi-diagram-3-fill" style="color: var(--primary-color); font-size: 16px;"></i>
     </div>
     <div class="logo-text" *ngIf="visible">
-      <h5 class="m-0 fw-bold text-white tracking-wider">KKK ADMIN</h5>
-      <small class="text-white-50" style="font-size: 0.75rem;">Premium League</small>
+      <h6 class="m-0 fw-bold text-white tracking-wider" style="font-size: 0.95rem;">Auction Management System</h6>
+      <small class="text-white-50" style="font-size: 0.65rem;">v1.0.0</small>
     </div>
   </div>
 
-  <mat-nav-list *ngIf="visible" class="sidebar-nav">
-    <ng-container *ngFor="let section of menuSections">
+  <mat-nav-list *ngIf="visible && (user$ | async)" class="sidebar-nav">
+    <ng-container *ngFor="let section of filteredMenu">
       <!-- Section Header (Optional) -->
       <div class="section-label text-uppercase text-white-50 px-3 py-2 mt-2 mb-1 fw-bold"
         style="font-size: 0.7rem; letter-spacing: 1px;" *ngIf="section.label">
@@ -28,6 +28,22 @@
       </a>
     </ng-container>
   </mat-nav-list>
+
+  <!-- User Profile Section -->
+  <div class="sidebar-footer mt-auto px-3 py-3" *ngIf="visible">
+    <div class="user-profile d-flex align-items-center p-2 rounded-3">
+      <div class="avatar bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-2"
+        style="width: 36px; height: 36px; font-weight: 600; font-size: 0.9rem;">
+        {{ (user$ | async)?.email?.charAt(0)?.toUpperCase() || 'A' }}
+      </div>
+      <div class="user-info flex-grow-1">
+        <div class="fw-medium text-white small">{{ (user$ | async)?.email || 'Admin' }}</div>
+        <small class="text-white-50" style="font-size: 0.7rem;">
+          {{ (user$ | async)?.role === 'super_admin' ? 'Super Admin' : 'Admin' }}
+        </small>
+      </div>
+    </div>
+  </div>
 
 
 </div>
