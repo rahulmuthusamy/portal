@@ -26,16 +26,16 @@
       ]">
         <a [class.active]="activeSection() === item.id" (click)="scrollTo(item.id)">{{ item.label }}</a>
       </li>
-</ul>
+    </ul>
 
-       <div class="nav-actions">
+    <div class="nav-actions">
       <!-- Live indicator -->
       <span class="live-pill" *ngIf="liveMatches().length > 0" (click)="scrollTo('fixtures')">
         <span class="live-dot"></span> LIVE
       </span>
-<button class="btn-register-nav" (click)="scrollTo('register')">Register Team</button>
-        <button class="btn-login-nav" routerLink="/login">Login</button>
-        <!-- Mobile hamburger -->
+      <button class="btn-register-nav" (click)="scrollTo('register')">Register Team</button>
+      <button class="btn-login-nav" routerLink="/login">Login</button>
+      <!-- Mobile hamburger -->
       <button class="hamburger" (click)="mobileNavOpen = !mobileNavOpen" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -44,12 +44,12 @@
 
   <!-- Mobile menu -->
   <div class="mobile-menu" [class.open]="mobileNavOpen">
-<a *ngFor="let item of [
+    <a *ngFor="let item of [
        {id:'home',label:'Home'},{id:'teams',label:'Teams'},{id:'standings',label:'Standings'},
        {id:'fixtures',label:'Fixtures'},{id:'players',label:'Players'},{id:'stats',label:'Stats'},
        {id:'auction',label:'Auction'},{id:'gallery',label:'Gallery'},{id:'register',label:'Register Team'},{id:'contact',label:'Contact'}
      ]" (click)="scrollTo(item.id)">{{ item.label }}</a>
-       <a routerLink="/login" (click)="mobileNavOpen = false" class="login-nav-mobile">Login</a>
+    <a routerLink="/login" (click)="mobileNavOpen = false" class="login-nav-mobile">Login</a>
   </div>
 </nav>
 
@@ -70,10 +70,12 @@
         <div class="hero-overlay"></div>
       </div>
     </div>
-    <button class="carousel-control-prev" data-bs-target="#heroCarousel" data-bs-slide="prev" *ngIf="carouselItems().length > 1">
+    <button class="carousel-control-prev" data-bs-target="#heroCarousel" data-bs-slide="prev"
+      *ngIf="carouselItems().length > 1">
       <span class="carousel-control-prev-icon"></span>
     </button>
-    <button class="carousel-control-next" data-bs-target="#heroCarousel" data-bs-slide="next" *ngIf="carouselItems().length > 1">
+    <button class="carousel-control-next" data-bs-target="#heroCarousel" data-bs-slide="next"
+      *ngIf="carouselItems().length > 1">
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
@@ -87,17 +89,21 @@
     <h1 class="hero-headline">
       The Battle<br>of <em>Champions</em>
     </h1>
-    <p class="hero-sub">{{ appSettings().appDescription || 'Village cricket at its finest — pride, passion, legacy.' }}</p>
+    <p class="hero-sub">{{ appSettings().appDescription || 'Village cricket at its finest — pride, passion, legacy.' }}
+    </p>
     <div class="hero-stats-row">
-      <div class="hero-stat"><span class="hero-stat-num">{{ teams().length || '6' }}</span><span class="hero-stat-lbl">Teams</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">{{ teams().length || '6' }}</span><span
+          class="hero-stat-lbl">Teams</span></div>
       <div class="hero-stat-div"></div>
-      <div class="hero-stat"><span class="hero-stat-num">{{ players.length || '50+' }}</span><span class="hero-stat-lbl">Players</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">{{ players.length || '50+' }}</span><span
+          class="hero-stat-lbl">Players</span></div>
       <div class="hero-stat-div"></div>
-      <div class="hero-stat"><span class="hero-stat-num">{{ completedMatches().length }}</span><span class="hero-stat-lbl">Matches Played</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">{{ completedMatches().length }}</span><span
+          class="hero-stat-lbl">Matches Played</span></div>
     </div>
     <div class="hero-cta">
       <button class="btn-hero-primary" (click)="scrollTo('fixtures')">View Fixtures</button>
-      <button class="btn-hero-outline" (click)="scrollTo('register')">Register Team</button>
+      <!-- <button class="btn-hero-outline" (click)="scrollTo('register')">Register Team</button> -->
     </div>
   </div>
 
@@ -110,7 +116,8 @@
           <strong>{{ m.TeamA?.Name }}</strong> {{ m.TeamA_Runs }}/{{ m.TeamA_Wickets }} ({{ m.TeamA_Overs || 0 }} ov)
           <span class="vs-sep">vs</span>
           <strong>{{ m.TeamB?.Name }}</strong>
-          <ng-container *ngIf="m.TeamB_Runs !== undefined"> {{ m.TeamB_Runs }}/{{ m.TeamB_Wickets }} ({{ m.TeamB_Overs || 0 }} ov)</ng-container>
+          <ng-container *ngIf="m.TeamB_Runs !== undefined"> {{ m.TeamB_Runs }}/{{ m.TeamB_Wickets }} ({{ m.TeamB_Overs
+            || 0 }} ov)</ng-container>
           &nbsp;·&nbsp;
           <a [routerLink]="['/kkk/scorecard', m.MatchID]" class="scorecard-link">Scorecard →</a>
         </span>
@@ -120,8 +127,8 @@
 
   <!-- Carousel dots -->
   <div class="hero-dots" *ngIf="carouselItems().length > 1">
-    <button *ngFor="let item of carouselItems(); let i = index"
-      data-bs-target="#heroCarousel" [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
+    <button *ngFor="let item of carouselItems(); let i = index" data-bs-target="#heroCarousel"
+      [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
   </div>
 </section>
 
@@ -138,8 +145,10 @@
         <p class="section-sub">{{ teams().length }} squads competing for the trophy</p>
       </div>
       <div class="scroll-arrows">
-        <button (click)="scrollContainer('teams-scroll', 'left')" aria-label="Scroll left"><i class="bi bi-chevron-left"></i></button>
-        <button (click)="scrollContainer('teams-scroll', 'right')" aria-label="Scroll right"><i class="bi bi-chevron-right"></i></button>
+        <button (click)="scrollContainer('teams-scroll', 'left')" aria-label="Scroll left"><i
+            class="bi bi-chevron-left"></i></button>
+        <button (click)="scrollContainer('teams-scroll', 'right')" aria-label="Scroll right"><i
+            class="bi bi-chevron-right"></i></button>
       </div>
     </div>
 
@@ -195,9 +204,9 @@
         <tbody>
           <tr *ngFor="let row of standings()" [class.leader-row]="row.rank === 1">
             <td class="col-rank">
-              <span class="rank-badge" [class.rank-1]="row.rank===1" [class.rank-2]="row.rank===2" [class.rank-3]="row.rank===3">
-                {{ row.rank <= 3 ? ['🥇','🥈','🥉'][row.rank-1] : row.rank }}
-              </span>
+              <span class="rank-badge" [class.rank-1]="row.rank===1" [class.rank-2]="row.rank===2"
+                [class.rank-3]="row.rank===3">
+                {{ row.rank <= 3 ? ['🥇','🥈','🥉'][row.rank-1] : row.rank }} </span>
             </td>
             <td class="col-team">
               <img [src]="row.team.LogoURL" [alt]="row.team.Name" class="standings-logo">
@@ -247,16 +256,13 @@
 
     <!-- Fixture cards -->
     <div class="fixtures-grid">
-      <div class="fixture-card" *ngFor="let match of getFixturesList()"
-           [class.fixture-live]="match.Status === 'Live'"
-           [class.fixture-done]="match.Status === 'Completed'">
+      <div class="fixture-card" *ngFor="let match of getFixturesList()" [class.fixture-live]="match.Status === 'Live'"
+        [class.fixture-done]="match.Status === 'Completed'">
 
         <div class="fixture-card-header">
           <span class="fixture-stage">{{ match.Stage || 'Group Stage' }} · #{{ match.MatchNumber || '' }}</span>
-          <span class="fixture-status-badge"
-            [class.status-live]="match.Status === 'Live'"
-            [class.status-done]="match.Status === 'Completed'"
-            [class.status-upcoming]="match.Status === 'Scheduled'">
+          <span class="fixture-status-badge" [class.status-live]="match.Status === 'Live'"
+            [class.status-done]="match.Status === 'Completed'" [class.status-upcoming]="match.Status === 'Scheduled'">
             <span *ngIf="match.Status === 'Live'" class="live-dot-sm"></span>
             {{ match.Status === 'Live' ? 'LIVE' : match.Status === 'Completed' ? 'FT' : 'Upcoming' }}
           </span>
@@ -296,7 +302,7 @@
             {{ match.ResultNote }}
           </span>
           <a *ngIf="match.Status !== 'Scheduled'" [routerLink]="['/kkk/scorecard', match.MatchID]"
-             class="btn-scorecard">Scorecard <i class="bi bi-arrow-right"></i></a>
+            class="btn-scorecard">Scorecard <i class="bi bi-arrow-right"></i></a>
         </div>
       </div>
 
@@ -327,11 +333,11 @@
       <div class="player-search">
         <i class="bi bi-search"></i>
         <input type="text" placeholder="Search player or team..." [(ngModel)]="searchQuery"
-               (ngModelChange)="onSearchChange()" name="playerSearch">
+          (ngModelChange)="onSearchChange()" name="playerSearch">
       </div>
       <div class="role-filters">
         <button *ngFor="let role of ['All','Batsman','Bowler','All-Rounder','Wicket Keeper']"
-                [class.active]="activeFilter === role" (click)="applyPlayerFilter(role)">
+          [class.active]="activeFilter === role" (click)="applyPlayerFilter(role)">
           {{ role }}
         </button>
       </div>
@@ -348,9 +354,12 @@
           <h4 class="player-name">{{ player.Name }}</h4>
           <span class="player-team">{{ player.Team }}</span>
           <div class="player-stats">
-            <div class="pstat"><span class="pstat-val">{{ player.matches || 0 }}</span><span class="pstat-lbl">M</span></div>
-            <div class="pstat"><span class="pstat-val">{{ player.runs || 0 }}</span><span class="pstat-lbl">Runs</span></div>
-            <div class="pstat"><span class="pstat-val">{{ player.wickets || 0 }}</span><span class="pstat-lbl">Wkts</span></div>
+            <div class="pstat"><span class="pstat-val">{{ player.matches || 0 }}</span><span class="pstat-lbl">M</span>
+            </div>
+            <div class="pstat"><span class="pstat-val">{{ player.runs || 0 }}</span><span class="pstat-lbl">Runs</span>
+            </div>
+            <div class="pstat"><span class="pstat-val">{{ player.wickets || 0 }}</span><span
+                class="pstat-lbl">Wkts</span></div>
           </div>
         </div>
       </div>
@@ -397,7 +406,8 @@
         <div class="lb-empty" *ngIf="topRunScorers().length === 0">Match data loading...</div>
         <div class="lb-row" *ngFor="let entry of topRunScorers(); let i = index">
           <span class="lb-rank">{{ i + 1 }}</span>
-          <img [src]="entry.player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="entry.player.Name" class="lb-avatar">
+          <img [src]="entry.player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="entry.player.Name"
+            class="lb-avatar">
           <div class="lb-info">
             <span class="lb-name">{{ entry.player.Name }}</span>
             <span class="lb-team">{{ entry.player.Team }}</span>
@@ -407,7 +417,8 @@
             <span class="lb-unit">runs</span>
           </div>
           <div class="lb-bar-wrap">
-            <div class="lb-bar" [style.width.%]="topRunScorers()[0]?.value ? (entry.value / topRunScorers()[0].value) * 100 : 0"></div>
+            <div class="lb-bar"
+              [style.width.%]="topRunScorers()[0]?.value ? (entry.value / topRunScorers()[0].value) * 100 : 0"></div>
           </div>
         </div>
       </div>
@@ -421,7 +432,8 @@
         <div class="lb-empty" *ngIf="topWicketTakers().length === 0">Match data loading...</div>
         <div class="lb-row" *ngFor="let entry of topWicketTakers(); let i = index">
           <span class="lb-rank">{{ i + 1 }}</span>
-          <img [src]="entry.player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="entry.player.Name" class="lb-avatar">
+          <img [src]="entry.player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="entry.player.Name"
+            class="lb-avatar">
           <div class="lb-info">
             <span class="lb-name">{{ entry.player.Name }}</span>
             <span class="lb-team">{{ entry.player.Team }}</span>
@@ -431,7 +443,9 @@
             <span class="lb-unit">wkts</span>
           </div>
           <div class="lb-bar-wrap">
-            <div class="lb-bar lb-bar-bowl" [style.width.%]="topWicketTakers()[0]?.value ? (entry.value / topWicketTakers()[0].value) * 100 : 0"></div>
+            <div class="lb-bar lb-bar-bowl"
+              [style.width.%]="topWicketTakers()[0]?.value ? (entry.value / topWicketTakers()[0].value) * 100 : 0">
+            </div>
           </div>
         </div>
       </div>
@@ -488,12 +502,13 @@
 
     <div id="auctionCarousel" class="carousel slide" data-bs-ride="carousel" *ngIf="auctionList.length > 0">
       <div class="carousel-indicators" *ngIf="auctionList.length > 1">
-        <button *ngFor="let a of auctionList; let i = index"
-          data-bs-target="#auctionCarousel" [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
+        <button *ngFor="let a of auctionList; let i = index" data-bs-target="#auctionCarousel"
+          [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
       </div>
 
       <div class="carousel-inner">
-        <div class="carousel-item" *ngFor="let auction of auctionList; let i = index; let first = first" [class.active]="first">
+        <div class="carousel-item" *ngFor="let auction of auctionList; let i = index; let first = first"
+          [class.active]="first">
           <div class="auction-card">
             <div class="auction-card-left">
               <span class="auction-badge"><i class="bi bi-broadcast me-2"></i> AUCTION</span>
@@ -532,7 +547,8 @@
               </div>
 
               <!-- Registered Teams Display -->
-              <div class="registered-teams-section" *ngIf="auction.registeredTeams && auction.registeredTeams.length > 0">
+              <div class="registered-teams-section"
+                *ngIf="auction.registeredTeams && auction.registeredTeams.length > 0">
                 <div class="reg-teams-label">
                   <i class="bi bi-check-circle-fill" style="color: #22c55e;"></i>
                   Registered Teams ({{ auction.registeredTeams.length }})
@@ -540,14 +556,17 @@
                 <div class="reg-teams-avatars">
                   <div class="reg-team-avatar" *ngFor="let rt of auction.registeredTeams" [title]="rt.name">
                     <img [src]="rt.logoUrl" [alt]="rt.name" class="reg-team-logo">
-                    <span class="reg-team-name">{{ rt.name }}</span>
-                  </div>
+                    <span class="reg-team-name">{{ rt.name }}</span>  
+                  </div>  
                 </div>
+                
               </div>
 
-              <button class="btn-auction-register" (click)="scrollTo('register')">
-                Register Your Team <i class="bi bi-arrow-right ms-2"></i>
-              </button>
+              <button class="btn-auction-register" (click)="scrollTo('register', auction)">
+                      Register Your Team <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+
+
             </div>
 
             <div class="auction-card-right">
@@ -586,10 +605,12 @@
         </div>
       </div>
 
-      <button *ngIf="auctionList.length > 1" class="carousel-control-prev" data-bs-target="#auctionCarousel" data-bs-slide="prev">
+      <button *ngIf="auctionList.length > 1" class="carousel-control-prev" data-bs-target="#auctionCarousel"
+        data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
       </button>
-      <button *ngIf="auctionList.length > 1" class="carousel-control-next" data-bs-target="#auctionCarousel" data-bs-slide="next">
+      <button *ngIf="auctionList.length > 1" class="carousel-control-next" data-bs-target="#auctionCarousel"
+        data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
       </button>
     </div>
@@ -604,13 +625,13 @@
   <div class="section-container">
     <div class="section-header center">
       <span class="section-eyebrow">Moments</span>
-        <h2 class="section-title">Gallery</h2>
-        <p class="section-sub">Frozen moments of pure passion</p>
+      <h2 class="section-title">Gallery</h2>
+      <p class="section-sub">Frozen moments of pure passion</p>
 
       <div class="gallery-filters">
         <button [class.active]="selectedCategory === 'all'" (click)="setCategory('all')">All</button>
-        <button *ngFor="let cat of availableCategories"
-                [class.active]="selectedCategory === cat" (click)="setCategory(cat)">{{ cat }}</button>
+        <button *ngFor="let cat of availableCategories" [class.active]="selectedCategory === cat"
+          (click)="setCategory(cat)">{{ cat }}</button>
       </div>
     </div>
 
@@ -643,12 +664,19 @@
       <div class="footer-brand">
         <img [src]="appSettings().logoUrl || 'assets/logo.jpeg'" alt="KPL" class="footer-logo">
         <h4>{{ appSettings().appName || 'Kattur Premier League' }}</h4>
-        <p>{{ appSettings().appDescription || 'Village cricket at its finest. Pride, passion, and legacy since 2021.' }}</p>
+        <p>{{ appSettings().appDescription || 'Village cricket at its finest. Pride, passion, and legacy since 2021.' }}
+        </p>
         <div class="social-links">
-          <a *ngIf="appSettings().facebook || contactInfo.facebook" [href]="appSettings().facebook || contactInfo.facebook" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-          <a *ngIf="appSettings().instagram || contactInfo.instagram" [href]="appSettings().instagram || contactInfo.instagram" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-          <a *ngIf="appSettings().twitter || contactInfo.twitter" [href]="appSettings().twitter || contactInfo.twitter" target="_blank" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-          <a *ngIf="appSettings().youtube || contactInfo.youtube" [href]="appSettings().youtube || contactInfo.youtube" target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+          <a *ngIf="appSettings().facebook || contactInfo.facebook"
+            [href]="appSettings().facebook || contactInfo.facebook" target="_blank" aria-label="Facebook"><i
+              class="bi bi-facebook"></i></a>
+          <a *ngIf="appSettings().instagram || contactInfo.instagram"
+            [href]="appSettings().instagram || contactInfo.instagram" target="_blank" aria-label="Instagram"><i
+              class="bi bi-instagram"></i></a>
+          <a *ngIf="appSettings().twitter || contactInfo.twitter" [href]="appSettings().twitter || contactInfo.twitter"
+            target="_blank" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+          <a *ngIf="appSettings().youtube || contactInfo.youtube" [href]="appSettings().youtube || contactInfo.youtube"
+            target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
         </div>
       </div>
 
@@ -693,7 +721,8 @@
     </div>
 
     <div class="footer-bottom">
-      <span>&copy; {{ selectedSeason }} {{ appSettings().appName || 'Kattur Premier League' }}. All rights reserved.</span>
+      <span>&copy; {{ selectedSeason }} {{ appSettings().appName || 'Kattur Premier League' }}. All rights
+        reserved.</span>
       <span>Designed with passion for cricket</span>
     </div>
   </div>
@@ -766,14 +795,17 @@
           </div>
           <div class="reg-form-group">
             <label>Phone Number <span class="req">*</span></label>
-            <input type="tel" [(ngModel)]="regForm.contactNumber" (ngModelChange)="onTeamLookupChange()" name="contactNumber" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}" required>
+            <input type="tel" [(ngModel)]="regForm.contactNumber" (ngModelChange)="onTeamLookupChange()"
+              name="contactNumber" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}" required>
           </div>
         </div>
         <div class="reg-form-group">
           <label>Password <span class="req">*</span></label>
           <div class="reg-password-wrap">
-            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="regForm.password" name="password" placeholder="Create a strong password" required>
-            <button type="button" (click)="showPassword = !showPassword" class="reg-toggle-pw" aria-label="Toggle password">
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="regForm.password" name="password"
+              placeholder="Create a strong password" required>
+            <button type="button" (click)="showPassword = !showPassword" class="reg-toggle-pw"
+              aria-label="Toggle password">
               <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
             </button>
           </div>
@@ -782,7 +814,8 @@
         <div class="reg-section-label" style="margin-top:1.25rem">Team Information</div>
         <div class="reg-form-group">
           <label>Team Name <span class="req">*</span></label>
-          <input type="text" [(ngModel)]="regForm.teamName" (ngModelChange)="onTeamLookupChange()" name="teamName" placeholder="E.g. Kattur Kings" required>
+          <input type="text" [(ngModel)]="regForm.teamName" (ngModelChange)="onTeamLookupChange()" name="teamName"
+            placeholder="E.g. Kattur Kings" required>
         </div>
 
         <div class="master-match-card" *ngIf="existingTeamMatch">
@@ -823,17 +856,20 @@
         <div class="reg-form-row">
           <div class="reg-form-group">
             <label>Transaction ID <span class="req">*</span></label>
-            <input type="text" [(ngModel)]="regForm.transactionId" name="transactionId" placeholder="e.g. T1234567890" required>
+            <input type="text" [(ngModel)]="regForm.transactionId" name="transactionId" placeholder="e.g. T1234567890"
+              required>
           </div>
           <div class="reg-form-group">
             <label>Payment Screenshot <span class="req">*</span></label>
-            <input type="file" accept="image/*,application/pdf" (change)="onReceiptFileSelected($event)" required class="reg-file-input">
+            <input type="file" accept="image/*,application/pdf" (change)="onReceiptFileSelected($event)" required
+              class="reg-file-input">
           </div>
         </div>
 
         <div class="reg-form-group">
           <label>Notes</label>
-          <textarea [(ngModel)]="regForm.notes" name="notes" placeholder="Any details regarding payment" rows="2" class="reg-textarea"></textarea>
+          <textarea [(ngModel)]="regForm.notes" name="notes" placeholder="Any details regarding payment" rows="2"
+            class="reg-textarea"></textarea>
         </div>
 
         <button type="submit" class="reg-submit-btn" [disabled]="isRegistering">
@@ -852,8 +888,10 @@
 <div class="lightbox" *ngIf="lightboxOpen()" (click)="closeLightbox()">
   <div class="lightbox-inner" (click)="$event.stopPropagation()">
     <button class="lightbox-close" (click)="closeLightbox()" aria-label="Close"><i class="bi bi-x-lg"></i></button>
-    <button class="lightbox-nav lightbox-prev" (click)="prevLightboxImage()" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>
-    <button class="lightbox-nav lightbox-next" (click)="nextLightboxImage()" aria-label="Next"><i class="bi bi-chevron-right"></i></button>
+    <button class="lightbox-nav lightbox-prev" (click)="prevLightboxImage()" aria-label="Previous"><i
+        class="bi bi-chevron-left"></i></button>
+    <button class="lightbox-nav lightbox-next" (click)="nextLightboxImage()" aria-label="Next"><i
+        class="bi bi-chevron-right"></i></button>
     <img [src]="currentLightboxImage?.src" [alt]="currentLightboxImage?.caption" class="lightbox-img">
     <div class="lightbox-caption" *ngIf="currentLightboxImage?.caption">{{ currentLightboxImage?.caption }}</div>
     <div class="lightbox-counter">{{ currentLightboxIndex() + 1 }} / {{ currentLightboxImages().length }}</div>
