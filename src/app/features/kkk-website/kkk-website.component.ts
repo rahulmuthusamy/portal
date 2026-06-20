@@ -211,7 +211,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
         if (settings?.UPIScannerImageURL &&
             !settings.UPIScannerImageURL.startsWith('http') &&
             !settings.UPIScannerImageURL.startsWith('assets')) {
-          settings.UPIScannerImageURL = environment.apiUrl.replace('/api', '') + settings.UPIScannerImageURL;
+          settings.UPIScannerImageURL = environment.apiUrl + settings.UPIScannerImageURL;
         }
         this.appSettings.set(settings || {});
         if (settings) {
@@ -759,9 +759,9 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
 
   // ─── Scroll & Navigation ───────────────────────────────────────────────────
 
-  scrollTo(sectionId: string) {
+  scrollTo(sectionId: string,auction?:any) {
     if (sectionId === 'register') {
-      this.openRegisterModal();
+      this.openRegisterModal(auction);
       return;
     }
     this.activeSection.set(sectionId);
