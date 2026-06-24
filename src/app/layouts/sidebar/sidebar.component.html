@@ -34,21 +34,12 @@
     </ng-container>
   </mat-nav-list>
 
-  <!-- User Profile Section -->
+  <!-- User Profile & Powered By Section -->
   <div class="sidebar-footer mt-auto px-3 py-3" *ngIf="visible">
-    <div class="user-profile d-flex align-items-center p-2 rounded-3">
-      <div class="avatar bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-2"
-        style="width: 36px; height: 36px; font-weight: 600; font-size: 0.9rem;">
-        {{ (user$ | async)?.email?.charAt(0)?.toUpperCase() || 'A' }}
-      </div>
-      <div class="user-info flex-grow-1">
-        <div class="fw-medium text-white small">{{ (user$ | async)?.email || 'Admin' }}</div>
-        <small class="text-white-50" style="font-size: 0.7rem;">
-          {{ (user$ | async)?.role === 'super_admin' ? 'Super Admin' : 'Admin' }}
-        </small>
-      </div>
+    <!-- Powered By -->
+    <div class="sidebar-powered-by p-3 mx-2 mb-3 rounded-3 d-flex align-items-center justify-content-between gap-2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.05);">
+      <span class="text-white-50 fw-bold flex-shrink-0" style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">Powered By</span>
+      <img src="assets/ravens-analytics.png" alt="The Ravens Analytics" style="width: 100%; max-width: 120px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
     </div>
   </div>
-
-
 </div>
