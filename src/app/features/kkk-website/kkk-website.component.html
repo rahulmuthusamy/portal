@@ -153,20 +153,25 @@
     </div>
 
     <div id="teams-scroll" class="teams-track">
-      <div class="team-card" *ngFor="let team of teams()" (click)="openTeamModal(team)">
-        <div class="team-card-header">
-          <div class="team-logo-wrap">
-            <img [src]="team.LogoURL" [alt]="team.Name" class="team-logo">
+      <div class="franchise-card" *ngFor="let team of teams()" (click)="openFranchiseDetail(team)">
+        <div class="franchise-card-bg"></div>
+        <div class="franchise-logo-ring">
+          <img [src]="team.LogoURL" [alt]="team.Name" class="franchise-logo">
+        </div>
+        <div class="franchise-card-body">
+          <h3 class="franchise-name">{{ team.Name }}</h3>
+          <p class="franchise-slogan" *ngIf="team.Slogan">"{{ team.Slogan }}"</p>
+          <div class="franchise-owner" *ngIf="team.OwnerName">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>{{ team.OwnerName }}</span>
+          </div>
+          <div class="franchise-location" *ngIf="team.Location">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>{{ team.Location }}</span>
           </div>
         </div>
-        <div class="team-card-body">
-          <h3 class="team-name">{{ team.Name }}</h3>
-          <p class="team-slogan" *ngIf="team.Slogan">"{{ team.Slogan }}"</p>
-          <div class="team-meta">
-            <span *ngIf="team.Captain" class="meta-tag"><i class="bi bi-person-fill"></i> {{ team.Captain }}</span>
-            <span *ngIf="team.Location" class="meta-tag"><i class="bi bi-geo-alt-fill"></i> {{ team.Location }}</span>
-          </div>
-          <button class="btn-team-profile">View Profile <i class="bi bi-arrow-right"></i></button>
+        <div class="franchise-view-btn">
+          <span>View Team <i class="bi bi-arrow-right"></i></span>
         </div>
       </div>
     </div>
@@ -175,7 +180,87 @@
 
 
 <!-- ═══════════════════════════════════════════════════════
-     STANDINGS / POINTS TABLE
+     FRANCHISE DETAIL MODAL
+══════════════════════════════════════════════════════════ -->
+<div class="franchise-modal-overlay" *ngIf="franchiseDetailOpen()" (click)="closeFranchiseDetail()">
+  <div class="franchise-modal" (click)="$event.stopPropagation()" *ngIf="selectedFranchise() as ft">
+    <button class="franchise-modal-close" (click)="closeFranchiseDetail()" aria-label="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- Hero -->
+    <div class="fm-hero">
+      <div class="fm-logo-wrap">
+        <img [src]="ft.LogoURL" [alt]="ft.Name" class="fm-logo">
+      </div>
+      <div class="fm-hero-info">
+        <h2 class="fm-name">{{ ft.Name }}</h2>
+        <p class="fm-slogan" *ngIf="ft.Slogan">"{{ ft.Slogan }}"</p>
+        <div class="fm-badges">
+          <span class="fm-badge" *ngIf="ft.Location"><i class="bi bi-geo-alt-fill"></i> {{ ft.Location }}</span>
+          <span class="fm-badge fm-badge-season">Season {{ selectedSeason }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info grid -->
+    <div class="fm-info-grid">
+      <div class="fm-info-item" *ngIf="ft.OwnerName">
+        <span class="fm-info-icon"><i class="bi bi-briefcase-fill"></i></span>
+        <div>
+          <span class="fm-info-lbl">Owner</span>
+          <span class="fm-info-val">{{ ft.OwnerName }}</span>
+        </div>
+      </div>
+      <div class="fm-info-item" *ngIf="ft.Captain">
+        <span class="fm-info-icon"><i class="bi bi-person-badge-fill"></i></span>
+        <div>
+          <span class="fm-info-lbl">Captain</span>
+          <span class="fm-info-val">{{ ft.Captain }}</span>
+        </div>
+      </div>
+      <div class="fm-info-item" *ngIf="ft.Coach">
+        <span class="fm-info-icon"><i class="bi bi-clipboard2-pulse-fill"></i></span>
+        <div>
+          <span class="fm-info-lbl">Coach</span>
+          <span class="fm-info-val">{{ ft.Coach }}</span>
+        </div>
+      </div>
+      <div class="fm-info-item" *ngIf="ft.Founded">
+        <span class="fm-info-icon"><i class="bi bi-calendar3"></i></span>
+        <div>
+          <span class="fm-info-lbl">Founded</span>
+          <span class="fm-info-val">{{ ft.Founded }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bio -->
+    <p class="fm-bio" *ngIf="ft.Bio">{{ ft.Bio }}</p>
+
+    <!-- Players -->
+    <div class="fm-players" *ngIf="getPlayersForTeam(ft.Name).length > 0">
+      <h4 class="fm-players-title"><i class="bi bi-people-fill"></i> Squad ({{ getPlayersForTeam(ft.Name).length }} Players)</h4>
+      <div class="fm-squad-grid">
+        <div class="fm-squad-player" *ngFor="let p of getPlayersForTeam(ft.Name)">
+          <img [src]="p.PhotoURL || 'assets/avatars/default.jpg'" [alt]="p.Name" class="fm-squad-avatar">
+          <span class="fm-squad-name">{{ p.Name }}</span>
+          <span class="fm-squad-role">{{ p.Role }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fm-no-players" *ngIf="getPlayersForTeam(ft.Name).length === 0">
+      <i class="bi bi-person-x"></i>
+      <span>Squad to be announced</span>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ═══════════════════════════════════════════════════════
+      STANDINGS / POINTS TABLE
 ══════════════════════════════════════════════════════════ -->
 <section id="standings" class="section-standings">
   <div class="section-container">
@@ -183,47 +268,14 @@
       <div>
         <span class="section-eyebrow">Tournament</span>
         <h2 class="section-title">Points Table</h2>
-        <p class="section-sub">KPL {{ selectedSeason }} standings</p>
+        <p class="section-sub">{{ selectedSeason }} standings</p>
       </div>
     </div>
 
-    <div class="standings-table-wrap">
-      <table class="standings-table">
-        <thead>
-          <tr>
-            <th class="col-rank">#</th>
-            <th class="col-team">Team</th>
-            <th>P</th>
-            <th>W</th>
-            <th>L</th>
-            <th>T</th>
-            <th>NRR</th>
-            <th>Pts</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let row of standings()" [class.leader-row]="row.rank === 1">
-            <td class="col-rank">
-              <span class="rank-badge" [class.rank-1]="row.rank===1" [class.rank-2]="row.rank===2"
-                [class.rank-3]="row.rank===3">
-                {{ row.rank <= 3 ? ['🥇','🥈','🥉'][row.rank-1] : row.rank }} </span>
-            </td>
-            <td class="col-team">
-              <img [src]="row.team.LogoURL" [alt]="row.team.Name" class="standings-logo">
-              <span class="standings-team-name">{{ row.team.Name }}</span>
-            </td>
-            <td>{{ row.played }}</td>
-            <td class="col-won">{{ row.won }}</td>
-            <td>{{ row.lost }}</td>
-            <td>{{ row.tied }}</td>
-            <td class="col-nrr">{{ row.nrr }}</td>
-            <td class="col-pts"><strong>{{ row.points }}</strong></td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="standings-empty" *ngIf="standings().length === 0">
-        Standings will appear once matches are played.
-      </p>
+    <div class="coming-soon-section">
+      <i class="bi bi-clock-history"></i>
+      <h3>Coming Soon</h3>
+      <p>Standings will be available once the tournament begins.</p>
     </div>
   </div>
 </section>
@@ -316,7 +368,7 @@
 
 
 <!-- ═══════════════════════════════════════════════════════
-     PLAYERS SECTION
+      PLAYERS SECTION
 ══════════════════════════════════════════════════════════ -->
 <section id="players" class="section-players">
   <div class="section-container">
@@ -328,63 +380,17 @@
       </div>
     </div>
 
-    <!-- Search + Filters -->
-    <div class="player-controls">
-      <div class="player-search">
-        <i class="bi bi-search"></i>
-        <input type="text" placeholder="Search player or team..." [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearchChange()" name="playerSearch">
-      </div>
-      <div class="role-filters">
-        <button *ngFor="let role of ['All','Batsman','Bowler','All-Rounder','Wicket Keeper']"
-          [class.active]="activeFilter === role" (click)="applyPlayerFilter(role)">
-          {{ role }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Player grid -->
-    <div class="players-grid">
-      <div class="player-card" *ngFor="let player of filteredPlayers" (click)="openPlayerModal(player)">
-        <div class="player-img-wrap">
-          <img [src]="player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="player.Name" class="player-img">
-          <span class="player-role-badge" [ngClass]="getRoleBadgeClass(player.Role)">{{ player.Role }}</span>
-        </div>
-        <div class="player-info">
-          <h4 class="player-name">{{ player.Name }}</h4>
-          <span class="player-team">{{ player.Team }}</span>
-          <div class="player-stats">
-            <div class="pstat"><span class="pstat-val">{{ player.matches || 0 }}</span><span class="pstat-lbl">M</span>
-            </div>
-            <div class="pstat"><span class="pstat-val">{{ player.runs || 0 }}</span><span class="pstat-lbl">Runs</span>
-            </div>
-            <div class="pstat"><span class="pstat-val">{{ player.wickets || 0 }}</span><span
-                class="pstat-lbl">Wkts</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="players-empty" *ngIf="filteredPlayers.length === 0">
-        <i class="bi bi-person-x"></i>
-        <p>No players found.</p>
-      </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination-row" *ngIf="totalPages > 1">
-      <button (click)="prevPage()" [disabled]="currentPage === 1" aria-label="Previous page">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-      <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
-        <i class="bi bi-chevron-right"></i>
-      </button>
+    <div class="coming-soon-section">
+      <i class="bi bi-clock-history"></i>
+      <h3>Coming Soon</h3>
+      <p>Player profiles will be available once registrations are complete.</p>
     </div>
   </div>
 </section>
 
 
 <!-- ═══════════════════════════════════════════════════════
-     STATS / TOP PERFORMERS
+      STATS / TOP PERFORMERS
 ══════════════════════════════════════════════════════════ -->
 <section id="stats" class="section-stats">
   <div class="section-container">
@@ -396,59 +402,10 @@
       </div>
     </div>
 
-    <div class="stats-two-col">
-      <!-- Top Run Scorers -->
-      <div class="stats-leaderboard">
-        <div class="lb-header">
-          <i class="bi bi-lightning-charge-fill"></i>
-          <h3>Top Run Scorers</h3>
-        </div>
-        <div class="lb-empty" *ngIf="topRunScorers().length === 0">Match data loading...</div>
-        <div class="lb-row" *ngFor="let entry of topRunScorers(); let i = index">
-          <span class="lb-rank">{{ i + 1 }}</span>
-          <img [src]="entry.player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="entry.player.Name"
-            class="lb-avatar">
-          <div class="lb-info">
-            <span class="lb-name">{{ entry.player.Name }}</span>
-            <span class="lb-team">{{ entry.player.Team }}</span>
-          </div>
-          <div class="lb-value">
-            <span class="lb-num">{{ entry.value }}</span>
-            <span class="lb-unit">runs</span>
-          </div>
-          <div class="lb-bar-wrap">
-            <div class="lb-bar"
-              [style.width.%]="topRunScorers()[0]?.value ? (entry.value / topRunScorers()[0].value) * 100 : 0"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Top Wicket Takers -->
-      <div class="stats-leaderboard">
-        <div class="lb-header lb-header-bowl">
-          <i class="bi bi-bullseye"></i>
-          <h3>Top Wicket Takers</h3>
-        </div>
-        <div class="lb-empty" *ngIf="topWicketTakers().length === 0">Match data loading...</div>
-        <div class="lb-row" *ngFor="let entry of topWicketTakers(); let i = index">
-          <span class="lb-rank">{{ i + 1 }}</span>
-          <img [src]="entry.player.PhotoURL || 'assets/avatars/default.jpg'" [alt]="entry.player.Name"
-            class="lb-avatar">
-          <div class="lb-info">
-            <span class="lb-name">{{ entry.player.Name }}</span>
-            <span class="lb-team">{{ entry.player.Team }}</span>
-          </div>
-          <div class="lb-value lb-value-bowl">
-            <span class="lb-num">{{ entry.value }}</span>
-            <span class="lb-unit">wkts</span>
-          </div>
-          <div class="lb-bar-wrap">
-            <div class="lb-bar lb-bar-bowl"
-              [style.width.%]="topWicketTakers()[0]?.value ? (entry.value / topWicketTakers()[0].value) * 100 : 0">
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="coming-soon-section">
+      <i class="bi bi-clock-history"></i>
+      <h3>Coming Soon</h3>
+      <p>Top performer statistics will be available after tournament matches.</p>
     </div>
   </div>
 </section>
@@ -828,9 +785,33 @@
         </div>
 
         <div class="reg-form-row">
-          <div class="reg-form-group">
+          <div class="reg-form-group reg-location-group">
             <label>Location</label>
-            <input type="text" [(ngModel)]="regForm.location" name="location" placeholder="City / Area">
+            <div class="reg-searchable-select">
+              <input
+                type="text"
+                [(ngModel)]="locationSearch"
+                name="locationSearch"
+                placeholder="Search city / area..."
+                (focus)="onLocationSearchFocus()"
+                (blur)="onLocationSearchBlur()"
+                autocomplete="off"
+              >
+              <i class="bi bi-search reg-loc-icon"></i>
+              <div class="reg-loc-dropdown" *ngIf="showLocationDropdown && filteredLocations.length > 0">
+                <div
+                  class="reg-loc-option"
+                  *ngFor="let loc of filteredLocations"
+                  (mousedown)="selectLocation(loc)"
+                >
+                  <i class="bi bi-geo-alt"></i>
+                  <span>{{ loc.Name }}<ng-container *ngIf="loc.District">, <span class="loc-district">{{ loc.District }}</span></ng-container></span>
+                </div>
+                <div class="reg-loc-empty" *ngIf="filteredLocations.length === 0">
+                  No locations found
+                </div>
+              </div>
+            </div>
           </div>
           <div class="reg-form-group">
             <label>Team Slogan</label>

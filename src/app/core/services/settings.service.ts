@@ -128,4 +128,21 @@ export class SettingsService {
     deletePoll(id: number): Observable<any> {
         return this.api.delete(`/polls/${id}`);
     }
+
+    // Location Master
+    getLocations(activeOnly = false): Observable<any> {
+        return this.api.get(`${this.endpoint}/locations`, activeOnly ? { active: 'true' } : {});
+    }
+
+    createLocation(data: any): Observable<any> {
+        return this.api.post(`${this.endpoint}/locations`, data);
+    }
+
+    updateLocation(id: number, data: any): Observable<any> {
+        return this.api.put(`${this.endpoint}/locations/${id}`, data);
+    }
+
+    deleteLocation(id: number): Observable<any> {
+        return this.api.delete(`${this.endpoint}/locations/${id}`);
+    }
 }

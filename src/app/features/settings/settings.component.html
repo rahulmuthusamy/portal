@@ -41,6 +41,10 @@
             <span class="tab-icon">🗳️</span>
             <span class="tab-label">Polls & Voting</span>
         </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'locations'" (click)="switchTab('locations')">
+            <span class="tab-icon">📍</span>
+            <span class="tab-label">Location Master</span>
+        </button>
     </div>
 
     <!-- Tab Content -->
@@ -666,5 +670,91 @@
                 </div>
             </div>
         </div>
+
+        <!-- ==================== LOCATION MASTER TAB ==================== -->
+        <div class="tab-panel" *ngIf="activeTab() === 'locations'">
+            <div class="panel-layout">
+                <!-- Left: Add / Edit Form -->
+                <div class="panel-left">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <h2>{{ editingLocation ? '✏️ Edit Location' : '➕ Add Location' }}</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Location Name *</label>
+                                <input type="text" class="form-input" [(ngModel)]="locationForm.Name"
+                                    placeholder="e.g. Eriyur" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">District</label>
+                                <input type="text" class="form-input" [(ngModel)]="locationForm.District"
+                                    placeholder="e.g. Dharmapuri" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-input" [(ngModel)]="locationForm.State"
+                                    placeholder="e.g. Tamil Nadu" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sort Order</label>
+                                <input type="number" class="form-input" [(ngModel)]="locationForm.SortOrder"
+                                    placeholder="0" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select class="form-input" [(ngModel)]="locationForm.IsActive">
+                                    <option [ngValue]="true">Active</option>
+                                    <option [ngValue]="false">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="form-actions" style="display:flex;gap:0.75rem;margin-top:1rem">
+                                <button class="btn-save-all" (click)="saveLocation()" [disabled]="!locationForm.Name">
+                                    {{ editingLocation ? '💾 Update' : '➕ Add Location' }}
+                                </button>
+                                <button class="btn-cancel" *ngIf="editingLocation" (click)="cancelEditLocation()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Locations List -->
+                <div class="panel-right">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <h2>All Locations <span class="badge">{{ locations().length }}</span></h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="empty-state" *ngIf="locations().length === 0">
+                                <div class="empty-icon">📍</div>
+                                <h3>No Locations Yet</h3>
+                                <p>Add locations from the form on the left</p>
+                            </div>
+                            <div class="location-list">
+                                <div class="location-item" *ngFor="let loc of locations()">
+                                    <div class="location-info">
+                                        <div class="location-name">📍 {{ loc.Name }}</div>
+                                        <div class="location-meta">
+                                            <span *ngIf="loc.District">{{ loc.District }}</span>
+                                            <span *ngIf="loc.State">, {{ loc.State }}</span>
+                                            <span class="location-badge" [class.active]="loc.IsActive" [class.inactive]="!loc.IsActive">
+                                                {{ loc.IsActive ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="location-actions">
+                                        <button class="btn-edit-sm" (click)="editLocation(loc)" title="Edit">✏️</button>
+                                        <button class="btn-delete-sm" (click)="deleteLocation(loc.LocationID)" title="Delete">🗑️</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>

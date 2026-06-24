@@ -130,6 +130,11 @@ export class SettingsComponent implements OnInit {
   players: WritableSignal<any[]> = signal([]);
   selectedVoterId = signal<number | null>(null);
 
+  // Location Master State
+  locations: WritableSignal<any[]> = signal([]);
+  editingLocation: any = null;
+  locationForm: any = { Name: '', District: '', State: 'Tamil Nadu', SortOrder: 0, IsActive: true };
+
   // Sponsor Upload State
   newSponsorFile = signal<File | null>(null);
   newSponsorLogoPreview = signal<string>('https://via.placeholder.com/150');
@@ -261,6 +266,16 @@ export class SettingsComponent implements OnInit {
         this.players.set(res.data.players || []);
       }
     });
+    // Load Locations
+    this.loadLocations();
+  }
+
+  loadLocations(): void {
+    this.settingsService.getLocations().subscribe({
+      next: (res) => {
+        this.locations.set(res.data?.locations || []);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -315,6 +330,9 @@ export class SettingsComponent implements OnInit {
     this.activeTab.set(tab);
     if (tab !== 'carousel') {
       this.stopCarouselPreview();
+    }
+    if (tab === 'locations') {
+      this.loadLocations();
     }
   }
 
@@ -911,4 +929,43 @@ export class SettingsComponent implements OnInit {
       this.loadSettings(); // Reload to get fresh IDs from DB
     }, 500);
   }
+
+  // ==================== LOCATION MASTER ====================
+
+  saveLocation(): void {
+    if (!this.locationForm.Name.trim()) return;
+    if (this.editingLocation) {
+      this.settingsService.updateLocation(this.editingLocation.LocationID, this.locationForm).subscribe({
+        next: () => {
+          this.cancelEditLocation();
+          this.loadLocations();
+        }
+      });
+    } else {
+      this.settingsService.createLocation(this.locationForm).subscribe({
+        next: () => {
+          this.locationForm = { Name: '', District: '', State: 'Tamil Nadu', SortOrder: 0, IsActive: true };
+          this.loadLocations();
+        }
+      });
+    }
+  }
+
+  editLocation(loc: any): void {
+    this.editingLocation = loc;
+    this.locationForm = { Name: loc.Name, District: loc.District || '', State: loc.State || 'Tamil Nadu', SortOrder: loc.SortOrder || 0, IsActive: loc.IsActive };
+  }
+
+  cancelEditLocation(): void {
+    this.editingLocation = null;
+    this.locationForm = { Name: '', District: '', State: 'Tamil Nadu', SortOrder: 0, IsActive: true };
+  }
+
+  deleteLocation(id: number): void {
+    if (!confirm('Are you sure you want to delete this location?')) return;
+    this.settingsService.deleteLocation(id).subscribe({
+      next: () => this.loadLocations()
+    });
+  }
 }
+

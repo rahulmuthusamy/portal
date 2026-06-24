@@ -131,6 +131,41 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
    selectedPhotoFile: File | null = null;
    selectedReceiptFile: File | null = null;
 
+  // ─── Location search ──────────────────────────────────────────────────────
+  locationSearch = '';
+  showLocationDropdown = false;
+
+  get filteredLocations() {
+    const q = this.locationSearch.toLowerCase();
+    return this.availableLocations().filter(loc =>
+      !q || (loc.Name || '').toLowerCase().includes(q) || (loc.District || '').toLowerCase().includes(q)
+    );
+  }
+
+  selectLocation(loc: any) {
+    this.regForm.location = loc.Name;
+    this.locationSearch = loc.Name + (loc.District ? `, ${loc.District}` : '');
+    this.showLocationDropdown = false;
+  }
+
+  onLocationSearchFocus() { this.showLocationDropdown = true; }
+  onLocationSearchBlur() { setTimeout(() => this.showLocationDropdown = false, 200); }
+
+  // ─── Franchise detail view ────────────────────────────────────────────────
+  franchiseDetailOpen = signal(false);
+  selectedFranchise = signal<any | null>(null);
+
+  openFranchiseDetail(team: any) {
+    this.selectedFranchise.set(team);
+    this.franchiseDetailOpen.set(true);
+    if (this.isBrowser) document.body.style.overflow = 'hidden';
+  }
+
+  closeFranchiseDetail() {
+    this.franchiseDetailOpen.set(false);
+    if (this.isBrowser) document.body.style.overflow = '';
+  }
+
   // ─── Newsletter ────────────────────────────────────────────────────────────
   newsletterEmail = '';
   newsletterSuccess = false;
@@ -140,6 +175,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   mobileNavOpen = false;
   selectedSeason = '2026';
   availableSeasons = ['2024', '2025', '2026'];
+  availableLocations = signal<any[]>([]);
 
   // ─── Fallback grid ─────────────────────────────────────────────────────────
   gridImages = [
@@ -178,6 +214,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
     this.getTeamList();
     this.getPlayerList();
     this.loadAllMatches();
+    this.loadLocations();
 
     if (this.isBrowser) {
       this.updateActiveSection();
@@ -191,6 +228,15 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   }
 
   // ─── Data loading ──────────────────────────────────────────────────────────
+
+  loadLocations() {
+    this.settingsService.getLocations(true).subscribe({
+      next: (res: any) => {
+        this.availableLocations.set(res.data?.locations || []);
+      },
+      error: () => {}
+    });
+  }
 
   loadAppSettings() {
     this.settingsService.getAppSettings().subscribe({
@@ -807,6 +853,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
       if (this.teamModalOpen()) this.closeTeamModal();
       if (this.playerModalOpen()) this.closePlayerModal();
       if (this.registerModalOpen()) this.closeRegisterModal();
+      if (this.franchiseDetailOpen()) this.closeFranchiseDetail();
     }
     if (this.lightboxOpen()) {
       if (e.key === 'ArrowRight') this.nextLightboxImage();
