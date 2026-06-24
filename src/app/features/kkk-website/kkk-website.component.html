@@ -33,7 +33,7 @@
       <span class="live-pill" *ngIf="liveMatches().length > 0" (click)="scrollTo('fixtures')">
         <span class="live-dot"></span> LIVE
       </span>
-      <button class="btn-register-nav" (click)="scrollTo('register')">Register Team</button>
+      <!-- <button class="btn-register-nav" (click)="scrollTo('register')">Register Team</button> -->
       <button class="btn-login-nav" routerLink="/login">Login</button>
       <!-- Mobile hamburger -->
       <button class="hamburger" (click)="mobileNavOpen = !mobileNavOpen" aria-label="Menu">
@@ -81,7 +81,7 @@
   </div>
 
   <!-- Hero Content -->
-  <div class="hero-content">
+  <!-- <div class="hero-content">
     <div class="hero-eyebrow">
       <span class="season-badge">Season {{ selectedSeason }}</span>
       <span class="tournament-name">{{ appSettings().appName || 'Kattur Premier League' }}</span>
@@ -103,9 +103,8 @@
     </div>
     <div class="hero-cta">
       <button class="btn-hero-primary" (click)="scrollTo('fixtures')">View Fixtures</button>
-      <!-- <button class="btn-hero-outline" (click)="scrollTo('register')">Register Team</button> -->
     </div>
-  </div>
+  </div> -->
 
   <!-- Live match ticker inside hero -->
   <div class="hero-live-strip" *ngIf="liveMatches().length > 0">
