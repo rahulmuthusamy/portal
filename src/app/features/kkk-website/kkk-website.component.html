@@ -239,7 +239,8 @@
 
     <!-- Players -->
     <div class="fm-players" *ngIf="getPlayersForTeam(ft.Name).length > 0">
-      <h4 class="fm-players-title"><i class="bi bi-people-fill"></i> Squad ({{ getPlayersForTeam(ft.Name).length }} Players)</h4>
+      <h4 class="fm-players-title"><i class="bi bi-people-fill"></i> Squad ({{ getPlayersForTeam(ft.Name).length }}
+        Players)</h4>
       <div class="fm-squad-grid">
         <div class="fm-squad-player" *ngFor="let p of getPlayersForTeam(ft.Name)">
           <img [src]="p.PhotoURL || 'assets/avatars/default.jpg'" [alt]="p.Name" class="fm-squad-avatar">
@@ -251,11 +252,151 @@
 
     <div class="fm-no-players" *ngIf="getPlayersForTeam(ft.Name).length === 0">
       <i class="bi bi-person-x"></i>
-      <span>Squad to be announced</span>
+      <span>Squad To Be Announced</span>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════
+     AUCTION SECTION
+══════════════════════════════════════════════════════════ -->
+<section id="auction" class="section-auction">
+  <div class="auction-bg-img" style="background-image: url('assets/hero-image.jpeg')"></div>
+  <div class="auction-bg-overlay"></div>
+
+  <div class="section-container position-relative">
+    <div class="section-header">
+      <div>
+        <span class="section-eyebrow" style="color: rgba(255,215,0,0.8);">Player Auction</span>
+        <h2 class="section-title" style="color:#fff;">Bid. Win. Build.</h2>
+        <p class="section-sub" style="color: rgba(255,255,255,0.6);">Build your dream squad at the auction</p>
+      </div>
+    </div>
+
+    <div class="auction-empty" *ngIf="auctionList.length === 0">
+      <i class="bi bi-calendar-event"></i>
+      <h3>No Active Auctions</h3>
+      <p>Stay tuned for upcoming tournament announcements.</p>
+    </div>
+
+    <div id="auctionCarousel" class="carousel slide" data-bs-ride="carousel" *ngIf="auctionList.length > 0">
+      <div class="carousel-indicators" *ngIf="auctionList.length > 1">
+        <button *ngFor="let a of auctionList; let i = index" data-bs-target="#auctionCarousel"
+          [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
+      </div>
+
+      <div class="carousel-inner">
+        <div class="carousel-item" *ngFor="let auction of auctionList; let i = index; let first = first"
+          [class.active]="first">
+          <div class="auction-card">
+            <div class="auction-card-left">
+              <span class="auction-badge"><i class="bi bi-broadcast me-2"></i> AUCTION</span>
+              <h2 class="auction-title">{{ auction.Name }}</h2>
+              <p class="auction-desc">Bid on star players. Build your franchise. Conquer the league.</p>
+
+              <div class="auction-details">
+                <div class="auction-detail">
+                  <i class="bi bi-calendar-event-fill"></i>
+                  <div>
+                    <span class="detail-lbl">Date</span>
+                    <span class="detail-val">To Be Announced</span>
+                    <!-- {{ auction.StartDate | date:'mediumDate' }} -->
+                  </div>
+                </div>
+                <div class="auction-detail">
+                  <i class="bi bi-clock-fill"></i>
+                  <div>
+                    <span class="detail-lbl">Time</span>
+                    <span class="detail-val">To Be Announced</span>
+                    <!-- {{ auction.StartDate | date:'shortTime' }} -->
+                  </div>
+                </div>
+                <div class="auction-detail">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <div>
+                    <span class="detail-lbl">Venue</span>
+                    <span class="detail-val">{{ auction.location || 'ECL Ground' }}</span>
+                  </div>
+                </div>
+                <div class="auction-detail">
+                  <i class="bi bi-people-fill"></i>
+                  <div>
+                    <span class="detail-lbl">Teams</span>
+                    <span class="detail-val">{{ auction.registeredTeamCount || teams().length }} Franchises</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Registered Teams Display -->
+              <div class="registered-teams-section"
+                *ngIf="auction.registeredTeams && auction.registeredTeams.length > 0">
+                <div class="reg-teams-label">
+                  <i class="bi bi-check-circle-fill" style="color: #22c55e;"></i>
+                  Registered Teams ({{ auction.registeredTeams.length }})
+                </div>
+                <div class="reg-teams-avatars">
+                  <div class="reg-team-avatar" *ngFor="let rt of auction.registeredTeams" [title]="rt.name">
+                    <img [src]="rt.logoUrl" [alt]="rt.name" class="reg-team-logo">
+                    <span class="reg-team-name">{{ rt.name }}</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <button class="btn-auction-register" (click)="scrollTo('register', auction)">
+                Register Your Team <i class="bi bi-arrow-right ms-2"></i>
+              </button>
+
+
+            </div>
+
+            <div class="auction-card-right">
+              <ng-container *ngIf="auctionCountdowns[auction.id || auction._id || i] as timer">
+                <div class="countdown-label-top">
+                  <span *ngIf="!timer.started">Auction Starts In</span>
+                  <span *ngIf="timer.started" class="started-label">🎯 Auction Underway!</span>
+                </div>
+                <div class="countdown-grid" *ngIf="!timer.started">
+                  <div class="cd-unit">
+                    <div class="cd-num">{{ timer.days }}</div>
+                    <div class="cd-lbl">Days</div>
+                  </div>
+                  <div class="cd-sep">:</div>
+                  <div class="cd-unit">
+                    <div class="cd-num">{{ timer.hours }}</div>
+                    <div class="cd-lbl">Hours</div>
+                  </div>
+                  <div class="cd-sep">:</div>
+                  <div class="cd-unit">
+                    <div class="cd-num">{{ timer.minutes }}</div>
+                    <div class="cd-lbl">Mins</div>
+                  </div>
+                  <div class="cd-sep">:</div>
+                  <div class="cd-unit">
+                    <div class="cd-num">{{ timer.seconds }}</div>
+                    <div class="cd-lbl">Secs</div>
+                  </div>
+                </div>
+                <div class="auction-status-info" *ngIf="timer.started">
+                  <span class="live-pill-lg"><span class="live-dot"></span> LIVE NOW</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button *ngIf="auctionList.length > 1" class="carousel-control-prev" data-bs-target="#auctionCarousel"
+        data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button *ngIf="auctionList.length > 1" class="carousel-control-next" data-bs-target="#auctionCarousel"
+        data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </div>
+</section>
 
 
 <!-- ═══════════════════════════════════════════════════════
@@ -345,7 +486,7 @@
         </div>
 
         <div class="fixture-card-footer">
-          <span class="fixture-venue"><i class="bi bi-geo-alt"></i> {{ match.Venue || 'Kattur Ground' }}</span>
+          <span class="fixture-venue"><i class="bi bi-geo-alt"></i> {{ match.Venue || 'ECL Ground' }}</span>
           <span class="fixture-time" *ngIf="match.Status === 'Scheduled'">
             <i class="bi bi-clock"></i> {{ formatMatchTime(match.MatchDate) }}
           </span>
@@ -429,146 +570,6 @@
       <div class="sponsors-empty" *ngIf="dynamicSponsors().length === 0">
         <p>Partnering with the community...</p>
       </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ═══════════════════════════════════════════════════════
-     AUCTION SECTION
-══════════════════════════════════════════════════════════ -->
-<section id="auction" class="section-auction">
-  <div class="auction-bg-img" style="background-image: url('assets/hero-image.jpeg')"></div>
-  <div class="auction-bg-overlay"></div>
-
-  <div class="section-container position-relative">
-    <div class="section-header">
-      <div>
-        <span class="section-eyebrow" style="color: rgba(255,215,0,0.8);">Player Auction</span>
-        <h2 class="section-title" style="color:#fff;">Bid. Win. Build.</h2>
-        <p class="section-sub" style="color: rgba(255,255,255,0.6);">Build your dream squad at the auction</p>
-      </div>
-    </div>
-
-    <div class="auction-empty" *ngIf="auctionList.length === 0">
-      <i class="bi bi-calendar-event"></i>
-      <h3>No Active Auctions</h3>
-      <p>Stay tuned for upcoming tournament announcements.</p>
-    </div>
-
-    <div id="auctionCarousel" class="carousel slide" data-bs-ride="carousel" *ngIf="auctionList.length > 0">
-      <div class="carousel-indicators" *ngIf="auctionList.length > 1">
-        <button *ngFor="let a of auctionList; let i = index" data-bs-target="#auctionCarousel"
-          [attr.data-bs-slide-to]="i" [class.active]="i === 0"></button>
-      </div>
-
-      <div class="carousel-inner">
-        <div class="carousel-item" *ngFor="let auction of auctionList; let i = index; let first = first"
-          [class.active]="first">
-          <div class="auction-card">
-            <div class="auction-card-left">
-              <span class="auction-badge"><i class="bi bi-broadcast me-2"></i> AUCTION</span>
-              <h2 class="auction-title">{{ auction.Name }}</h2>
-              <p class="auction-desc">Bid on star players. Build your franchise. Conquer the league.</p>
-
-              <div class="auction-details">
-                <div class="auction-detail">
-                  <i class="bi bi-calendar-event-fill"></i>
-                  <div>
-                    <span class="detail-lbl">Date</span>
-                    <span class="detail-val">{{ auction.StartDate | date:'mediumDate' }}</span>
-                  </div>
-                </div>
-                <div class="auction-detail">
-                  <i class="bi bi-clock-fill"></i>
-                  <div>
-                    <span class="detail-lbl">Time</span>
-                    <span class="detail-val">{{ auction.StartDate | date:'shortTime' }}</span>
-                  </div>
-                </div>
-                <div class="auction-detail">
-                  <i class="bi bi-geo-alt-fill"></i>
-                  <div>
-                    <span class="detail-lbl">Venue</span>
-                    <span class="detail-val">{{ auction.location || 'Kattur Ground' }}</span>
-                  </div>
-                </div>
-                <div class="auction-detail">
-                  <i class="bi bi-people-fill"></i>
-                  <div>
-                    <span class="detail-lbl">Teams</span>
-                    <span class="detail-val">{{ auction.registeredTeamCount || teams().length }} Franchises</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Registered Teams Display -->
-              <div class="registered-teams-section"
-                *ngIf="auction.registeredTeams && auction.registeredTeams.length > 0">
-                <div class="reg-teams-label">
-                  <i class="bi bi-check-circle-fill" style="color: #22c55e;"></i>
-                  Registered Teams ({{ auction.registeredTeams.length }})
-                </div>
-                <div class="reg-teams-avatars">
-                  <div class="reg-team-avatar" *ngFor="let rt of auction.registeredTeams" [title]="rt.name">
-                    <img [src]="rt.logoUrl" [alt]="rt.name" class="reg-team-logo">
-                    <span class="reg-team-name">{{ rt.name }}</span>  
-                  </div>  
-                </div>
-                
-              </div>
-
-              <button class="btn-auction-register" (click)="scrollTo('register', auction)">
-                      Register Your Team <i class="bi bi-arrow-right ms-2"></i>
-                    </button>
-
-
-            </div>
-
-            <div class="auction-card-right">
-              <ng-container *ngIf="auctionCountdowns[auction.id || auction._id || i] as timer">
-                <div class="countdown-label-top">
-                  <span *ngIf="!timer.started">Auction Starts In</span>
-                  <span *ngIf="timer.started" class="started-label">🎯 Auction Underway!</span>
-                </div>
-                <div class="countdown-grid" *ngIf="!timer.started">
-                  <div class="cd-unit">
-                    <div class="cd-num">{{ timer.days }}</div>
-                    <div class="cd-lbl">Days</div>
-                  </div>
-                  <div class="cd-sep">:</div>
-                  <div class="cd-unit">
-                    <div class="cd-num">{{ timer.hours }}</div>
-                    <div class="cd-lbl">Hours</div>
-                  </div>
-                  <div class="cd-sep">:</div>
-                  <div class="cd-unit">
-                    <div class="cd-num">{{ timer.minutes }}</div>
-                    <div class="cd-lbl">Mins</div>
-                  </div>
-                  <div class="cd-sep">:</div>
-                  <div class="cd-unit">
-                    <div class="cd-num">{{ timer.seconds }}</div>
-                    <div class="cd-lbl">Secs</div>
-                  </div>
-                </div>
-                <div class="auction-status-info" *ngIf="timer.started">
-                  <span class="live-pill-lg"><span class="live-dot"></span> LIVE NOW</span>
-                </div>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button *ngIf="auctionList.length > 1" class="carousel-control-prev" data-bs-target="#auctionCarousel"
-        data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button *ngIf="auctionList.length > 1" class="carousel-control-next" data-bs-target="#auctionCarousel"
-        data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </button>
     </div>
   </div>
 </section>
@@ -790,24 +791,14 @@
           <div class="reg-form-group reg-location-group">
             <label>Location</label>
             <div class="reg-searchable-select">
-              <input
-                type="text"
-                [(ngModel)]="locationSearch"
-                name="locationSearch"
-                placeholder="Search city / area..."
-                (focus)="onLocationSearchFocus()"
-                (blur)="onLocationSearchBlur()"
-                autocomplete="off"
-              >
+              <input type="text" [(ngModel)]="locationSearch" name="locationSearch" placeholder="Search city / area..."
+                (focus)="onLocationSearchFocus()" (blur)="onLocationSearchBlur()" autocomplete="off">
               <i class="bi bi-search reg-loc-icon"></i>
               <div class="reg-loc-dropdown" *ngIf="showLocationDropdown && filteredLocations.length > 0">
-                <div
-                  class="reg-loc-option"
-                  *ngFor="let loc of filteredLocations"
-                  (mousedown)="selectLocation(loc)"
-                >
+                <div class="reg-loc-option" *ngFor="let loc of filteredLocations" (mousedown)="selectLocation(loc)">
                   <i class="bi bi-geo-alt"></i>
-                  <span>{{ loc.Name }}<ng-container *ngIf="loc.District">, <span class="loc-district">{{ loc.District }}</span></ng-container></span>
+                  <span>{{ loc.Name }}<ng-container *ngIf="loc.District">, <span class="loc-district">{{ loc.District
+                        }}</span></ng-container></span>
                 </div>
                 <div class="reg-loc-empty" *ngIf="filteredLocations.length === 0">
                   No locations found
