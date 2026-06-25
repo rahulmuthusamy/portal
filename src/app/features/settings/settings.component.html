@@ -37,10 +37,10 @@
             <span class="tab-icon">🤝</span>
             <span class="tab-label">Sponsors</span>
         </button>
-        <button class="tab-btn" [class.active]="activeTab() === 'polls'" (click)="switchTab('polls')">
+        <!-- <button class="tab-btn" [class.active]="activeTab() === 'polls'" (click)="switchTab('polls')">
             <span class="tab-icon">🗳️</span>
             <span class="tab-label">Polls & Voting</span>
-        </button>
+        </button> -->
         <button class="tab-btn" [class.active]="activeTab() === 'locations'" (click)="switchTab('locations')">
             <span class="tab-icon">📍</span>
             <span class="tab-label">Location Master</span>
@@ -289,12 +289,13 @@
                                 <!-- UPI Information -->
                                 <div class="settings-section">
                                     <h3 class="section-title">💳 UPI Payment Details</h3>
-                                    
+
                                     <div class="form-group">
                                         <label>UPI Scanner Image</label>
                                         <div class="logo-upload">
                                             <div class="logo-preview">
-                                                <img [src]="appSettings().upiScannerImage || 'assets/placeholder-qr.png'" alt="UPI Scanner">
+                                                <img [src]="appSettings().upiScannerImage || 'assets/placeholder-qr.png'"
+                                                    alt="UPI Scanner">
                                             </div>
                                             <input type="file" #upiScannerFileInput accept="image/*"
                                                 (change)="onUpiScannerFileSelect($event)" style="display: none;">
@@ -313,8 +314,7 @@
 
                                     <div class="form-group">
                                         <label>UPI ID</label>
-                                        <input type="text" formControlName="upiId"
-                                            placeholder="example@upi">
+                                        <input type="text" formControlName="upiId" placeholder="example@upi">
                                     </div>
                                 </div>
 
@@ -739,14 +739,16 @@
                                         <div class="location-meta">
                                             <span *ngIf="loc.District">{{ loc.District }}</span>
                                             <span *ngIf="loc.State">, {{ loc.State }}</span>
-                                            <span class="location-badge" [class.active]="loc.IsActive" [class.inactive]="!loc.IsActive">
+                                            <span class="location-badge" [class.active]="loc.IsActive"
+                                                [class.inactive]="!loc.IsActive">
                                                 {{ loc.IsActive ? 'Active' : 'Inactive' }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="location-actions">
                                         <button class="btn-edit-sm" (click)="editLocation(loc)" title="Edit">✏️</button>
-                                        <button class="btn-delete-sm" (click)="deleteLocation(loc.LocationID)" title="Delete">🗑️</button>
+                                        <button class="btn-delete-sm" (click)="deleteLocation(loc.LocationID)"
+                                            title="Delete">🗑️</button>
                                     </div>
                                 </div>
                             </div>

@@ -10,6 +10,7 @@ import { PlayerService } from '../services/players.service';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { Player } from '../models/player.model';
 import { environment } from '@environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registration',
@@ -54,6 +55,9 @@ export class PlayerRegistrationComponent implements OnInit {
       actions: [
         {
           text: 'Edit', type: 'Edit', class: 'btn-outline-info'
+        },
+        {
+          text: 'Delete', type: 'Delete', class: 'btn-outline-danger ms-2'
         }
       ]
     }
@@ -71,6 +75,28 @@ export class PlayerRegistrationComponent implements OnInit {
       console.log('View/Edit clicked', event.row);
 
       this.router.navigate([`/kkk/registration-form-edit/${event.row.PlayerID}`]);
+    } else if (event.type === 'Delete') {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You want to delete player "${event.row.Name}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.playerService.delete(event.row.PlayerID).subscribe({
+            next: () => {
+              Swal.fire('Deleted!', 'The player has been deleted.', 'success');
+              this.ngOnInit();
+            },
+            error: (err: any) => {
+              Swal.fire('Error!', err.error?.message || 'Failed to delete player.', 'error');
+            }
+          });
+        }
+      });
     }
   }
 

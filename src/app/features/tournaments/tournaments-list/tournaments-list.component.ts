@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { TournamentService } from '../services/tournament.service';
 import { environment } from '@environments/environment';
 import { TeamsBannerComponent } from '@shared/components/teams-banner/teams-banner.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-tournaments-list',
@@ -37,6 +38,30 @@ export class TournamentsListComponent implements OnInit {
         this.tournaments.set(data);
       },
       error: (err) => console.error('Error loading tournaments', err)
+    });
+  }
+
+  deleteTournament(tournament: any): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You want to delete tournament "${tournament.Name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.tournamentService.delete(tournament.TournamentID).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'The tournament has been deleted.', 'success');
+            this.loadTournaments();
+          },
+          error: (err: any) => {
+            Swal.fire('Error!', err.error?.message || 'Failed to delete tournament.', 'error');
+          }
+        });
+      }
     });
   }
 }

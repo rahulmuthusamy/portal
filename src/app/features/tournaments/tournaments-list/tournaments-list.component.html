@@ -44,9 +44,12 @@
                         [routerLink]="['/kkk/tournament-details', t.TournamentID]">
                         Manage League
                     </button>
-                    <button class="btn btn-light border px-3"
+                    <button class="btn btn-light border px-3 ms-2"
                         [routerLink]="['/kkk/tournament-form', {id: t.TournamentID}]">
                         <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-light text-danger border px-3 ms-2" (click)="deleteTournament(t)">
+                        <i class="bi bi-trash"></i>
                     </button>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { map, Observable, tap } from 'rxjs';
 import { TeamsService } from '../services/teams.service';
 import { CommonModule } from '@angular/common';
 import { environment } from '@environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-teams',
@@ -46,6 +47,9 @@ export class TeamsComponent implements OnInit {
       actions: [
         {
           text: 'Edit', type: 'Edit', class: 'btn-outline-info'
+        },
+        {
+          text: 'Delete', type: 'Delete', class: 'btn-outline-danger ms-2'
         }
       ]
     }
@@ -62,6 +66,28 @@ export class TeamsComponent implements OnInit {
     if (event.type === 'Edit') {
       sessionStorage.setItem('TeamID', event.row.TeamID);
       this.router.navigate(['/kkk/teams-form']);
+    } else if (event.type === 'Delete') {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You want to delete team "${event.row.Name}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.teamService.delete(event.row.TeamID).subscribe({
+            next: () => {
+              Swal.fire('Deleted!', 'The team has been deleted.', 'success');
+              this.ngOnInit();
+            },
+            error: (err: any) => {
+              Swal.fire('Error!', err.error?.message || 'Failed to delete team.', 'error');
+            }
+          });
+        }
+      });
     }
   }
 

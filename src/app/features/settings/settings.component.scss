@@ -1190,3 +1190,77 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-left: 0.4rem;
     vertical-align: middle;
 }
+
+// ==================== RESPONSIVE DESIGN (MOBILE MAX-WIDTH 768px) ====================
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 15px;
+    }
+
+    .settings-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding: 16px;
+        
+        .settings-title {
+            font-size: 24px;
+            justify-content: center;
+        }
+
+        .settings-subtitle {
+            text-align: center;
+        }
+
+        .btn-save-all {
+            width: 100%;
+        }
+    }
+
+    .tab-navigation {
+        width: 100%;
+        justify-content: center;
+
+        .tab-btn {
+            flex: 1 1 auto;
+            text-align: center;
+            justify-content: center;
+            font-size: 13px;
+            padding: 10px 15px;
+        }
+    }
+
+    .carousel-item {
+        grid-template-columns: 1fr;
+        
+        .carousel-item-preview img {
+            height: 150px;
+        }
+
+        .carousel-item-actions {
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+    }
+
+    .logo-upload {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .gallery-actions {
+        flex-direction: column;
+        align-items: stretch;
+        
+        .add-category-wrapper {
+            flex-direction: column;
+            width: 100%;
+
+            input { width: 100%; }
+        }
+    }
+
+    .sponsor-item {
+        grid-template-columns: 1fr;
+    }
+}
