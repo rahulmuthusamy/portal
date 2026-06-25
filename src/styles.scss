@@ -110,12 +110,174 @@ body {
 
 /* Make snackbar responsive */
 @media (max-width: 600px) {
-
   .snackbar-success,
   .snackbar-error,
   .snackbar-info {
     font-size: 14px;
     padding: 12px 16px !important;
     max-width: 90%;
+  }
+}
+
+// ============================================================
+// GLOBAL MOBILE RESPONSIVE — Admin Portal
+// Covers all admin pages at ≤768px and ≤480px
+// ============================================================
+
+@media (max-width: 768px) {
+
+  // --- Header toolbar ---
+  .header-toolbar {
+    height: 56px !important;
+    padding: 0 12px !important;
+  }
+
+  // --- Main content area padding ---
+  .main-content {
+    padding: 12px !important;
+  }
+
+  // --- Page-level headings / title rows ---
+  .page-header,
+  .d-flex.justify-content-between {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  // --- Bootstrap grid: make col-md-* stack on mobile ---
+  .row > [class*="col-md-"],
+  .row > [class*="col-lg-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  // --- Cards ---
+  .card,
+  .content-card {
+    padding: 14px !important;
+    margin-bottom: 14px;
+    border-radius: 10px;
+  }
+
+  // --- Data Table: ensure horizontal scroll and smaller fonts ---
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+
+  .custom-table {
+    font-size: 0.78rem;
+
+    th, td {
+      white-space: nowrap;
+      padding: 8px 10px !important;
+    }
+  }
+
+  // Pagination row
+  .d-flex.justify-content-between.align-items-center {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px;
+
+    .btn-group { align-self: flex-end; }
+  }
+
+  // --- Dynamic form: stack all form groups ---
+  .dynamic-form,
+  form .row {
+    flex-direction: column;
+  }
+
+  form .row > [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  // --- Buttons: allow wrapping ---
+  .btn-group,
+  .d-flex.gap-2,
+  .d-flex.gap-3 {
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  // --- Stats / KPI cards in a row → grid on mobile ---
+  .stats-row,
+  .kpi-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px;
+  }
+
+  // --- Modal dialogs ---
+  .modal-dialog {
+    margin: 8px !important;
+    max-width: calc(100vw - 16px) !important;
+  }
+
+  .modal-body {
+    padding: 16px !important;
+  }
+
+  // --- Sidebar (Angular Material mat-sidenav) ---
+  // Will be hidden/overlay on mobile due to BreakpointObserver
+  .mat-sidenav-container .mat-sidenav {
+    width: 260px !important;
+  }
+
+  // --- Tournament / Team / Player list action buttons ---
+  .tournament-actions,
+  .list-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  // --- Sticky form-actions footer ---
+  .form-actions-sticky {
+    padding: 12px 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+
+  // Even smaller screens: single column stats
+  .stats-row,
+  .kpi-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  // Table action icons — shrink slightly
+  .btn-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  // Auth / login page
+  .login-card,
+  .auth-card {
+    margin: 16px !important;
+    padding: 20px !important;
+  }
+
+  // Page section padding
+  .section-teams,
+  .section-fixtures,
+  .section-players,
+  .section-gallery,
+  .section-stats,
+  .section-sponsors,
+  .section-auction {
+    padding: 2.5rem 0 !important;
+  }
+
+  .section-container {
+    padding: 0 1rem !important;
   }
 }

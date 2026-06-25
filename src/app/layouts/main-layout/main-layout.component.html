@@ -1,6 +1,6 @@
 <mat-sidenav-container class="sidenav-container">
   <!-- Sidebar -->
-  <mat-sidenav #drawer mode="side" [opened]="sidebarOpen" class="sidenav" fixedInViewport>
+  <mat-sidenav #drawer [mode]="isMobile ? 'over' : 'side'" [opened]="sidebarOpen" class="sidenav" fixedInViewport>
     <app-sidebar [visible]="sidebarOpen"></app-sidebar>
   </mat-sidenav>
 
@@ -11,11 +11,12 @@
     <app-breadcrumb></app-breadcrumb>
 
     <!-- Main router content -->
-    <div class="main-content animate-fade">
+    <div class="main-content animate-fade" (click)="closeSidebarOnMobile()">
       <router-outlet></router-outlet>
     </div>
 
     <!-- Footer -->
     <!-- <app-footer></app-footer> -->
   </mat-sidenav-content>
+
 </mat-sidenav-container>

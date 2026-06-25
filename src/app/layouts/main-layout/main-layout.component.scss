@@ -58,3 +58,18 @@ mat-sidenav-content {
   padding: 24px;
   margin-bottom: 24px;
 }
+
+@media (max-width: 768px) {
+  .sidenav {
+    width: 280px;
+  }
+
+  .main-content {
+    padding: 16px 16px;
+    min-height: calc(100vh - 56px);
+  }
+
+  .content-card {
+    padding: 16px;
+  }
+}

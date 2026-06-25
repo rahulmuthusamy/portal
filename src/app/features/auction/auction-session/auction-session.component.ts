@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 import { AuctionSessionService } from '../services/auction-session.service';
 import { DataTableComponent, TableConfig } from '@shared/components/data-table/data-table.component';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 import { ButtonComponent } from '@shared/forms/form-controls';
 import { FormsModule } from '@angular/forms';
 
@@ -49,7 +50,8 @@ export class AuctionSessionComponent implements OnInit {
       actions: [
         { text: 'Manage', type: 'Manage', class: 'btn-outline-primary' },
         { text: 'Edit', type: 'Edit', class: 'btn-outline-info' },
-        { text: 'Report', type: 'Report', class: 'btn-outline-success' }
+        { text: 'Report', type: 'Report', class: 'btn-outline-success' },
+        { text: 'Delete', type: 'Delete', class: 'btn-outline-danger ms-2' }
       ]
     }
   ]
@@ -69,6 +71,28 @@ export class AuctionSessionComponent implements OnInit {
       this.router.navigate(['/kkk/auction-session-detail', event.row.SessionID]);
     } else if (event.type === 'Report') {
       this.router.navigate(['/kkk/auction-report', event.row.SessionID]);
+    } else if (event.type === 'Delete') {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You want to delete auction session "${event.row.Name}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.auctionSessionService.delete(event.row.SessionID).subscribe({
+            next: () => {
+              Swal.fire('Deleted!', 'The session has been deleted.', 'success');
+              this.ngOnInit();
+            },
+            error: (err: any) => {
+              Swal.fire('Error!', err.error?.message || 'Failed to delete session.', 'error');
+            }
+          });
+        }
+      });
     }
   }
 

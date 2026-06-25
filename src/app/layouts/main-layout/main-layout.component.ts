@@ -27,13 +27,22 @@ import { SidebarComponent } from 'app/layouts/sidebar/sidebar.component';
 })
 export class MainLayoutComponent {
   sidebarOpen = true;
+  isMobile = false;
+
   constructor(private breakpointObserver: BreakpointObserver) {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+      this.isMobile = result.matches;
       this.sidebarOpen = !result.matches;
     });
   }
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebarOnMobile() {
+    if (this.isMobile && this.sidebarOpen) {
+      this.sidebarOpen = false;
+    }
   }
 }
