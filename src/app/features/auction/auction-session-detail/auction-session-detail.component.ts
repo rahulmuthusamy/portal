@@ -34,17 +34,17 @@ export class AuctionSessionDetailComponent implements OnInit {
   sessionId = signal<number | null>(null);
   sessionData = signal<any>(null);
   loading = signal(true);
-  
+
   sessionTeams = signal<any[]>([]);
   sessionPlayers = signal<any[]>([]);
-  
+
   // For adding
   allTeams = signal<any[]>([]);
   allPlayers = signal<any[]>([]);
-  
+
   selectedTeamId = signal<number | null>(null);
   selectedPlayerId = signal<number | null>(null);
-  playerBasePrice = signal<number>(100000);
+  playerBasePrice = signal<number>(100);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -77,7 +77,7 @@ export class AuctionSessionDetailComponent implements OnInit {
 
     // Load registered teams
     this.loadSessionTeams();
-    
+
     // Load player pool
     this.loadSessionPlayers();
 

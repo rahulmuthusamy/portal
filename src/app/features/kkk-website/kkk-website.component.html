@@ -343,9 +343,14 @@
 
               </div>
 
-              <button class="btn-auction-register" (click)="scrollTo('register', auction)">
-                Register Your Team <i class="bi bi-arrow-right ms-2"></i>
-              </button>
+              <div class="auction-register-actions">
+                <button class="btn-auction-register-team" (click)="scrollTo('register', auction, 'team')">
+                  <i class="bi bi-shield-fill-plus me-2"></i> Register Your Team
+                </button>
+                <button class="btn-auction-register-player" (click)="scrollTo('register', auction, 'player')">
+                  <i class="bi bi-person-fill-add me-2"></i> Register Player
+                </button>
+              </div>
 
 
             </div>
@@ -708,7 +713,7 @@
       <div class="reg-modal-title">
         <span class="reg-modal-icon">🏏</span>
         <div>
-          <h3>Register Your Team</h3>
+          <h3>{{ regType === 'team' ? 'Register Your Team' : 'Register Player' }}</h3>
           <p *ngIf="selectedAuctionForReg">{{ selectedAuctionForReg.Name }}</p>
         </div>
       </div>
@@ -721,7 +726,9 @@
     <div class="reg-modal-success" *ngIf="registrationSuccess">
       <div class="reg-success-icon">✅</div>
       <h3>Registration Submitted!</h3>
-      <p>Admin will review and approve your team.<br>You'll receive login credentials once approved.</p>
+      <p *ngIf="regType === 'team'">Admin will review and approve your team.<br>You'll receive login credentials once
+        approved.</p>
+      <p *ngIf="regType === 'player'">You have been successfully registered for the auction pool.</p>
       <div class="reg-success-loader">
         <div class="success-progress-bar"></div>
       </div>
@@ -737,7 +744,7 @@
         <span>{{ registrationError }}</span>
       </div>
 
-      <form (ngSubmit)="submitRegistration()">
+      <form (ngSubmit)="submitRegistration()" *ngIf="regType === 'team'">
         <div class="reg-section-label">Auction Session</div>
         <div class="reg-form-group">
           <label>Upcoming Auction <span class="req">*</span></label>
@@ -779,10 +786,16 @@
         </div>
 
         <div class="master-match-card" *ngIf="existingTeamMatch">
-          <div class="master-match-icon"><i class="bi bi-shield-check"></i></div>
+          <div class="master-match-icon">
+            <img *ngIf="existingTeamMatch.LogoURL" [src]="existingTeamMatch.LogoURL" alt="Logo" class="match-avatar">
+            <i *ngIf="!existingTeamMatch.LogoURL" class="bi bi-shield-check"></i>
+          </div>
           <div class="master-match-copy">
-            <strong>Existing team found</strong>
-            <span>{{ existingTeamMatch.Name }} will be reused.</span>
+            <strong>{{ existingTeamMatch.Name }}</strong>
+            <span class="match-details">
+              <span *ngIf="existingTeamMatch.OwnerName"><i class="bi bi-person"></i> {{ existingTeamMatch.OwnerName }}</span>
+              <span *ngIf="existingTeamMatch.Captain"><i class="bi bi-person-badge"></i> Capt: {{ existingTeamMatch.Captain }}</span>
+            </span>
           </div>
           <button type="button" (click)="applyExistingTeam(existingTeamMatch)">Use details</button>
         </div>
@@ -849,6 +862,101 @@
         <button type="submit" class="reg-submit-btn" [disabled]="isRegistering">
           <span *ngIf="isRegistering" class="spinner-border spinner-border-sm me-2"></span>
           {{ isRegistering ? 'Registering...' : 'Submit Registration' }}
+        </button>
+      </form>
+
+      <form (ngSubmit)="submitPlayerRegistration()" *ngIf="regType === 'player'">
+        <div class="reg-section-label">Auction Session</div>
+        <div class="reg-form-group">
+          <label>Upcoming Auction <span class="req">*</span></label>
+          <select [(ngModel)]="playerRegForm.sessionId" name="playerSessionId" required>
+            <option [ngValue]="null" disabled>Select Auction Session</option>
+            <option *ngFor="let a of auctionList" [ngValue]="a.SessionID || a.id || a._id">{{ a.Name }}</option>
+          </select>
+        </div>
+
+        <div class="reg-section-label">Player Information</div>
+
+        <div class="reg-form-group">
+          <label>Profile Photo</label>
+          <input type="file" accept="image/*" (change)="onPhotoSelected($event)" class="reg-file-input">
+        </div>
+
+        <div class="reg-form-row">
+          <div class="reg-form-group">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" [(ngModel)]="playerRegForm.playerName" name="playerName"
+              (ngModelChange)="onPlayerLookupChange()" placeholder="John Doe" required>
+          </div>
+          <div class="reg-form-group">
+            <label>Father's Name <span class="req">*</span></label>
+            <input type="text" [(ngModel)]="playerRegForm.fatherName" name="fatherName" placeholder="Father's Name"
+              required>
+          </div>
+        </div>
+
+        <div class="reg-form-row">
+          <div class="reg-form-group">
+            <label>Phone Number <span class="req">*</span></label>
+            <input type="tel" [(ngModel)]="playerRegForm.contactNumber" name="playerContact"
+              (ngModelChange)="onPlayerLookupChange()" placeholder="9876543210" maxlength="10" pattern="[0-9]{10}"
+              required>
+          </div>
+          <div class="reg-form-group">
+            <label>Role <span class="req">*</span></label>
+            <select [(ngModel)]="playerRegForm.role" name="playerRole" required>
+              <option value="Batsman">Batsman</option>
+              <option value="Bowler">Bowler</option>
+              <option value="All-Rounder">All-Rounder</option>
+              <option value="Wicket Keeper">Wicket Keeper</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="master-match-card" *ngIf="existingPlayerMatch">
+          <div class="master-match-icon">
+            <img *ngIf="existingPlayerMatch.PhotoURL" [src]="existingPlayerMatch.PhotoURL" alt="Photo" class="match-avatar">
+            <i *ngIf="!existingPlayerMatch.PhotoURL" class="bi bi-person-check"></i>
+          </div>
+          <div class="master-match-copy">
+            <strong>{{ existingPlayerMatch.Name }}</strong>
+            <span class="match-details">
+              <span *ngIf="existingPlayerMatch.Role"><i class="bi bi-star"></i> {{ existingPlayerMatch.Role }}</span>
+              <span *ngIf="existingPlayerMatch.Team"><i class="bi bi-shield"></i> {{ existingPlayerMatch.Team }}</span>
+            </span>
+          </div>
+          <button type="button" (click)="applyExistingPlayer(existingPlayerMatch)">Use details</button>
+        </div>
+
+        <div class="reg-form-row">
+          <div class="reg-form-group">
+            <label>Batting Style</label>
+            <select [(ngModel)]="playerRegForm.battingStyle" name="battingStyle">
+              <option value="Right-hand bat">Right-hand bat</option>
+              <option value="Left-hand bat">Left-hand bat</option>
+            </select>
+          </div>
+          <div class="reg-form-group">
+            <label>Bowling Style</label>
+            <select [(ngModel)]="playerRegForm.bowlingStyle" name="bowlingStyle">
+              <option value="Right-arm fast">Right-arm fast</option>
+              <option value="Right-arm medium">Right-arm medium</option>
+              <option value="Right-arm spin">Right-arm spin</option>
+              <option value="Left-arm fast">Left-arm fast</option>
+              <option value="Left-arm medium">Left-arm medium</option>
+              <option value="Left-arm spin">Left-arm spin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="reg-form-group">
+          <label>Base Price (₹)</label>
+          <input type="number" [(ngModel)]="playerRegForm.basePrice" name="basePrice" placeholder="100" required>
+        </div>
+
+        <button type="submit" class="reg-submit-btn" [disabled]="isRegistering">
+          <span *ngIf="isRegistering" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isRegistering ? 'Registering...' : 'Register Player' }}
         </button>
       </form>
     </div>
