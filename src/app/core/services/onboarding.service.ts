@@ -55,6 +55,9 @@ export class OnboardingService {
     registerPlayerForAuction(payload: any): Observable<any> {
         const formData = new FormData();
         Object.keys(payload).forEach(key => {
+            if (key === 'photoUrl') {
+                return; // skip appending the huge base64 string
+            }
             if (key === 'photoFile' && payload[key] instanceof File) {
                 formData.append('photo', payload[key]);
             } else if (payload[key] !== null && payload[key] !== undefined) {

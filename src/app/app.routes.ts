@@ -85,6 +85,11 @@ export const routes: Routes = [
                 loadComponent: () => import('@features/auction/auction-session/auction-session.component').then(m => m.AuctionSessionComponent),
             },
             {
+                path: 'auction-player-register',
+                data: { breadcrumb: 'Register Player for Auction' },
+                loadComponent: () => import('@features/auction/auction-player/auction-player.component').then(m => m.AuctionPlayerComponent),
+            },
+            {
                 path: 'auction-session-form',
                 data: { breadcrumb: 'New Auction Session' },
                 loadComponent: () => import('@features/auction/auction-session-form/auction-session-form.component').then(m => m.AuctionSessionFormComponent),

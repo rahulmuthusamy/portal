@@ -118,18 +118,18 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   registerModalOpen = signal(false);
   selectedAuctionForReg: any = null;
 
-// ─── Registration ──────────────────────────────────────────────────────────
-   regForm = { ownerName: '', contactNumber: '', password: '', teamName: '', location: '', slogan: '', sessionId: null as any, transactionId: '', notes: '' };
-   isRegistering = false;
-   registrationSuccess = false;
-   registrationError = '';
-   showPassword = false;
-   existingTeamMatch: any | null = null;
-   existingPlayerMatch: any | null = null;
-   regType: 'team' | 'player' = 'team';
-   playerRegForm = { playerName: '', fatherName: '', contactNumber: '', photoUrl: '', role: 'Batsman', battingStyle: 'Right-hand bat', bowlingStyle: 'Right-arm medium', basePrice: 100000, sessionId: null };
-   selectedPhotoFile: File | null = null;
-   selectedReceiptFile: File | null = null;
+  // ─── Registration ──────────────────────────────────────────────────────────
+  regForm = { ownerName: '', contactNumber: '', password: '', teamName: '', location: '', slogan: '', sessionId: null as any, transactionId: '', notes: '' };
+  isRegistering = false;
+  registrationSuccess = false;
+  registrationError = '';
+  showPassword = false;
+  existingTeamMatch: any | null = null;
+  existingPlayerMatch: any | null = null;
+  regType: 'team' | 'player' = 'team';
+  playerRegForm = { playerName: '', fatherName: '', contactNumber: '', photoUrl: '', role: 'Batsman', battingStyle: 'Right-hand bat', bowlingStyle: 'Right-arm medium', basePrice: 100, sessionId: null };
+  selectedPhotoFile: File | null = null;
+  selectedReceiptFile: File | null = null;
 
   // ─── Location search ──────────────────────────────────────────────────────
   locationSearch = '';
@@ -234,7 +234,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.availableLocations.set(res.data?.locations || []);
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -243,20 +243,20 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         const rawSettings = res.data?.settings || res.data || res;
         const settings = { ...rawSettings };
-        
+
         // Map backend fields to frontend properties
         settings.appName = settings.AppName;
         settings.logo = settings.AppLogoURL;
-        
+
         if (settings?.logo) {
           settings.logoUrl = settings.logo.startsWith('http') || settings.logo.startsWith('assets')
             ? settings.logo : environment.apiUrl.replace('/api', '') + settings.logo;
         }
-        
+
         // Fix UPI scanner image URL — prepend apiUrl for relative paths
         if (settings?.UPIScannerImageURL &&
-            !settings.UPIScannerImageURL.startsWith('http') &&
-            !settings.UPIScannerImageURL.startsWith('assets')) {
+          !settings.UPIScannerImageURL.startsWith('http') &&
+          !settings.UPIScannerImageURL.startsWith('assets')) {
           settings.UPIScannerImageURL = environment.apiUrl + settings.UPIScannerImageURL;
         }
         this.appSettings.set(settings || {});
@@ -541,15 +541,16 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
 
   // ─── Modals ────────────────────────────────────────────────────────────────
 
-  openRegisterModal(auction?: any) {
+  openRegisterModal(auction?: any, type: 'team' | 'player' = 'team') {
     this.selectedAuctionForReg = auction || null;
     // Pre-fill session if auction is provided
     if (auction) {
       this.regForm.sessionId = auction.SessionID || auction.id || auction._id || null;
+      this.playerRegForm.sessionId = this.regForm.sessionId;
     }
     this.registrationSuccess = false;
     this.registrationError = '';
-    this.regType = 'team';
+    this.regType = type;
     this.registerModalOpen.set(true);
     if (this.isBrowser) document.body.style.overflow = 'hidden';
   }
@@ -640,8 +641,6 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
       const teamLabel = this.normalizeText(team.Name);
       return (phone && teamPhone && teamPhone === phone) || (teamName.length >= 3 && teamLabel === teamName);
     }) || null;
-
-    if (this.existingTeamMatch) this.applyExistingTeam(this.existingTeamMatch, false);
   }
 
   onPlayerLookupChange() {
@@ -657,8 +656,6 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
       const playerLabel = this.normalizeText(player.Name);
       return (phone && playerPhone && playerPhone === phone) || (playerName.length >= 3 && playerLabel === playerName);
     }) || null;
-
-    if (this.existingPlayerMatch) this.applyExistingPlayer(this.existingPlayerMatch, false);
   }
 
   applyExistingTeam(team: any, announce = true) {
@@ -761,7 +758,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
         this.isRegistering = false;
         this.registrationSuccess = true;
         this.existingPlayerMatch = null;
-        this.playerRegForm = { playerName: '', fatherName: '', contactNumber: '', photoUrl: '', role: 'Batsman', battingStyle: 'Right-hand bat', bowlingStyle: 'Right-arm medium', basePrice: 100000, sessionId: null };
+        this.playerRegForm = { playerName: '', fatherName: '', contactNumber: '', photoUrl: '', role: 'Batsman', battingStyle: 'Right-hand bat', bowlingStyle: 'Right-arm medium', basePrice: 100, sessionId: null };
         this.selectedPhotoFile = null;
         this.getPlayerList();
         Swal.fire({
@@ -805,9 +802,9 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
 
   // ─── Scroll & Navigation ───────────────────────────────────────────────────
 
-  scrollTo(sectionId: string,auction?:any) {
+  scrollTo(sectionId: string, auction?: any, type: 'team' | 'player' = 'team') {
     if (sectionId === 'register') {
-      this.openRegisterModal(auction);
+      this.openRegisterModal(auction, type);
       return;
     }
     this.activeSection.set(sectionId);

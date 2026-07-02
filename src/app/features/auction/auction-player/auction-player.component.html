@@ -13,7 +13,32 @@
 
         <div class="form-panel">
             <div class="form-title">Auction Player Registration</div>
-            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+            <!-- Session Loading State -->
+            <div class="session-loading" *ngIf="sessionsLoading">
+                <div class="spinner"></div>
+                <p>Loading auction sessions...</p>
+            </div>
+
+            <!-- No Sessions Found -->
+            <div class="no-sessions" *ngIf="!sessionsLoading && sessions.length === 0">
+                <div class="no-sessions-icon">🎙️</div>
+                <h3>No Active Auction Sessions</h3>
+                <p>There are no live or upcoming auction sessions available at this time. Please create an auction session first.</p>
+            </div>
+
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!sessionsLoading && sessions.length > 0">
+
+                <!-- Session Selector -->
+                <div class="session-selector-row">
+                    <app-select
+                        label="Auction Session *"
+                        [control]="form.get('SessionID')!"
+                        [options]="sessions"
+                        placeholder="Select an auction session">
+                    </app-select>
+                </div>
+
                 <div class="top-row d-flex align-items-center justify-content-between flex-wrap">
                     <div class="profile-upload flex-shrink-0 me-3 mb-3">
                         <app-image-upload [control]="form.get('PhotoURL')!"
@@ -21,14 +46,13 @@
                     </div>
                 </div>
 
-
                 <div class="form-row">
                     <div class="form-field">
                         <app-input label="Full Name" [control]="form.get('Name')!" placeholder="Enter full name"
                             type="text"></app-input>
                     </div>
                     <div class="form-field">
-                        <app-input label="Father Name" [control]="form.get('FatherName')!" placeholder="Enter full name"
+                        <app-input label="Father Name" [control]="form.get('FatherName')!" placeholder="Enter father name"
                             type="text"></app-input>
                     </div>
                     <div class="form-field">
@@ -53,7 +77,11 @@
                 </div>
 
                 <div class="submit-btn">
-                    <app-button label="Register Auction Player" type="submit"></app-button>
+                    <app-button
+                        [label]="submitting ? 'Registering...' : 'Register Auction Player'"
+                        type="submit"
+                        [disabled]="submitting">
+                    </app-button>
                 </div>
             </form>
         </div>

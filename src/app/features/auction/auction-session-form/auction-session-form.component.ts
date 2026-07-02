@@ -92,7 +92,7 @@ export class AuctionSessionFormComponent {
       StartDate: ['', Validators.required],
       EndDate: ['', Validators.required],
       Year: [new Date().getFullYear(), [Validators.required, Validators.min(2000)]],
-      MaxBudget: [100000, [Validators.required, Validators.min(1)]],
+      MaxBudget: [100, [Validators.required, Validators.min(1)]],
       MaxPlayersPerTeam: [11, [Validators.required, Validators.min(1)]],
       TournamentID: [null],
       Description: ['']

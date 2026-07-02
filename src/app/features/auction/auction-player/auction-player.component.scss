@@ -65,6 +65,57 @@
     color: #0d47a1;
   }
 
+  .session-selector-row {
+    margin-bottom: 1.2rem;
+    background: #f0f4ff;
+    border-radius: 10px;
+    padding: 1rem 1.2rem 0.2rem;
+    border: 1px solid #c5cae9;
+  }
+
+  .session-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 1rem;
+    color: #546e7a;
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #e3f2fd;
+      border-top-color: #1565c0;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    p { font-size: 0.9rem; }
+  }
+
+  .no-sessions {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: #fff8e1;
+    border-radius: 12px;
+    border: 1px dashed #ffb300;
+
+    .no-sessions-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e65100;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: #6d4c41;
+      line-height: 1.6;
+    }
+  }
+
   .profile-upload {
     display: flex;
     justify-content: center;
@@ -91,6 +142,10 @@
     display: flex;
     justify-content: center;
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Animations */

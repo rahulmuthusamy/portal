@@ -41,6 +41,7 @@ export class SidebarComponent implements OnInit {
       label: 'Auction',
       items: [
         { label: 'Auction Session', route: '/kkk/auction-session-list', icon: 'gavel', roles: ['super_admin', 'admin'] },
+        { label: 'Register Player', route: '/kkk/auction-player-register', icon: 'person_add', roles: ['super_admin', 'admin'] },
         // { label: 'Live Room (Admin)', route: '/kkk/auction-room', icon: 'live_tv', roles: ['super_admin', 'admin'] },
         { label: 'Team Dashboard (Owner)', route: '/kkk/team-dashboard', icon: 'group_work', roles: ['owner'] }
       ]
