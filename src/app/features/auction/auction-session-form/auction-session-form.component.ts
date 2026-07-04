@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SHARED_FORM_COMPONENTS } from '@shared/forms/form-controls';
 import { AuctionSessionService } from '../services/auction-session.service';
 import { TournamentService } from '@features/tournaments/services/tournament.service';
 import { ToastService } from '@shared/services/toast.service';
 import { Router } from '@angular/router';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-auction-session-form',
@@ -23,6 +24,11 @@ export class AuctionSessionFormComponent {
   StatusOptions = this.Status.map(s => ({ label: s, value: s }));
   tournaments: any[] = [];
   tournamentOptions: any[] = [];
+
+  // QR Scanner file upload
+  qrScannerFile = signal<File | null>(null);
+  qrScannerPreview = signal<string | null>(null);
+  existingQrUrl = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -65,6 +71,11 @@ export class AuctionSessionFormComponent {
           return;
         }
 
+        // If session has an existing QR image, show it as preview
+        if (session.UPIScannerImageURL) {
+          this.existingQrUrl.set(`${environment.apiUrl}${session.UPIScannerImageURL}`);
+        }
+
         this.form.patchValue({
           SessionID: session.SessionID,
           Name: session.Name,
@@ -74,14 +85,18 @@ export class AuctionSessionFormComponent {
           Year: session.Year,
           MaxBudget: session.MaxBudget,
           MaxPlayersPerTeam: session.MaxPlayersPerTeam,
-          TournamentID: session.TournamentID
+          TournamentID: session.TournamentID,
+          Description: session.Description,
+          PlayerRegistrationFee: session.PlayerRegistrationFee,
+          OwnerRegistrationFee: session.OwnerRegistrationFee,
+          UPIName: session.UPIName,
+          UPIId: session.UPIId
         });
       },
       error: (error: any) => {
         console.error('Error fetching session:', error);
       }
     });
-
   }
 
   InitForm() {
@@ -95,8 +110,30 @@ export class AuctionSessionFormComponent {
       MaxBudget: [100, [Validators.required, Validators.min(1)]],
       MaxPlayersPerTeam: [11, [Validators.required, Validators.min(1)]],
       TournamentID: [null],
-      Description: ['']
+      Description: ['', Validators.maxLength(500)],
+      PlayerRegistrationFee: [0],
+      OwnerRegistrationFee: [0],
+      UPIName: [''],
+      UPIId: ['']
     });
+  }
+
+  onQrFileSelected(event: any): void {
+    const file: File = event.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      this.qrScannerFile.set(file);
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.qrScannerPreview.set(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeQrImage(): void {
+    this.qrScannerFile.set(null);
+    this.qrScannerPreview.set(null);
+    this.existingQrUrl.set(null);
   }
 
   onSubmit(): void {
@@ -105,22 +142,32 @@ export class AuctionSessionFormComponent {
       return;
     }
 
-    const auction = this.form.value;
+    const formValue = { ...this.form.value };
+    const sessionId = formValue.SessionID;  // null when creating
+    delete formValue.SessionID;
+
+    // Map Description → Notes (model column name)
+    if (formValue.Description !== undefined) {
+      formValue.Notes = formValue.Description;
+      delete formValue.Description;
+    }
+
+    const qrFile = this.qrScannerFile();
 
     const request$ = this.isEdit
-      ? this.auctionSessionService.update(auction.SessionID, auction)
-      : this.auctionSessionService.create(auction);
+      ? this.auctionSessionService.updateSessionWithFile(sessionId, formValue, qrFile)
+      : this.auctionSessionService.createSessionWithFile(formValue, qrFile);
 
     request$.subscribe({
       next: (response: any) => {
         this.toast.success(response?.message || (this.isEdit ? 'Session updated successfully.' : 'Session created successfully.'));
+        sessionStorage.removeItem('SessionID');
         this.router.navigate(['/kkk/auction-session-list']);
       },
       error: (error) => {
         console.error(this.isEdit ? 'Update failed:' : 'Creation failed:', error);
-        this.toast.error(this.isEdit ? 'Failed to update session.' : 'Failed to create session.');
+        this.toast.error(error?.error?.message || (this.isEdit ? 'Failed to update session.' : 'Failed to create session.'));
       }
     });
   }
-
 }

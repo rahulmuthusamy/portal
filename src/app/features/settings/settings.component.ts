@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '@environments/environment';
 import { SettingsService } from '@core/services/settings.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface CarouselImage {
   id: string;
@@ -74,7 +75,7 @@ interface Poll {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -143,7 +144,7 @@ export class SettingsComponent implements OnInit {
   isDragging = signal<boolean>(false);
   uploadProgress = signal<number>(0);
   isUploading = signal<boolean>(false);
-  
+
   appLogoFile = signal<File | null>(null);
   upiScannerFile = signal<File | null>(null);
 
@@ -840,7 +841,7 @@ export class SettingsComponent implements OnInit {
     };
 
     this.settingsService.updateAppSettings(
-      appSettingsData, 
+      appSettingsData,
       this.appLogoFile() || undefined,
       this.upiScannerFile() || undefined
     ).subscribe();

@@ -1,45 +1,60 @@
-<div class="sidebar-container">
-  <!-- Logo Section -->
-  <div class="logo-section d-flex align-items-center mb-4 px-3 pt-3">
-    <div class="logo-icon bg-white rounded-circle d-flex align-items-center justify-content-center me-3"
-      style="width: 32px; height: 32px; overflow: hidden;">
+<!-- =====================================================
+     SIDEBAR — CricHub Admin Portal (Tailwind CSS)
+     ===================================================== -->
+<div class="flex flex-col h-full bg-[#0f172a] overflow-hidden select-none">
+
+  <!-- ── Logo / Brand ── -->
+  <div class="flex items-center gap-3 px-4 py-5 border-b border-white/5">
+    <!-- Logo circle -->
+    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center flex-shrink-0 shadow-lg overflow-hidden">
       <ng-container *ngIf="appSettings.logoUrl; else defaultLogo">
-        <img [src]="appSettings.logoUrl" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+        <img [src]="appSettings.logoUrl" alt="Logo" class="w-full h-full object-cover">
       </ng-container>
       <ng-template #defaultLogo>
-        <i class="bi bi-diagram-3-fill" style="color: var(--primary-color); font-size: 16px;"></i>
+        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
       </ng-template>
     </div>
-    <div class="logo-text" *ngIf="visible">
-      <h6 class="m-0 fw-bold text-white tracking-wider" style="font-size: 0.95rem;">{{ appSettings.appName }}</h6>
-      <small class="text-white-50" style="font-size: 0.65rem;">v1.0.0</small>
+
+    <!-- App name (hidden when collapsed) -->
+    <div *ngIf="visible" class="animate-fade-in overflow-hidden">
+      <h6 class="text-white font-bold text-sm tracking-wide leading-none m-0">{{ appSettings.appName }}</h6>
+      <span class="text-slate-500 text-[10px] font-medium tracking-widest uppercase">v1.0.0</span>
     </div>
   </div>
 
-  <mat-nav-list *ngIf="visible && (user$ | async)" class="sidebar-nav">
+  <!-- ── Navigation ── -->
+  <nav class="flex-1 overflow-y-auto py-3 space-y-0.5 scrollbar-thin" *ngIf="visible && (user$ | async)">
     <ng-container *ngFor="let section of filteredMenu">
-      <!-- Section Header (Optional) -->
-      <div class="section-label text-uppercase text-white-50 px-3 py-2 mt-2 mb-1 fw-bold"
-        style="font-size: 0.7rem; letter-spacing: 1px;" *ngIf="section.label">
+      <!-- Section label -->
+      <div *ngIf="section.label"
+           class="px-4 pt-4 pb-1.5 text-[9px] font-bold tracking-[0.15em] uppercase text-slate-500">
         {{ section.label }}
       </div>
 
-      <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active-link"
-        class="sidebar-link mb-1">
-        <div class="sidebar-item-wrapper d-flex align-items-center px-3 py-2 rounded-3">
-          <mat-icon class="sidebar-icon me-3">{{ item.icon }}</mat-icon>
-          <span class="sidebar-label">{{ item.label }}</span>
-        </div>
+      <!-- Nav items -->
+      <a *ngFor="let item of section.items"
+         [routerLink]="item.route"
+         routerLinkActive="sidebar-active"
+         class="sidebar-item group flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg
+                text-slate-400 hover:text-white hover:bg-white/5
+                transition-all duration-150 no-underline">
+        <mat-icon class="sidebar-icon text-[20px] w-5 h-5 flex-shrink-0 transition-colors duration-150">
+          {{ item.icon }}
+        </mat-icon>
+        <span class="text-[13px] font-medium leading-none">{{ item.label }}</span>
       </a>
     </ng-container>
-  </mat-nav-list>
+  </nav>
 
-  <!-- User Profile & Powered By Section -->
-  <div class="sidebar-footer mt-auto px-3 py-3" *ngIf="visible">
-    <!-- Powered By -->
-    <div class="sidebar-powered-by p-3 mx-2 mb-3 rounded-3 d-flex align-items-center justify-content-between gap-2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.05);">
-      <span class="text-white-50 fw-bold flex-shrink-0" style="font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase;">Powered By</span>
-      <img src="assets/ravens-analytics.png" alt="The Ravens Analytics" style="width: 100%; max-width: 120px; height: 45px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+  <!-- ── Footer / Powered By ── -->
+  <div *ngIf="visible" class="px-3 py-4 border-t border-white/5">
+    <div class="flex items-center justify-between gap-2 bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2.5">
+      <span class="text-slate-600 text-[9px] font-bold tracking-widest uppercase flex-shrink-0">Powered By</span>
+      <img src="assets/ravens-analytics.png" alt="The Ravens Analytics"
+           class="h-8 max-w-[110px] object-contain opacity-70" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2))">
     </div>
   </div>
+
 </div>

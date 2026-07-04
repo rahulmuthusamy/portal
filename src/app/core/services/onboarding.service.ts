@@ -44,15 +44,18 @@ export class OnboardingService {
     registerTeam(payload: any, receiptFile: File): Observable<any> {
         const formData = new FormData();
         Object.keys(payload).forEach(key => {
-            if (payload[key] !== null && payload[key] !== undefined) {
+            if (payload[key] !== null && payload[key] !== undefined && key !== 'qrCodeFile') {
                 formData.append(key, payload[key]);
             }
         });
+        if (payload.qrCodeFile && payload.qrCodeFile instanceof File) {
+            formData.append('qrCodeFile', payload.qrCodeFile);
+        }
         formData.append('receipt', receiptFile);
         return this.api.post(`${this.endpoint}/public/register-team`, formData);
     }
 
-    registerPlayerForAuction(payload: any): Observable<any> {
+    registerPlayerForAuction(payload: any, receiptFile?: File): Observable<any> {
         const formData = new FormData();
         Object.keys(payload).forEach(key => {
             if (key === 'photoUrl') {
@@ -60,11 +63,25 @@ export class OnboardingService {
             }
             if (key === 'photoFile' && payload[key] instanceof File) {
                 formData.append('photo', payload[key]);
-            } else if (payload[key] !== null && payload[key] !== undefined) {
+            } else if (payload[key] !== null && payload[key] !== undefined && key !== 'qrCodeFile') {
                 formData.append(key, payload[key]);
             }
         });
+        if (payload.qrCodeFile && payload.qrCodeFile instanceof File) {
+            formData.append('qrCodeFile', payload.qrCodeFile);
+        }
+        if (receiptFile) {
+            formData.append('receipt', receiptFile);
+        }
         return this.api.post(`${this.endpoint}/public/register-player`, formData);
+    }
+
+    getPendingAuctionPlayers(): Observable<any> {
+        return this.api.get(`${this.endpoint}/admin/auction-players`);
+    }
+
+    verifyAuctionPlayer(auctionPlayerId: number, status: 'approved' | 'rejected'): Observable<any> {
+        return this.api.post(`${this.endpoint}/admin/auction-players/${auctionPlayerId}/verify`, { status });
     }
 
     getOwnerDashboard(): Observable<any> {

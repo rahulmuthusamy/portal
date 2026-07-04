@@ -49,6 +49,92 @@
         </app-select>
       </div>
 
+      <!-- Registration Settings -->
+      <div class="col-12">
+        <h5 class="mt-2 text-secondary border-bottom pb-2">Registration &amp; Payment Settings</h5>
+      </div>
+
+      <div class="col-md-3">
+        <app-input id="PlayerRegistrationFee" type="number" [control]="form.get('PlayerRegistrationFee')!"
+          [label]="'Player Reg Fee'" placeholder="e.g., 100">
+        </app-input>
+      </div>
+
+      <div class="col-md-3">
+        <app-input id="OwnerRegistrationFee" type="number" [control]="form.get('OwnerRegistrationFee')!"
+          [label]="'Owner Reg Fee'" placeholder="e.g., 5000">
+        </app-input>
+      </div>
+
+      <div class="col-md-3">
+        <app-input id="UPIName" type="text" [control]="form.get('UPIName')!"
+          [label]="'UPI Name'" placeholder="e.g., John Doe">
+        </app-input>
+      </div>
+
+      <div class="col-md-3">
+        <app-input id="UPIId" type="text" [control]="form.get('UPIId')!"
+          [label]="'UPI ID'" placeholder="e.g., jdoe@upi">
+        </app-input>
+      </div>
+
+      <!-- UPI QR Scanner Upload -->
+      <div class="col-md-6">
+        <label class="form-label fw-semibold text-secondary mb-2 d-block">
+          <i class="bi bi-qr-code me-1"></i> UPI QR Scanner Image
+          <small class="text-muted fw-normal">(Optional)</small>
+        </label>
+
+        <!-- Preview zone: shows existing or newly selected image -->
+        <div *ngIf="qrScannerPreview() || existingQrUrl()"
+             class="border rounded-3 p-3 mb-2 bg-light d-flex align-items-start gap-3 position-relative">
+          <img [src]="qrScannerPreview() || existingQrUrl()"
+               alt="QR Scanner Preview"
+               style="width:120px;height:120px;object-fit:contain;border-radius:10px;border:1px solid #dee2e6;background:#fff;padding:4px;">
+          <div class="flex-grow-1">
+            <p class="mb-1 fw-semibold text-success" style="font-size:0.82rem;">
+              <span *ngIf="qrScannerPreview()">✅ New image selected</span>
+              <span *ngIf="!qrScannerPreview() && existingQrUrl()">📌 Existing QR image</span>
+            </p>
+            <p class="mb-2 text-muted" style="font-size:0.78rem;">
+              <span *ngIf="qrScannerFile()">{{ qrScannerFile()!.name }}</span>
+              <span *ngIf="!qrScannerFile()">Upload a new image to replace this.</span>
+            </p>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeQrImage()">
+              <i class="bi bi-trash me-1"></i>Remove
+            </button>
+          </div>
+        </div>
+
+        <!-- Drop / click upload zone (shown when no preview) -->
+        <div *ngIf="!qrScannerPreview() && !existingQrUrl()">
+          <label for="qrScannerInput"
+                 class="d-flex flex-column align-items-center justify-content-center gap-2 border border-2 border-dashed rounded-3 p-4 text-center cursor-pointer"
+                 style="border-color:#ced4da;background:#f8fafc;cursor:pointer;transition:border-color .2s,background .2s;"
+                 onmouseenter="this.style.borderColor='#0d6efd';this.style.background='#f0f5ff'"
+                 onmouseleave="this.style.borderColor='#ced4da';this.style.background='#f8fafc'">
+            <span style="font-size:2.5rem;line-height:1;">📲</span>
+            <span class="fw-semibold text-secondary" style="font-size:0.9rem;">Click to upload QR Scanner</span>
+            <span class="text-muted" style="font-size:0.78rem;">PNG, JPG up to 5 MB</span>
+            <input id="qrScannerInput" type="file" class="d-none"
+                   accept="image/*"
+                   (change)="onQrFileSelected($event)">
+          </label>
+        </div>
+
+        <!-- Replace button shown when there's already a preview -->
+        <div *ngIf="qrScannerPreview() || existingQrUrl()" class="mt-1">
+          <label for="qrScannerInputReplace"
+                 class="btn btn-sm btn-outline-primary"
+                 style="cursor:pointer;">
+            <i class="bi bi-arrow-repeat me-1"></i>Replace Image
+            <input id="qrScannerInputReplace" type="file" class="d-none"
+                   accept="image/*"
+                   (change)="onQrFileSelected($event)">
+          </label>
+        </div>
+      </div>
+
       <div class="col-md-12">
         <app-textarea id="description" [control]="form.get('Description')!" [label]="'Description (Optional)'"
           placeholder="Add notes or details">
@@ -61,32 +147,4 @@
         type="submit"></app-button>
     </div>
   </form>
-
-  <!-- <div class="mt-5 bg-white shadow rounded p-4" *ngIf="form.get('SessionID')?.value">
-    <h4 class="mb-4 text-primary">Auction Configuration</h4>
-
-    <ul class="nav nav-tabs" id="auctionTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams" type="button"
-          role="tab">
-          Auction Teams
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players" type="button"
-          role="tab">
-          Team-wise Players
-        </button>
-      </li>
-    </ul>
-
-    <div class="tab-content pt-3" id="auctionTabsContent">
-      <div class="tab-pane fade show active" id="teams" role="tabpanel">
-        <app-auction-teams [sessionId]="sessionId"></app-auction-teams>
-      </div>
-      <div class="tab-pane fade" id="players" role="tabpanel">
-        <app-auction-team-players [sessionId]="sessionId"></app-auction-team-players>
-      </div>
-    </div>
-  </div> -->
 </div>

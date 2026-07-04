@@ -35,15 +35,18 @@ export class ApiService {
     post<T>(url: string, body: any, optionsOrParams?: any): Observable<T> {
         const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
         const isFormData = body instanceof FormData;
-        const options = isFormData
-            ? { headers: new HttpHeaders({ enctype: 'multipart/form-data' }) }
-            : this.normalizeOptions(optionsOrParams);
+        // For FormData: do NOT set Content-Type — browser must set it automatically
+        // so that the multipart boundary is included correctly.
+        const options = isFormData ? {} : this.normalizeOptions(optionsOrParams);
         return this.http.post<any>(fullUrl, body, options as any) as Observable<T>;
     }
 
     put<T>(url: string, body: any): Observable<T> {
         const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
-        return this.http.put<any>(fullUrl, body) as Observable<T>;
+        const isFormData = body instanceof FormData;
+        // Same as post: let browser set Content-Type for FormData automatically
+        const options = isFormData ? {} : {};
+        return this.http.put<any>(fullUrl, body, options as any) as Observable<T>;
     }
 
     delete<T>(url: string): Observable<T> {

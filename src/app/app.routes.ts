@@ -52,6 +52,15 @@ export const routes: Routes = [
             }
         ]
     },
+    // ── Public Registration Pages (standalone, no layout wrapper) ──
+    {
+        path: 'register-player',
+        loadComponent: () => import('./features/registration/player-registration-page/player-registration-page.component').then(m => m.PlayerRegistrationPageComponent),
+    },
+    {
+        path: 'register-owner',
+        loadComponent: () => import('./features/registration/owner-registration-page/owner-registration-page.component').then(m => m.OwnerRegistrationPageComponent),
+    },
 
     {
         path: 'kkk',
@@ -120,6 +129,11 @@ export const routes: Routes = [
                 path: 'pending-owners',
                 data: { breadcrumb: 'Pending Registrations' },
                 loadComponent: () => import('@features/teams/pending-owners/pending-owners.component').then(m => m.PendingOwnersComponent),
+            },
+            {
+                path: 'pending-auction-players',
+                data: { breadcrumb: 'Pending Players' },
+                loadComponent: () => import('@features/auction/pending-auction-players/pending-auction-players.component').then(m => m.PendingAuctionPlayersComponent),
             },
             {
                 path: 'teams-form',
