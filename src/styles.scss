@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
   height: 100%;
@@ -281,3 +285,60 @@ body {
     padding: 0 1rem !important;
   }
 }
+/* ============================================================
+   TAILWIND REDESIGN CUSTOM UTILITIES
+   ============================================================ */
+
+@layer components {
+  /* Cards */
+  .content-card {
+    @apply bg-white rounded-xl shadow-md p-6 transition-shadow duration-200 hover:shadow-lg;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-sky-500 hover:bg-sky-600
+           text-white font-semibold rounded-lg transition-all duration-200
+           shadow-sm hover:shadow-md active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200
+           text-slate-700 font-semibold rounded-lg border border-slate-200 transition-all duration-200;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-500 hover:bg-red-600
+           text-white font-semibold rounded-lg transition-all duration-200;
+  }
+
+  /* Form inputs */
+  .form-input {
+    @apply w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800
+           text-sm placeholder-slate-400 transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500;
+  }
+  .form-label {
+    @apply block text-sm font-semibold text-slate-700 mb-1.5;
+  }
+  .form-group {
+    @apply flex flex-col gap-1.5;
+  }
+}
+
+/* Scrollbar Styling for Tailwind UI */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-fade    { animation: fadeIn 0.3s ease-in-out; }
+.animate-slide-up { animation: fadeInUp 0.4s ease-out; }
+

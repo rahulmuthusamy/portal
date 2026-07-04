@@ -31,7 +31,8 @@ export class SidebarComponent implements OnInit {
     {
       label: 'Overview',
       items: [
-        { label: 'Pending Approvals', route: '/kkk/pending-owners', icon: 'how_to_reg', roles: ['super_admin', 'admin'] },
+        { label: 'Franchises Approvals', route: '/kkk/pending-owners', icon: 'how_to_reg', roles: ['super_admin', 'admin'] },
+        { label: 'Players Approvals', route: '/kkk/pending-auction-players', icon: 'person_add', roles: ['super_admin', 'admin'] },
         { label: 'Players', route: '/kkk/players-list', icon: 'people', roles: ['super_admin', 'admin', 'owner', 'member'] },
         { label: 'Teams', route: '/kkk/teams-list', icon: 'shield', roles: ['super_admin', 'admin', 'owner', 'member'] },
         { label: 'Tournaments', route: '/kkk/tournaments-list', icon: 'sports_cricket', roles: ['super_admin', 'admin'] }

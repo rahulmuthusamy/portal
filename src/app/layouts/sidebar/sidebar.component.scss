@@ -1,102 +1,22 @@
-.sidebar-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: var(--sidebar-bg);
-}
+/* Active sidebar link state */
+.sidebar-active {
+  @apply bg-sky-500/20 text-sky-400 !important;
+  border-left: 3px solid theme('colors.sky.400');
+  padding-left: calc(0.75rem - 3px) !important;
 
-.sidebar-link {
-  text-decoration: none;
-  display: block;
-  margin: 0 12px;
-
-  .sidebar-item-wrapper {
-    transition: all 0.2s ease;
-    color: #9ca3af; /* Tailwind text-gray-400 */
-    border-radius: 8px;
-
-    .sidebar-icon {
-      color: #9ca3af;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      transition: color 0.2s ease;
-    }
-
-    .sidebar-label {
-      font-weight: 500;
-      font-size: 0.85rem;
-    }
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: #fff;
-
-      .sidebar-icon {
-        color: #fff;
-      }
-    }
-  }
-
-  &.active-link {
-    .sidebar-item-wrapper {
-      background-color: var(--primary-color);
-      color: #ffffff;
-      padding-left: 16px !important;
-
-      .sidebar-icon {
-        color: #ffffff;
-      }
-    }
+  .sidebar-icon {
+    @apply text-sky-400 !important;
   }
 }
 
-.section-label {
-  font-size: 0.65rem !important;
-  color: #6b7280 !important; /* text-gray-500 */
+/* Nav scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.08) transparent;
 }
-
-.tracking-wider {
-  letter-spacing: 0.05em;
-}
-
-// Scrollbar styling for sidebar
-.sidebar-nav {
-  overflow: hidden;
-  flex: 1;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-  }
-
-  &:hover::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-  }
-}
-
-// User Profile Footer
-.sidebar-footer {
-  .user-profile {
-    background: #2a3044;
-    transition: background 0.2s ease;
-    border-radius: 8px;
-
-    &:hover {
-      background: #32394e;
-    }
-
-    .avatar {
-      background-color: #6366f1 !important;
-      color: #fff !important;
-    }
-  }
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
 }

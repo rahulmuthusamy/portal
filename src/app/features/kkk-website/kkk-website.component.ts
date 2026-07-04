@@ -4,7 +4,7 @@ import {
   signal, WritableSignal, inject, DestroyRef
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { environment } from '@environments/environment';
 import { AuctionSessionService } from '@features/auction/services/auction-session.service';
 import { PlayerService } from '@features/players/services/players.service';
@@ -193,6 +193,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   private countdownInterval: any;
   private liveMatchInterval: any;
   private matchService = inject(MatchService);
+  private router = inject(Router);
 
   constructor(
     private teamService: TeamsService,
@@ -805,7 +806,11 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
 
   scrollTo(sectionId: string, auction?: any, type: 'team' | 'player' = 'team') {
     if (sectionId === 'register') {
-      this.openRegisterModal(auction, type);
+      if (type === 'player') {
+        this.router.navigate(['/register-player']);
+      } else {
+        this.router.navigate(['/register-owner']);
+      }
       return;
     }
     this.activeSection.set(sectionId);

@@ -1,49 +1,48 @@
-<div class="settings-container">
+<div class="p-6 max-w-7xl mx-auto space-y-6">
     <!-- Header -->
-    <div class="settings-header">
-        <div class="header-content">
-            <h1 class="settings-title">
-                <i class="icon-settings"></i>
-                Application Settings
-            </h1>
-            <p class="settings-subtitle">Manage your application configuration and content</p>
+    <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-sky-50 text-sky-500 flex items-center justify-center">
+                <mat-icon>settings</mat-icon>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-slate-800">Application Settings</h1>
+                <p class="text-sm text-slate-500 mt-1">Manage your application configuration and content</p>
+            </div>
         </div>
-        <button class="btn-save-all" (click)="saveAllSettings()" [disabled]="isUploading()">
-            <span *ngIf="!isUploading()">💾 Save All Changes</span>
-            <span *ngIf="isUploading()">⏳ Saving... {{ uploadProgress() }}%</span>
+        <button class="btn-primary" (click)="saveAllSettings()" [disabled]="isUploading()">
+            <ng-container *ngIf="!isUploading()">
+                <mat-icon class="text-[18px]">save</mat-icon>
+                <span>Save All Changes</span>
+            </ng-container>
+            <ng-container *ngIf="isUploading()">
+                <mat-icon class="text-[18px] animate-spin">autorenew</mat-icon>
+                <span>Saving... {{ uploadProgress() }}%</span>
+            </ng-container>
         </button>
     </div>
 
     <!-- Progress Bar -->
-    <div class="upload-progress" *ngIf="isUploading()">
-        <div class="progress-bar" [style.width.%]="uploadProgress()"></div>
+    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden" *ngIf="isUploading()">
+        <div class="bg-sky-500 h-2 rounded-full transition-all duration-300" [style.width.%]="uploadProgress()"></div>
     </div>
 
     <!-- Tab Navigation -->
-    <div class="tab-navigation">
-        <button class="tab-btn" [class.active]="activeTab() === 'carousel'" (click)="switchTab('carousel')">
-            <span class="tab-icon">🎠</span>
-            <span class="tab-label">Website Carousel</span>
-        </button>
-        <button class="tab-btn" [class.active]="activeTab() === 'app'" (click)="switchTab('app')">
-            <span class="tab-icon">⚙️</span>
-            <span class="tab-label">App Settings</span>
-        </button>
-        <button class="tab-btn" [class.active]="activeTab() === 'gallery'" (click)="switchTab('gallery')">
-            <span class="tab-icon">🖼️</span>
-            <span class="tab-label">Gallery</span>
-        </button>
-        <button class="tab-btn" [class.active]="activeTab() === 'sponsors'" (click)="switchTab('sponsors')">
-            <span class="tab-icon">🤝</span>
-            <span class="tab-label">Sponsors</span>
-        </button>
-        <!-- <button class="tab-btn" [class.active]="activeTab() === 'polls'" (click)="switchTab('polls')">
-            <span class="tab-icon">🗳️</span>
-            <span class="tab-label">Polls & Voting</span>
-        </button> -->
-        <button class="tab-btn" [class.active]="activeTab() === 'locations'" (click)="switchTab('locations')">
-            <span class="tab-icon">📍</span>
-            <span class="tab-label">Location Master</span>
+    <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin border-b border-slate-200">
+        <button *ngFor="let tab of [
+            { id: 'carousel', icon: 'view_carousel', label: 'Website Carousel' },
+            { id: 'app', icon: 'tune', label: 'App Settings' },
+            { id: 'gallery', icon: 'photo_library', label: 'Gallery' },
+            { id: 'sponsors', icon: 'handshake', label: 'Sponsors' },
+            { id: 'locations', icon: 'place', label: 'Location Master' }
+        ]" class="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 whitespace-nowrap"
+            [ngClass]="activeTab() === tab.id 
+                ? 'border-sky-500 text-sky-600 bg-sky-50/50' 
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'"
+            (click)="switchTab(tab.id)">
+            <mat-icon class="text-[18px]">{{ tab.icon }}</mat-icon>
+            <span>{{ tab.label }}</span>
         </button>
     </div>
 
@@ -51,100 +50,120 @@
     <div class="tab-content">
 
         <!-- ==================== CAROUSEL TAB ==================== -->
-        <div class="tab-panel" *ngIf="activeTab() === 'carousel'">
-            <div class="panel-layout">
+        <div class="animate-fade" *ngIf="activeTab() === 'carousel'">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Left: Carousel Management -->
-                <div class="panel-left">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>Carousel Images</h2>
-                            <button class="btn-preview" (click)="toggleCarouselPreview()">
-                                {{ carouselPreviewMode() ? '✏️ Edit Mode' : '👁️ Preview Mode' }}
+                <div class="space-y-6">
+                    <div class="content-card">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">Carousel Images</h2>
+                                <p class="text-sm text-slate-500 mt-1">Manage slides displayed on the main website homepage</p>
+                            </div>
+                            <button class="btn-secondary text-sm px-4 py-2" (click)="toggleCarouselPreview()">
+                                <mat-icon class="text-[16px]">{{ carouselPreviewMode() ? 'edit' : 'visibility' }}</mat-icon>
+                                <span>{{ carouselPreviewMode() ? 'Edit Mode' : 'Preview Mode' }}</span>
                             </button>
                         </div>
 
                         <!-- Upload Area -->
-                        <div class="upload-zone" [class.dragging]="isDragging()" (dragover)="onDragOver($event)"
-                            (dragleave)="onDragLeave($event)" (drop)="onCarouselDrop($event)">
+                        <div class="border-2 border-dashed border-slate-200 hover:border-sky-400 bg-slate-50 hover:bg-sky-50/20 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 group"
+                            [class.border-sky-400]="isDragging()" 
+                            [class.bg-sky-50]="isDragging()"
+                            (dragover)="onDragOver($event)"
+                            (dragleave)="onDragLeave($event)" 
+                            (drop)="onCarouselDrop($event)"
+                            (click)="carouselFileInput.click()">
                             <input type="file" #carouselFileInput multiple accept="image/*"
-                                (change)="onCarouselFileSelect($event)" style="display: none;">
-                            <div class="upload-content">
-                                <div class="upload-icon">📤</div>
-                                <h3>Upload Carousel Images</h3>
-                                <p>Drag & drop images here or click to browse</p>
-                                <button class="btn-upload" (click)="carouselFileInput.click()">
+                                (change)="onCarouselFileSelect($event)" class="hidden">
+                            <div class="flex flex-col items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-sky-500 transition-colors duration-200">
+                                    <mat-icon class="text-[24px]">cloud_upload</mat-icon>
+                                </div>
+                                <h3 class="font-semibold text-slate-700">Upload Carousel Images</h3>
+                                <p class="text-xs text-slate-500">Drag & drop images here or click to browse</p>
+                                <button type="button" class="btn-secondary text-xs px-3 py-1.5 mt-2">
                                     Choose Files
                                 </button>
                             </div>
                         </div>
 
                         <!-- Carousel Images List -->
-                        <div class="carousel-list">
-                            <div class="carousel-item" *ngFor="let image of carouselImages(); let i = index"
-                                [class.inactive]="!image.isActive">
-                                <div class="carousel-item-preview">
-                                    <img [src]="image.src" [alt]="image.alt">
-                                    <div class="item-overlay">
-                                        <button class="btn-icon" (click)="editCarouselImage(image)" title="Edit">
-                                            ✏️
+                        <div class="divide-y divide-slate-100 mt-6 max-h-[500px] overflow-y-auto pr-1">
+                            <div class="flex items-center gap-4 py-4 first:pt-0 last:pb-0" 
+                                *ngFor="let image of carouselImages(); let i = index"
+                                [class.opacity-60]="!image.isActive">
+                                
+                                <div class="relative w-20 h-14 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex-shrink-0 group">
+                                    <img [src]="image.src" [alt]="image.alt" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-150">
+                                        <button class="w-7 h-7 rounded-full bg-white text-slate-700 flex items-center justify-center shadow-sm hover:scale-105 transition-transform" 
+                                            (click)="editCarouselImage(image); $event.stopPropagation()" title="Edit details">
+                                            <mat-icon class="text-[16px] !w-4 !h-4">edit</mat-icon>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="carousel-item-info">
-                                    <h4>{{ image.title || 'Untitled' }}</h4>
-                                    <p>{{ image.description || 'No description' }}</p>
-                                    <div class="item-meta">
-                                        <span class="order-badge">Order: {{ image.order }}</span>
-                                        <span class="status-badge" [class.active]="image.isActive">
+
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-sm font-semibold text-slate-800 truncate">{{ image.title || 'Untitled' }}</h4>
+                                    <p class="text-xs text-slate-500 truncate mt-0.5">{{ image.description || 'No description' }}</p>
+                                    <div class="flex items-center gap-2 mt-1.5">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
+                                            Order: {{ image.order }}
+                                        </span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                                            [ngClass]="image.isActive ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-slate-100 text-slate-500'">
                                             {{ image.isActive ? 'Active' : 'Inactive' }}
                                         </span>
                                     </div>
                                 </div>
-                                <div class="carousel-item-actions">
-                                    <button class="btn-icon-sm" (click)="moveCarouselImage(image.id, 'up')"
-                                        [disabled]="i === 0" title="Move Up">
-                                        ⬆️
+
+                                <div class="flex items-center gap-1">
+                                    <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 disabled:opacity-30 flex items-center justify-center" 
+                                        (click)="moveCarouselImage(image.id, 'up')" [disabled]="i === 0" title="Move Up">
+                                        <mat-icon class="text-[18px]">arrow_upward</mat-icon>
                                     </button>
-                                    <button class="btn-icon-sm" (click)="moveCarouselImage(image.id, 'down')"
-                                        [disabled]="i === carouselImages().length - 1" title="Move Down">
-                                        ⬇️
+                                    <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 disabled:opacity-30 flex items-center justify-center" 
+                                        (click)="moveCarouselImage(image.id, 'down')" [disabled]="i === carouselImages().length - 1" title="Move Down">
+                                        <mat-icon class="text-[18px]">arrow_downward</mat-icon>
                                     </button>
-                                    <button class="btn-icon-sm" (click)="toggleCarouselImageStatus(image.id)"
-                                        [title]="image.isActive ? 'Deactivate' : 'Activate'">
-                                        {{ image.isActive ? '👁️' : '🚫' }}
+                                    <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 flex items-center justify-center" 
+                                        [ngClass]="{'text-sky-500 hover:bg-sky-50': image.isActive}"
+                                        (click)="toggleCarouselImageStatus(image.id)" [title]="image.isActive ? 'Deactivate' : 'Activate'">
+                                        <mat-icon class="text-[18px]">{{ image.isActive ? 'visibility' : 'visibility_off' }}</mat-icon>
                                     </button>
-                                    <button class="btn-icon-sm btn-delete" (click)="deleteCarouselImage(image.id)"
-                                        title="Delete">
-                                        🗑️
+                                    <button class="w-7 h-7 rounded-lg hover:bg-red-50 text-red-500 flex items-center justify-center" 
+                                        (click)="deleteCarouselImage(image.id)" title="Delete">
+                                        <mat-icon class="text-[18px]">delete_outline</mat-icon>
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Edit Form -->
-                        <div class="edit-form" *ngIf="selectedCarouselImage()">
-                            <h3>Edit Carousel Image</h3>
-                            <form [formGroup]="carouselForm" (ngSubmit)="updateCarouselImage()">
+                        <!-- Edit Form Overlay/Bottom Section -->
+                        <div class="mt-6 pt-6 border-t border-slate-100 bg-slate-50/50 p-4 rounded-xl" *ngIf="selectedCarouselImage()">
+                            <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <mat-icon class="text-sky-500">edit</mat-icon> Edit Image Details
+                            </h3>
+                            <form [formGroup]="carouselForm" (ngSubmit)="updateCarouselImage()" class="space-y-4">
                                 <div class="form-group">
-                                    <label>Title</label>
-                                    <input type="text" formControlName="title" placeholder="Enter title">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" formControlName="title" class="form-input" placeholder="Enter title">
                                 </div>
                                 <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea formControlName="description" placeholder="Enter description"
-                                        rows="3"></textarea>
+                                    <label class="form-label">Description</label>
+                                    <textarea formControlName="description" class="form-input" placeholder="Enter description" rows="3"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label>Alt Text</label>
-                                    <input type="text" formControlName="alt" placeholder="Enter alt text for SEO">
+                                    <label class="form-label">Alt Text</label>
+                                    <input type="text" formControlName="alt" class="form-input" placeholder="Enter alt text for SEO">
                                 </div>
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary" [disabled]="carouselForm.invalid">
-                                        Update Image
-                                    </button>
-                                    <button type="button" class="btn-secondary"
-                                        (click)="selectedCarouselImage.set(null)">
+                                <div class="flex items-center justify-end gap-2 pt-2">
+                                    <button type="button" class="btn-secondary text-sm px-4 py-2" (click)="selectedCarouselImage.set(null)">
                                         Cancel
+                                    </button>
+                                    <button type="submit" class="btn-primary text-sm px-4 py-2" [disabled]="carouselForm.invalid">
+                                        Update Details
                                     </button>
                                 </div>
                             </form>
@@ -153,48 +172,52 @@
                 </div>
 
                 <!-- Right: Live Preview -->
-                <div class="panel-right">
-                    <div class="section-card preview-card">
-                        <div class="card-header">
-                            <h2>Live Preview</h2>
-                            <span class="preview-label">How it looks on website</span>
+                <div class="space-y-6">
+                    <div class="content-card">
+                        <div class="mb-6">
+                            <h2 class="text-lg font-bold text-slate-800">Live Preview</h2>
+                            <p class="text-sm text-slate-500 mt-1">How it looks on the website homepage</p>
                         </div>
 
-                        <div class="carousel-preview">
-                            <div class="carousel-container" *ngIf="activeCarouselImages().length > 0">
-                                <div class="carousel-slides">
-                                    <div class="carousel-slide"
-                                        *ngFor="let image of activeCarouselImages(); let i = index"
-                                        [class.active]="i === currentCarouselIndex()">
-                                        <img [src]="image.src" [alt]="image.alt">
-                                        <div class="carousel-caption">
-                                            <h3>{{ image.title }}</h3>
-                                            <p>{{ image.description }}</p>
-                                        </div>
+                        <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-slate-900 shadow-inner group">
+                            <div class="w-full h-full relative" *ngIf="activeCarouselImages().length > 0">
+                                <div class="absolute inset-0 transition-opacity duration-500 ease-in-out"
+                                    *ngFor="let image of activeCarouselImages(); let i = index"
+                                    [class.opacity-100]="i === currentCarouselIndex()"
+                                    [class.opacity-0]="i !== currentCarouselIndex()"
+                                    [class.pointer-events-none]="i !== currentCarouselIndex()">
+                                    <img [src]="image.src" [alt]="image.alt" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                                    <div class="absolute bottom-0 inset-x-0 p-6 text-white">
+                                        <h3 class="text-lg font-bold truncate">{{ image.title }}</h3>
+                                        <p class="text-xs text-slate-200 mt-1 line-clamp-2">{{ image.description }}</p>
                                     </div>
                                 </div>
 
-                                <!-- Carousel Controls -->
-                                <button class="carousel-control prev" (click)="prevCarouselSlide()">
-                                    ‹
+                                <!-- Controls -->
+                                <button class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-colors backdrop-blur-sm opacity-0 group-hover:opacity-100" 
+                                    (click)="prevCarouselSlide()">
+                                    <mat-icon class="text-[18px]">chevron_left</mat-icon>
                                 </button>
-                                <button class="carousel-control next" (click)="nextCarouselSlide()">
-                                    ›
+                                <button class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-colors backdrop-blur-sm opacity-0 group-hover:opacity-100" 
+                                    (click)="nextCarouselSlide()">
+                                    <mat-icon class="text-[18px]">chevron_right</mat-icon>
                                 </button>
 
-                                <!-- Carousel Indicators -->
-                                <div class="carousel-indicators">
+                                <!-- Indicators -->
+                                <div class="absolute bottom-4 right-4 flex gap-1.5 z-10">
                                     <button *ngFor="let image of activeCarouselImages(); let i = index"
-                                        class="indicator" [class.active]="i === currentCarouselIndex()"
+                                        class="w-2 h-2 rounded-full transition-all duration-200" 
+                                        [ngClass]="i === currentCarouselIndex() ? 'bg-white w-4' : 'bg-white/50'"
                                         (click)="goToCarouselSlide(i)">
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="empty-state" *ngIf="activeCarouselImages().length === 0">
-                                <div class="empty-icon">🎠</div>
-                                <h3>No Active Carousel Images</h3>
-                                <p>Upload and activate images to see the preview</p>
+                            <div class="w-full h-full flex flex-col items-center justify-center text-center p-6 text-slate-400" *ngIf="activeCarouselImages().length === 0">
+                                <mat-icon class="text-[48px] !w-12 !h-12 text-slate-600 mb-3">view_carousel</mat-icon>
+                                <h3 class="font-semibold text-slate-500">No Active Carousel Images</h3>
+                                <p class="text-xs text-slate-600 mt-1 max-w-[240px]">Upload and activate images to see the live preview.</p>
                             </div>
                         </div>
                     </div>
@@ -203,337 +226,423 @@
         </div>
 
         <!-- ==================== APP SETTINGS TAB ==================== -->
-        <div class="tab-panel" *ngIf="activeTab() === 'app'">
-            <div class="panel-layout">
-                <div class="panel-full">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>Application Settings</h2>
-                            <p>Configure your application name, branding, and contact information</p>
-                        </div>
+        <div class="animate-fade" *ngIf="activeTab() === 'app'">
+            <div class="content-card">
+                <div class="mb-6">
+                    <h2 class="text-lg font-bold text-slate-800">Application Settings</h2>
+                    <p class="text-sm text-slate-500 mt-1">Configure your application name, branding, and contact
+                        information</p>
+                </div>
 
-                        <form [formGroup]="appSettingsForm" (ngSubmit)="saveAppSettings()">
-                            <div class="settings-grid">
-                                <!-- Branding Section -->
-                                <div class="settings-section">
-                                    <h3 class="section-title">🎨 Branding</h3>
+                <form [formGroup]="appSettingsForm" (ngSubmit)="saveAppSettings()">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
+                        <!-- Left Column -->
+                        <div class="space-y-8">
+                            <!-- Branding Section -->
+                            <div>
+                                <h3
+                                    class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                    <mat-icon class="text-sky-500 text-[18px]">palette</mat-icon> Branding
+                                </h3>
+
+                                <div class="space-y-4">
                                     <div class="form-group">
-                                        <label>Application Name *</label>
-                                        <input type="text" formControlName="appName"
+                                        <label class="form-label">Application Name *</label>
+                                        <input type="text" formControlName="appName" class="form-input"
                                             placeholder="Enter application name">
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Application Logo</label>
-                                        <div class="logo-upload">
-                                            <div class="logo-preview">
-                                                <img [src]="appSettings().appLogo" alt="App Logo">
+                                        <label class="form-label">Application Logo</label>
+                                        <div class="flex items-center gap-4 mt-1">
+                                            <div
+                                                class="w-16 h-16 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                                <img [src]="appSettings().appLogo" alt="App Logo"
+                                                    class="max-w-full max-h-full object-contain"
+                                                    *ngIf="appSettings().appLogo">
+                                                <mat-icon *ngIf="!appSettings().appLogo"
+                                                    class="text-slate-300">image</mat-icon>
                                             </div>
                                             <input type="file" #logoFileInput accept="image/*"
-                                                (change)="onLogoFileSelect($event)" style="display: none;">
-                                            <button type="button" class="btn-upload-logo"
+                                                (change)="onLogoFileSelect($event)" class="hidden">
+                                            <button type="button" class="btn-secondary text-sm px-4 py-2"
                                                 (click)="logoFileInput.click()">
-                                                Change Logo
+                                                <mat-icon class="text-[16px]">upload</mat-icon> Change Logo
                                             </button>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea formControlName="appDescription" rows="3"
+                                        <label class="form-label">Description</label>
+                                        <textarea formControlName="appDescription" rows="3" class="form-input"
                                             placeholder="Brief description of your application"></textarea>
                                     </div>
 
-                                    <div class="form-row">
+                                    <div class="grid grid-cols-2 gap-4">
                                         <div class="form-group">
-                                            <label>Primary Color</label>
-                                            <div class="color-input">
-                                                <input type="color" formControlName="primaryColor">
-                                                <input type="text" formControlName="primaryColor" placeholder="#1a73e8">
+                                            <label class="form-label">Primary Color</label>
+                                            <div class="flex items-center gap-2">
+                                                <input type="color" formControlName="primaryColor"
+                                                    class="w-9 h-9 p-0 border-0 rounded-lg cursor-pointer">
+                                                <input type="text" formControlName="primaryColor"
+                                                    class="form-input font-mono text-sm" placeholder="#1a73e8">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label>Secondary Color</label>
-                                            <div class="color-input">
-                                                <input type="color" formControlName="secondaryColor">
+                                            <label class="form-label">Secondary Color</label>
+                                            <div class="flex items-center gap-2">
+                                                <input type="color" formControlName="secondaryColor"
+                                                    class="w-9 h-9 p-0 border-0 rounded-lg cursor-pointer">
                                                 <input type="text" formControlName="secondaryColor"
-                                                    placeholder="#34a853">
+                                                    class="form-input font-mono text-sm" placeholder="#34a853">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Contact Information -->
-                                <div class="settings-section">
-                                    <h3 class="section-title">📞 Contact Information</h3>
+                            <!-- Social Media -->
+                            <div>
+                                <h3
+                                    class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                    <mat-icon class="text-sky-500 text-[18px]">public</mat-icon> Social Media
+                                </h3>
 
+                                <div class="space-y-4">
                                     <div class="form-group">
-                                        <label>Email *</label>
-                                        <input type="email" formControlName="contactEmail"
-                                            placeholder="contact@example.com">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Phone</label>
-                                        <input type="tel" formControlName="contactPhone" placeholder="+91 1234567890">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Address</label>
-                                        <textarea formControlName="address" rows="3"
-                                            placeholder="Enter full address"></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- UPI Information -->
-                                <div class="settings-section">
-                                    <h3 class="section-title">💳 UPI Payment Details</h3>
-
-                                    <div class="form-group">
-                                        <label>UPI Scanner Image</label>
-                                        <div class="logo-upload">
-                                            <div class="logo-preview">
-                                                <img [src]="appSettings().upiScannerImage || 'assets/placeholder-qr.png'"
-                                                    alt="UPI Scanner">
-                                            </div>
-                                            <input type="file" #upiScannerFileInput accept="image/*"
-                                                (change)="onUpiScannerFileSelect($event)" style="display: none;">
-                                            <button type="button" class="btn-upload-logo"
-                                                (click)="upiScannerFileInput.click()">
-                                                Upload QR Code
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>UPI Name</label>
-                                        <input type="text" formControlName="upiName"
-                                            placeholder="Name associated with UPI">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>UPI ID</label>
-                                        <input type="text" formControlName="upiId" placeholder="example@upi">
-                                    </div>
-                                </div>
-
-                                <!-- Social Media -->
-                                <div class="settings-section">
-                                    <h3 class="section-title">🌐 Social Media</h3>
-
-                                    <div class="form-group">
-                                        <label>Facebook</label>
-                                        <input type="url" formControlName="facebook"
+                                        <label class="form-label">Facebook</label>
+                                        <input type="url" formControlName="facebook" class="form-input"
                                             placeholder="https://facebook.com/yourpage">
                                     </div>
-
                                     <div class="form-group">
-                                        <label>Instagram</label>
-                                        <input type="url" formControlName="instagram"
+                                        <label class="form-label">Instagram</label>
+                                        <input type="url" formControlName="instagram" class="form-input"
                                             placeholder="https://instagram.com/yourpage">
                                     </div>
-
                                     <div class="form-group">
-                                        <label>Twitter</label>
-                                        <input type="url" formControlName="twitter"
+                                        <label class="form-label">Twitter / X</label>
+                                        <input type="url" formControlName="twitter" class="form-input"
                                             placeholder="https://twitter.com/yourpage">
                                     </div>
-
                                     <div class="form-group">
-                                        <label>YouTube</label>
-                                        <input type="url" formControlName="youtube"
+                                        <label class="form-label">YouTube</label>
+                                        <input type="url" formControlName="youtube" class="form-input"
                                             placeholder="https://youtube.com/yourchannel">
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="form-actions-bottom">
-                                <button type="submit" class="btn-primary" [disabled]="appSettingsForm.invalid">
-                                    💾 Save Settings
-                                </button>
-                                <button type="button" class="btn-secondary" (click)="loadSettings()">
-                                    🔄 Reset
-                                </button>
+                        <!-- Right Column -->
+                        <div class="space-y-8">
+                            <!-- Contact Information -->
+                            <div>
+                                <h3
+                                    class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                    <mat-icon class="text-sky-500 text-[18px]">contact_phone</mat-icon> Contact
+                                    Information
+                                </h3>
+
+                                <div class="space-y-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" formControlName="contactEmail" class="form-input"
+                                            placeholder="contact@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" formControlName="contactPhone" class="form-input"
+                                            placeholder="+91 1234567890">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Address</label>
+                                        <textarea formControlName="address" rows="3" class="form-input"
+                                            placeholder="Enter full address"></textarea>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+
+                            <!-- UPI Information -->
+                            <div>
+                                <h3
+                                    class="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                    <mat-icon class="text-sky-500 text-[18px]">qr_code_scanner</mat-icon> UPI Payment
+                                    Details
+                                </h3>
+
+                                <div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                    <div class="form-group">
+                                        <label class="form-label">UPI Scanner Image</label>
+                                        <div class="flex items-start gap-4 mt-1">
+                                            <div
+                                                class="w-24 h-24 rounded-lg bg-white border border-slate-200 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-sm">
+                                                <img [src]="appSettings().upiScannerImage || 'assets/placeholder-qr.png'"
+                                                    alt="UPI Scanner" class="max-w-full max-h-full object-contain p-1">
+                                            </div>
+                                            <div class="flex flex-col items-start gap-2">
+                                                <input type="file" #upiScannerFileInput accept="image/*"
+                                                    (change)="onUpiScannerFileSelect($event)" class="hidden">
+                                                <button type="button" class="btn-secondary text-sm px-4 py-2"
+                                                    (click)="upiScannerFileInput.click()">
+                                                    <mat-icon class="text-[16px]">upload</mat-icon> Upload QR Code
+                                                </button>
+                                                <p class="text-xs text-slate-500">Upload a clear QR code image for
+                                                    payments.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mt-2">
+                                        <label class="form-label">UPI Name</label>
+                                        <input type="text" formControlName="upiName" class="form-input"
+                                            placeholder="Name associated with UPI">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">UPI ID</label>
+                                        <input type="text" formControlName="upiId" class="form-input font-mono"
+                                            placeholder="example@upi">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="flex items-center gap-3 justify-end mt-8 pt-6 border-t border-slate-100">
+                        <button type="button" class="btn-secondary" (click)="loadSettings()">
+                            <mat-icon class="text-sky-500 text-[18px]">refresh</mat-icon> Reset
+                        </button>
+                        <button type="submit" class="btn-primary" [disabled]="appSettingsForm.invalid">
+                            <mat-icon class="text-sky-500 text-[18px]">save</mat-icon> Save Settings
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- ==================== GALLERY TAB ==================== -->
-        <div class="tab-panel" *ngIf="activeTab() === 'gallery'">
-            <div class="section-card">
-                <div class="card-header">
-                    <h2>Gallery Management</h2>
-                    <div class="gallery-actions">
-                        <div class="add-category-wrapper">
-                            <input type="text" [(ngModel)]="newCategoryName" placeholder="New category name..."
+        <div class="animate-fade" *ngIf="activeTab() === 'gallery'">
+            <div class="content-card">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Gallery Management</h2>
+                        <p class="text-sm text-slate-500 mt-1">Organize photos into categories for the website gallery</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center">
+                            <input type="text" [(ngModel)]="newCategoryName" placeholder="New category..."
+                                class="form-input rounded-r-none border-r-0 !py-1.5"
                                 (keyup.enter)="addGalleryCategory()">
-                            <button class="btn-add-cat" (click)="addGalleryCategory()">➕ Add</button>
+                            <button class="btn-primary rounded-l-none !py-1.5 px-4" (click)="addGalleryCategory()">
+                                <mat-icon class="text-[16px] !w-4 !h-4">add</mat-icon> Add
+                            </button>
                         </div>
-                        <select class="category-select" [value]="selectedGalleryCategory()"
+                        <select class="form-input !py-1.5 !w-auto bg-slate-50 border-slate-200" [value]="selectedGalleryCategory()"
                             (change)="selectedGalleryCategory.set($any($event.target).value)">
                             <option *ngFor="let cat of galleryCategories()" [value]="cat">{{ cat }}</option>
                         </select>
-                        <button class="btn-delete-selected" *ngIf="selectedGalleryImages().length > 0"
+                        <button class="btn-danger !py-1.5 px-4 text-xs font-semibold" *ngIf="selectedGalleryImages().length > 0"
                             (click)="deleteSelectedGalleryImages()">
-                            🗑️ Delete Selected ({{ selectedGalleryImages().length }})
+                            <mat-icon class="text-[16px] !w-4 !h-4">delete</mat-icon>
+                            <span>Delete Selected ({{ selectedGalleryImages().length }})</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Upload Zone -->
-                <div class="upload-zone gallery-upload" [class.dragging]="isDragging()" (dragover)="onDragOver($event)"
-                    (dragleave)="onDragLeave($event)" (drop)="onGalleryDrop($event)">
+                <div class="border-2 border-dashed border-slate-200 hover:border-sky-400 bg-slate-50 hover:bg-sky-50/20 rounded-xl p-8 text-center cursor-pointer transition-all duration-200 group mb-8"
+                    [class.border-sky-400]="isDragging()" 
+                    [class.bg-sky-50]="isDragging()"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)" 
+                    (drop)="onGalleryDrop($event)"
+                    (click)="galleryFileInput.click()">
                     <input type="file" #galleryFileInput multiple accept="image/*"
-                        (change)="onGalleryFileSelect($event)" style="display: none;">
-                    <div class="upload-content">
-                        <div class="upload-icon">🖼️</div>
-                        <h3>Upload to {{ selectedGalleryCategory() }}</h3>
-                        <p>Drag & drop multiple images or click to browse</p>
-                        <button class="btn-upload" (click)="galleryFileInput.click()">
+                        (change)="onGalleryFileSelect($event)" class="hidden">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-sky-500 transition-colors duration-200">
+                            <mat-icon class="text-[24px]">photo_library</mat-icon>
+                        </div>
+                        <h3 class="font-semibold text-slate-700">Upload to {{ selectedGalleryCategory() }}</h3>
+                        <p class="text-xs text-slate-500">Drag & drop multiple images here or click to browse</p>
+                        <button type="button" class="btn-secondary text-xs px-3 py-1.5 mt-2">
                             Choose Images
                         </button>
                     </div>
                 </div>
 
                 <!-- Gallery Grid -->
-                <div class="gallery-grid">
-                    <div class="gallery-item" *ngFor="let image of getFilteredGalleryImages()"
-                        [class.selected]="selectedGalleryImages().includes(image.id)"
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" *ngIf="getFilteredGalleryImages().length > 0">
+                    <div class="group relative bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col cursor-pointer"
+                        *ngFor="let image of getFilteredGalleryImages()"
+                        [class.ring-2]="selectedGalleryImages().includes(image.id)"
+                        [class.ring-sky-500]="selectedGalleryImages().includes(image.id)"
                         (click)="toggleGalleryImageSelection(image.id)">
-                        <div class="gallery-item-image">
-                            <img [src]="image.src" [alt]="image.caption">
-                            <div class="item-overlay">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" [checked]="selectedGalleryImages().includes(image.id)"
-                                        (click)="$event.stopPropagation()">
-                                </div>
-                                <button class="btn-delete-single"
+                        
+                        <div class="relative aspect-video w-full bg-slate-100 overflow-hidden">
+                            <img [src]="image.src" [alt]="image.caption" class="w-full h-full object-cover">
+                            
+                            <!-- Selection Checkbox and Overlay -->
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-start justify-between p-2">
+                                <input type="checkbox" [checked]="selectedGalleryImages().includes(image.id)"
+                                    (click)="$event.stopPropagation()"
+                                    class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300">
+                                
+                                <button class="w-7 h-7 rounded-lg bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-sm"
                                     (click)="deleteGalleryImage(image.id); $event.stopPropagation()" title="Delete">
-                                    🗑️
+                                    <mat-icon class="text-[16px] !w-4 !h-4">delete_outline</mat-icon>
                                 </button>
                             </div>
                         </div>
-                        <div class="gallery-item-info">
-                            <input type="text" class="caption-input" [value]="image.caption"
+
+                        <div class="p-3 flex-grow flex flex-col justify-between gap-2">
+                            <input type="text" class="w-full bg-transparent border-b border-transparent hover:border-slate-200 focus:border-sky-500 py-0.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none" 
+                                [value]="image.caption"
                                 (input)="updateGalleryImageCaption(image.id, $any($event.target).value)"
                                 (click)="$event.stopPropagation()" placeholder="Add caption...">
-                            <span class="upload-date">{{ image.uploadDate | date:'short' }}</span>
+                            <span class="text-[10px] text-slate-400 font-medium self-end">
+                                {{ image.uploadDate | date:'shortDate' }}
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <div class="empty-state" *ngIf="getFilteredGalleryImages().length === 0">
-                    <div class="empty-icon">📷</div>
-                    <h3>No Images in {{ selectedGalleryCategory() }}</h3>
-                    <p>Upload images to this category to get started</p>
+                <div class="flex flex-col items-center justify-center py-12 text-slate-400 border border-slate-100 rounded-xl bg-slate-50/50" *ngIf="getFilteredGalleryImages().length === 0">
+                    <mat-icon class="text-[48px] !w-12 !h-12 text-slate-300 mb-3">image_not_supported</mat-icon>
+                    <h3 class="font-semibold text-slate-500">No Images in {{ selectedGalleryCategory() }}</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-[240px] text-center">Upload images to this category to populate the gallery.</p>
                 </div>
             </div>
         </div>
 
         <!-- ==================== SPONSORS TAB ==================== -->
-        <div class="tab-panel" *ngIf="activeTab() === 'sponsors'">
-            <div class="panel-layout">
-                <div class="panel-left">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>Add New Sponsor</h2>
+        <div class="animate-fade" *ngIf="activeTab() === 'sponsors'">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left: Add Sponsor Form -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="content-card">
+                        <div class="mb-6">
+                            <h2 class="text-lg font-bold text-slate-800">Add New Sponsor</h2>
+                            <p class="text-xs text-slate-500 mt-1">Add a new partner or sponsor to the platform</p>
                         </div>
 
-                        <form [formGroup]="sponsorForm" (ngSubmit)="addSponsor()">
+                        <form [formGroup]="sponsorForm" (ngSubmit)="addSponsor()" class="space-y-5">
                             <div class="form-group">
-                                <label>Sponsor Logo</label>
-                                <div class="sponsor-logo-upload" (click)="newSponsorLogoInput.click()">
-                                    <img [src]="newSponsorLogoPreview()" alt="Logo Preview">
-                                    <div class="upload-overlay">
-                                        <span>Click to Upload</span>
+                                <label class="form-label">Sponsor Logo</label>
+                                <div class="relative group border-2 border-dashed border-slate-200 hover:border-sky-400 bg-slate-50 rounded-xl overflow-hidden aspect-video flex flex-col items-center justify-center cursor-pointer transition-colors duration-200"
+                                    (click)="newSponsorLogoInput.click()">
+                                    <img [src]="newSponsorLogoPreview()" alt="Logo Preview" class="w-full h-full object-contain p-2" *ngIf="newSponsorLogoPreview()">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity duration-150 gap-2">
+                                        <mat-icon class="text-[20px]">upload</mat-icon>
+                                        <span class="text-xs font-semibold">Click to Upload</span>
+                                    </div>
+                                    <div class="flex flex-col items-center text-slate-400 gap-1.5 p-4" *ngIf="!newSponsorLogoPreview()">
+                                        <mat-icon class="text-[32px] !w-8 !h-8">handshake</mat-icon>
+                                        <span class="text-xs font-medium">Click to Upload Logo</span>
                                     </div>
                                     <input type="file" #newSponsorLogoInput (change)="onSponsorFileSelect($event)"
-                                        accept="image/*" style="display: none;">
+                                        accept="image/*" class="hidden">
                                 </div>
                             </div>
+
                             <div class="form-group">
-                                <label>Sponsor Name *</label>
-                                <input type="text" formControlName="name" placeholder="Enter sponsor name">
+                                <label class="form-label">Sponsor Name *</label>
+                                <input type="text" formControlName="name" class="form-input" placeholder="Enter sponsor name">
                             </div>
 
                             <div class="form-group">
-                                <label>Description</label>
-                                <input type="text" formControlName="description"
-                                    placeholder="e.g., Title Sponsor, Kit Partner">
+                                <label class="form-label">Description</label>
+                                <input type="text" formControlName="description" class="form-input" placeholder="e.g., Title Sponsor, Kit Partner">
                             </div>
 
                             <div class="form-group">
-                                <label>Website</label>
-                                <input type="url" formControlName="website" placeholder="https://sponsor-website.com">
+                                <label class="form-label">Website</label>
+                                <input type="url" formControlName="website" class="form-input" placeholder="https://sponsor-website.com">
                             </div>
 
-                            <button type="submit" class="btn-primary" [disabled]="sponsorForm.invalid">
-                                ➕ Add Sponsor
+                            <button type="submit" class="btn-primary w-full justify-center" [disabled]="sponsorForm.invalid">
+                                <mat-icon class="text-[18px]">add</mat-icon> Add Sponsor
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <div class="panel-right">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>Sponsors List</h2>
-                            <span class="count-badge">{{ sponsors().length }} sponsors</span>
+                <!-- Right: Sponsors List -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="content-card">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">Sponsors List</h2>
+                                <p class="text-sm text-slate-500 mt-1">Manage active sponsors and display order</p>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100">
+                                {{ sponsors().length }} sponsors
+                            </span>
                         </div>
 
-                        <div class="sponsors-list">
-                            <div class="sponsor-item" *ngFor="let sponsor of sponsors(); let i = index"
-                                [class.inactive]="!sponsor.isActive">
-                                <div class="sponsor-logo">
-                                    <img [src]="sponsor.logo" [alt]="sponsor.name">
-                                    <input type="file" #sponsorLogoInput accept="image/*"
-                                        (change)="onSponsorFileSelect($event, sponsor.id)" style="display: none;">
-                                    <button class="btn-change-logo" (click)="sponsorLogoInput.click()">
-                                        Change
-                                    </button>
-                                </div>
-                                <div class="sponsor-info">
-                                    <h4>{{ sponsor.name }}</h4>
-                                    <p>{{ sponsor.description }}</p>
-                                    <a [href]="sponsor.website" target="_blank" *ngIf="sponsor.website">
-                                        🔗 {{ sponsor.website }}
-                                    </a>
-                                    <div class="sponsor-meta">
-                                        <span class="order-badge">Order: {{ sponsor.order }}</span>
-                                        <span class="status-badge" [class.active]="sponsor.isActive">
-                                            {{ sponsor.isActive ? 'Active' : 'Inactive' }}
-                                        </span>
+                        <div class="divide-y divide-slate-100 max-h-[600px] overflow-y-auto pr-1" *ngIf="sponsors().length > 0">
+                            <div class="flex items-center gap-4 py-4 first:pt-0 last:pb-0" 
+                                *ngFor="let sponsor of sponsors(); let i = index"
+                                [class.opacity-60]="!sponsor.isActive">
+                                
+                                <div class="relative w-20 h-14 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center flex-shrink-0 group">
+                                    <img [src]="sponsor.logo" [alt]="sponsor.name" class="max-w-full max-h-full object-contain p-1">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-150">
+                                        <button class="w-7 h-7 rounded-full bg-white text-slate-700 flex items-center justify-center shadow-sm hover:scale-105 transition-transform"
+                                            (click)="sponsorLogoInput.click()" title="Change logo">
+                                            <mat-icon class="text-[16px] !w-4 !h-4">photo_camera</mat-icon>
+                                        </button>
+                                        <input type="file" #sponsorLogoInput accept="image/*"
+                                            (change)="onSponsorFileSelect($event, sponsor.id)" class="hidden">
                                     </div>
                                 </div>
-                                <div class="sponsor-actions">
-                                    <button class="btn-icon-sm" (click)="moveSponsor(sponsor.id, 'up')"
-                                        [disabled]="i === 0" title="Move Up">
-                                        ⬆️
+
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-sm font-semibold text-slate-800 truncate">{{ sponsor.name }}</h4>
+                                    <p class="text-xs text-slate-500 truncate mt-0.5">{{ sponsor.description }}</p>
+                                    <a [href]="sponsor.website" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-sky-600 hover:underline mt-1.5" *ngIf="sponsor.website">
+                                        <mat-icon class="text-[12px] !w-3 !h-3">link</mat-icon>
+                                        <span class="truncate max-w-[200px]">{{ sponsor.website }}</span>
+                                    </a>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
+                                        Order: {{ sponsor.order }}
+                                    </span>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                                        [ngClass]="sponsor.isActive ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-slate-100 text-slate-500'">
+                                        {{ sponsor.isActive ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 disabled:opacity-30 flex items-center justify-center" 
+                                        (click)="moveSponsor(sponsor.id, 'up')" [disabled]="i === 0" title="Move Up">
+                                        <mat-icon class="text-[18px]">arrow_upward</mat-icon>
                                     </button>
-                                    <button class="btn-icon-sm" (click)="moveSponsor(sponsor.id, 'down')"
-                                        [disabled]="i === sponsors().length - 1" title="Move Down">
-                                        ⬇️
+                                    <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 disabled:opacity-30 flex items-center justify-center" 
+                                        (click)="moveSponsor(sponsor.id, 'down')" [disabled]="i === sponsors().length - 1" title="Move Down">
+                                        <mat-icon class="text-[18px]">arrow_downward</mat-icon>
                                     </button>
-                                    <button class="btn-icon-sm" (click)="toggleSponsorStatus(sponsor.id)"
-                                        [title]="sponsor.isActive ? 'Deactivate' : 'Activate'">
-                                        {{ sponsor.isActive ? '👁️' : '🚫' }}
+                                    <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 flex items-center justify-center"
+                                        [ngClass]="{'text-sky-500 hover:bg-sky-50': sponsor.isActive}"
+                                        (click)="toggleSponsorStatus(sponsor.id)" [title]="sponsor.isActive ? 'Deactivate' : 'Activate'">
+                                        <mat-icon class="text-[18px]">{{ sponsor.isActive ? 'visibility' : 'visibility_off' }}</mat-icon>
                                     </button>
-                                    <button class="btn-icon-sm btn-delete" (click)="deleteSponsor(sponsor.id)"
-                                        title="Delete">
-                                        🗑️
+                                    <button class="w-7 h-7 rounded-lg hover:bg-red-50 text-red-500 flex items-center justify-center" 
+                                        (click)="deleteSponsor(sponsor.id)" title="Delete">
+                                        <mat-icon class="text-[18px]">delete_outline</mat-icon>
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="empty-state" *ngIf="sponsors().length === 0">
-                            <div class="empty-icon">🤝</div>
-                            <h3>No Sponsors Added</h3>
-                            <p>Add your first sponsor to get started</p>
+                        <div class="flex flex-col items-center justify-center py-12 text-slate-400 border border-slate-100 rounded-xl bg-slate-50/50" *ngIf="sponsors().length === 0">
+                            <mat-icon class="text-[48px] !w-12 !h-12 text-slate-300 mb-3">handshake</mat-icon>
+                            <h3 class="font-semibold text-slate-500">No Sponsors Added</h3>
+                            <p class="text-xs text-slate-500 mt-1">Add your first sponsor to display them on the homepage.</p>
                         </div>
                     </div>
                 </div>
@@ -541,61 +650,69 @@
         </div>
 
         <!-- ==================== POLLS TAB ==================== -->
-        <div class="tab-panel" *ngIf="activeTab() === 'polls'">
-            <div class="panel-layout">
+        <div class="animate-fade" *ngIf="activeTab() === 'polls'">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left: Create Poll -->
-                <div class="panel-left">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>Create New Poll</h2>
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="content-card">
+                        <div class="mb-6">
+                            <h2 class="text-lg font-bold text-slate-800">Create New Poll</h2>
+                            <p class="text-xs text-slate-500 mt-1">Launch a new poll to engage with players</p>
                         </div>
-                        <form [formGroup]="pollForm" (ngSubmit)="createPoll()">
+                        
+                        <form [formGroup]="pollForm" (ngSubmit)="createPoll()" class="space-y-4">
                             <div class="form-group">
-                                <label>Question *</label>
-                                <input type="text" formControlName="question"
-                                    placeholder="e.g., Who will win today's match?">
+                                <label class="form-label">Question *</label>
+                                <input type="text" formControlName="question" class="form-input" placeholder="e.g., Who will win today's match?">
                             </div>
                             <div class="form-group">
-                                <label>Description</label>
-                                <textarea formControlName="description" rows="2"
-                                    placeholder="Add context..."></textarea>
+                                <label class="form-label">Description</label>
+                                <textarea formControlName="description" rows="2" class="form-input" placeholder="Add context..."></textarea>
                             </div>
 
-                            <div class="poll-options-section">
-                                <label>Options * (Min 2)</label>
-                                <div class="option-row" *ngFor="let opt of pollOptions(); let i = index">
+                            <div class="space-y-3">
+                                <label class="form-label">Options * (Min 2)</label>
+                                <div class="flex items-center gap-2" *ngFor="let opt of pollOptions(); let i = index">
                                     <input type="text" [value]="opt"
                                         (input)="updatePollOption(i, $any($event.target).value)"
+                                        class="form-input text-sm"
                                         placeholder="Option {{ i + 1 }}">
-                                    <button type="button" class="btn-remove-opt" (click)="removePollOption(i)"
-                                        [disabled]="pollOptions().length <= 2">✕</button>
+                                    <button type="button" class="w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center flex-shrink-0 transition-colors" 
+                                        (click)="removePollOption(i)"
+                                        [disabled]="pollOptions().length <= 2">
+                                        <mat-icon class="text-[18px]">close</mat-icon>
+                                    </button>
                                 </div>
-                                <button type="button" class="btn-add-option" (click)="addPollOption()">
-                                    ➕ Add Option
+                                <button type="button" class="btn-secondary w-full justify-center text-xs py-2 mt-1" (click)="addPollOption()">
+                                    <mat-icon class="text-[16px]">add</mat-icon> Add Option
                                 </button>
                             </div>
 
-                            <div class="form-group mt-3">
-                                <label>End Date (Optional)</label>
-                                <input type="datetime-local" formControlName="endDate">
+                            <div class="form-group pt-2">
+                                <label class="form-label">End Date (Optional)</label>
+                                <input type="datetime-local" formControlName="endDate" class="form-input">
                             </div>
 
-                            <button type="submit" class="btn-primary w-100 mt-3" [disabled]="pollForm.invalid">
-                                🚀 Launch Poll
+                            <button type="submit" class="btn-primary w-full justify-center mt-4" [disabled]="pollForm.invalid">
+                                <mat-icon class="text-[18px]">rocket_launch</mat-icon> Launch Poll
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Right: Active Polls -->
-                <div class="panel-right">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>Active & Past Polls</h2>
-                            <div class="header-actions">
-                                <div class="voter-selector" *ngIf="players().length > 0">
-                                    <span class="selector-label">Simulate as:</span>
-                                    <select [value]="selectedVoterId() || ''"
+                <!-- Right: Active & Past Polls -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="content-card">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">Active & Past Polls</h2>
+                                <p class="text-sm text-slate-500 mt-1">Review outcomes and manage active voting rooms</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200" *ngIf="players().length > 0">
+                                    <span class="text-xs font-semibold text-slate-500">Simulate:</span>
+                                    <select class="bg-transparent border-0 text-xs font-medium text-slate-700 focus:outline-none" 
+                                        [value]="selectedVoterId() || ''"
                                         (change)="selectedVoterId.set($any($event.target).value ? +$any($event.target).value : null)">
                                         <option value="">-- Choose Player --</option>
                                         <option *ngFor="let p of players()" [value]="p.id">
@@ -603,68 +720,67 @@
                                         </option>
                                     </select>
                                 </div>
-                                <span class="count-badge">{{ polls().length }} polls</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100">
+                                    {{ polls().length }} polls
+                                </span>
                             </div>
                         </div>
 
-                        <div class="polls-list">
-                            <div class="poll-card" *ngFor="let poll of polls()" [class.inactive]="!poll.IsActive">
-                                <div class="poll-card-header">
-                                    <div class="poll-title-group">
-                                        <span class="active-dot" *ngIf="poll.IsActive"></span>
-                                        <h3>{{ poll.Question }}</h3>
-                                    </div>
-                                    <div class="poll-actions">
-                                        <button class="btn-icon-sm" (click)="togglePollStatus(poll)"
-                                            [title]="poll.IsActive ? 'Disable' : 'Enable'">
-                                            {{ poll.IsActive ? '👁️' : '🚫' }}
-                                        </button>
-                                        <button class="btn-icon-sm btn-delete"
-                                            (click)="deletePoll(poll.id)">🗑️</button>
-                                    </div>
-                                </div>
-                                <p class="poll-desc">{{ poll.Description }}</p>
-
-                                <div class="poll-options-results">
-                                    <div class="poll-option-result" *ngFor="let opt of poll.options">
-                                        <div class="option-info">
-                                            <span>{{ opt.OptionText }}</span>
-                                            <span class="vote-count">{{ opt.Votes }} votes ({{ poll.TotalVotes > 0 ?
-                                                (opt.Votes/poll.TotalVotes*100 | number:'1.0-1') : 0 }}%)</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto pr-1" *ngIf="polls().length > 0">
+                            <div class="bg-white border border-slate-100 rounded-xl p-5 shadow-sm flex flex-col justify-between" 
+                                *ngFor="let poll of polls()" [class.opacity-70]="!poll.IsActive">
+                                <div>
+                                    <div class="flex items-start justify-between gap-4 mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full" [ngClass]="poll.IsActive ? 'bg-green-500 animate-pulse' : 'bg-slate-300'"></span>
+                                            <h3 class="text-sm font-bold text-slate-800 line-clamp-1">{{ poll.Question }}</h3>
                                         </div>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill"
-                                                [style.width.%]="poll.TotalVotes > 0 ? (opt.Votes/poll.TotalVotes*100) : 0">
+                                        <div class="flex items-center gap-1">
+                                            <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 flex items-center justify-center" 
+                                                [ngClass]="{'text-sky-500 hover:bg-sky-50': poll.IsActive}"
+                                                (click)="togglePollStatus(poll)" [title]="poll.IsActive ? 'Disable' : 'Enable'">
+                                                <mat-icon class="text-[16px] !w-4 !h-4">{{ poll.IsActive ? 'visibility' : 'visibility_off' }}</mat-icon>
+                                            </button>
+                                            <button class="w-7 h-7 rounded-lg hover:bg-red-50 text-red-500 flex items-center justify-center" 
+                                                (click)="deletePoll(poll.id)" title="Delete">
+                                                <mat-icon class="text-[16px] !w-4 !h-4">delete_outline</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 line-clamp-2 mb-4">{{ poll.Description }}</p>
+
+                                    <!-- Option results -->
+                                    <div class="space-y-3">
+                                        <div class="relative flex flex-col gap-1.5" *ngFor="let opt of poll.options">
+                                            <div class="flex items-center justify-between text-xs font-semibold text-slate-700">
+                                                <span>{{ opt.OptionText }}</span>
+                                                <span class="text-slate-500">{{ opt.Votes }} votes ({{ poll.TotalVotes > 0 ? (opt.Votes/poll.TotalVotes*100 | number:'1.0-1') : 0 }}%)</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex-grow bg-slate-100 rounded-full h-2 overflow-hidden">
+                                                    <div class="bg-sky-500 h-full rounded-full transition-all duration-300" 
+                                                        [style.width.%]="poll.TotalVotes > 0 ? (opt.Votes/poll.TotalVotes*100) : 0"></div>
+                                                </div>
+                                                <button class="btn-secondary text-[10px] px-2 py-0.5 h-6 whitespace-nowrap" 
+                                                    (click)="votePoll(poll.id, opt.id!)" *ngIf="poll.IsActive">
+                                                    Vote
+                                                </button>
                                             </div>
                                         </div>
-                                        <button class="btn-vote-mock" (click)="votePoll(poll.id, opt.id!)"
-                                            *ngIf="poll.IsActive">
-                                            Vote Now
-                                        </button>
                                     </div>
                                 </div>
 
-                                <div class="poll-footer">
-                                    <div class="footer-stat">
-                                        <span class="icon">👥</span>
-                                        <span>Total: <b>{{ poll.TotalVotes }}</b></span>
-                                    </div>
-                                    <div class="footer-stat">
-                                        <span class="icon">📅</span>
-                                        <span>Launched: {{ poll.createdAt | date:'MMM d, y' }}</span>
-                                    </div>
+                                <div class="flex items-center justify-between border-t border-slate-100 mt-5 pt-3 text-[10px] font-semibold text-slate-400">
+                                    <span class="flex items-center gap-1"><mat-icon class="text-[12px] !w-3 !h-3">people</mat-icon> Total: {{ poll.TotalVotes }}</span>
+                                    <span>Launched: {{ poll.createdAt | date:'mediumDate' }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="empty-state" *ngIf="polls().length === 0">
-                            <div class="empty-icon">📊</div>
-                            <h3>No Polls Launched</h3>
-                            <p>Create your first poll to engage with your player community</p>
-                        </div>
-
-                        <div class="voter-warning" *ngIf="players().length === 0">
-                            <p>⚠️ No players found in the system. You need players to simulate voting.</p>
+                        <div class="flex flex-col items-center justify-center py-12 text-slate-400 border border-slate-100 rounded-xl bg-slate-50/50" *ngIf="polls().length === 0">
+                            <mat-icon class="text-[48px] !w-12 !h-12 text-slate-300 mb-3">bar_chart</mat-icon>
+                            <h3 class="font-semibold text-slate-500">No Polls Launched</h3>
+                            <p class="text-xs text-slate-500 mt-1 max-w-[240px] text-center">Create and launch polls to collect player insights.</p>
                         </div>
                     </div>
                 </div>
@@ -672,34 +788,32 @@
         </div>
 
         <!-- ==================== LOCATION MASTER TAB ==================== -->
-        <div class="tab-panel" *ngIf="activeTab() === 'locations'">
-            <div class="panel-layout">
+        <div class="animate-fade" *ngIf="activeTab() === 'locations'">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left: Add / Edit Form -->
-                <div class="panel-left">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>{{ editingLocation ? '✏️ Edit Location' : '➕ Add Location' }}</h2>
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="content-card">
+                        <div class="mb-6">
+                            <h2 class="text-lg font-bold text-slate-800">{{ editingLocation ? 'Edit Location' : 'Add Location' }}</h2>
+                            <p class="text-xs text-slate-500 mt-1">Manage venues, districts, and sort weightings</p>
                         </div>
-                        <div class="card-body">
+                        
+                        <div class="space-y-4">
                             <div class="form-group">
                                 <label class="form-label">Location Name *</label>
-                                <input type="text" class="form-input" [(ngModel)]="locationForm.Name"
-                                    placeholder="e.g. Eriyur" />
+                                <input type="text" class="form-input" [(ngModel)]="locationForm.Name" placeholder="e.g. Eriyur" />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">District</label>
-                                <input type="text" class="form-input" [(ngModel)]="locationForm.District"
-                                    placeholder="e.g. Dharmapuri" />
+                                <input type="text" class="form-input" [(ngModel)]="locationForm.District" placeholder="e.g. Dharmapuri" />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">State</label>
-                                <input type="text" class="form-input" [(ngModel)]="locationForm.State"
-                                    placeholder="e.g. Tamil Nadu" />
+                                <input type="text" class="form-input" [(ngModel)]="locationForm.State" placeholder="e.g. Tamil Nadu" />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Sort Order</label>
-                                <input type="number" class="form-input" [(ngModel)]="locationForm.SortOrder"
-                                    placeholder="0" />
+                                <input type="number" class="form-input" [(ngModel)]="locationForm.SortOrder" placeholder="0" />
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Status</label>
@@ -708,12 +822,14 @@
                                     <option [ngValue]="false">Inactive</option>
                                 </select>
                             </div>
-                            <div class="form-actions" style="display:flex;gap:0.75rem;margin-top:1rem">
-                                <button class="btn-save-all" (click)="saveLocation()" [disabled]="!locationForm.Name">
-                                    {{ editingLocation ? '💾 Update' : '➕ Add Location' }}
-                                </button>
-                                <button class="btn-cancel" *ngIf="editingLocation" (click)="cancelEditLocation()">
+                            
+                            <div class="flex items-center gap-3 pt-3">
+                                <button class="btn-secondary text-sm flex-1 justify-center py-2.5" *ngIf="editingLocation" (click)="cancelEditLocation()">
                                     Cancel
+                                </button>
+                                <button class="btn-primary text-sm flex-grow justify-center py-2.5" (click)="saveLocation()" [disabled]="!locationForm.Name">
+                                    <mat-icon class="text-[18px]">{{ editingLocation ? 'save' : 'add' }}</mat-icon>
+                                    <span>{{ editingLocation ? 'Update' : 'Add Location' }}</span>
                                 </button>
                             </div>
                         </div>
@@ -721,37 +837,56 @@
                 </div>
 
                 <!-- Right: Locations List -->
-                <div class="panel-right">
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h2>All Locations <span class="badge">{{ locations().length }}</span></h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="empty-state" *ngIf="locations().length === 0">
-                                <div class="empty-icon">📍</div>
-                                <h3>No Locations Yet</h3>
-                                <p>Add locations from the form on the left</p>
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="content-card">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">All Locations</h2>
+                                <p class="text-sm text-slate-500 mt-1">Registry of play settings locations</p>
                             </div>
-                            <div class="location-list">
-                                <div class="location-item" *ngFor="let loc of locations()">
-                                    <div class="location-info">
-                                        <div class="location-name">📍 {{ loc.Name }}</div>
-                                        <div class="location-meta">
-                                            <span *ngIf="loc.District">{{ loc.District }}</span>
-                                            <span *ngIf="loc.State">, {{ loc.State }}</span>
-                                            <span class="location-badge" [class.active]="loc.IsActive"
-                                                [class.inactive]="!loc.IsActive">
-                                                {{ loc.IsActive ? 'Active' : 'Inactive' }}
-                                            </span>
-                                        </div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-100">
+                                {{ locations().length }} locations
+                            </span>
+                        </div>
+
+                        <div class="divide-y divide-slate-100 max-h-[600px] overflow-y-auto pr-1" *ngIf="locations().length > 0">
+                            <div class="flex items-center justify-between py-4 first:pt-0 last:pb-0" *ngFor="let loc of locations()">
+                                <div class="flex items-start gap-3 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 mt-0.5 flex-shrink-0">
+                                        <mat-icon class="text-[18px]">place</mat-icon>
                                     </div>
-                                    <div class="location-actions">
-                                        <button class="btn-edit-sm" (click)="editLocation(loc)" title="Edit">✏️</button>
-                                        <button class="btn-delete-sm" (click)="deleteLocation(loc.LocationID)"
-                                            title="Delete">🗑️</button>
+                                    <div class="min-w-0">
+                                        <h4 class="text-sm font-semibold text-slate-800">{{ loc.Name }}</h4>
+                                        <p class="text-xs text-slate-400 mt-0.5" *ngIf="loc.District || loc.State">
+                                            {{ loc.District }}{{ loc.District && loc.State ? ', ' : '' }}{{ loc.State }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-4 flex-shrink-0">
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+                                        [ngClass]="loc.IsActive ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-slate-100 text-slate-500'">
+                                        {{ loc.IsActive ? 'Active' : 'Inactive' }}
+                                    </span>
+                                    
+                                    <div class="flex items-center gap-1">
+                                        <button class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 flex items-center justify-center" 
+                                            (click)="editLocation(loc)" title="Edit">
+                                            <mat-icon class="text-[16px] !w-4 !h-4">edit</mat-icon>
+                                        </button>
+                                        <button class="w-7 h-7 rounded-lg hover:bg-red-50 text-red-500 flex items-center justify-center" 
+                                            (click)="deleteLocation(loc.LocationID)" title="Delete">
+                                            <mat-icon class="text-[16px] !w-4 !h-4">delete_outline</mat-icon>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center py-12 text-slate-400 border border-slate-100 rounded-xl bg-slate-50/50" *ngIf="locations().length === 0">
+                            <mat-icon class="text-[48px] !w-12 !h-12 text-slate-300 mb-3">place</mat-icon>
+                            <h3 class="font-semibold text-slate-500">No Locations Yet</h3>
+                            <p class="text-xs text-slate-500 mt-1">Add locations using the form on the left.</p>
                         </div>
                     </div>
                 </div>

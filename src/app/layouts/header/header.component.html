@@ -1,49 +1,60 @@
-<mat-toolbar class="header-toolbar bg-white border-bottom px-4">
-  <!-- Left: Sidebar Toggle & Page Title -->
-  <div class="d-flex align-items-center">
-    <button mat-icon-button (click)="toggleSidebar.emit()" class="me-2 text-dark">
-      <mat-icon>menu</mat-icon>
+<!-- =====================================================
+     HEADER — CricHub Admin Portal (Tailwind CSS)
+     ===================================================== -->
+<header class="flex items-center justify-between h-16 px-6 bg-white border-b border-slate-100 sticky top-0 z-30 shadow-sm">
+
+  <!-- Left: toggle + page title -->
+  <div class="flex items-center gap-3">
+    <button (click)="toggleSidebar.emit()"
+            class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors duration-150">
+      <mat-icon class="text-xl">menu</mat-icon>
     </button>
   </div>
 
-  <!-- Center: Search Bar -->
-  <div class="flex-grow-1 d-flex justify-content-center mx-4">
-    <div class="search-bar position-relative d-none d-md-block w-100" style="max-width: 500px;">
-      <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-      <input type="text" class="form-control rounded-pill border-0 bg-light ps-5 py-2 pe-5"
-        placeholder="Search or command..." style="font-size: 0.9rem;">
-      <div class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted border rounded px-2 bg-white" style="font-size: 0.7rem; padding-top: 2px; padding-bottom: 2px;">
+  <!-- Center: Search bar -->
+  <div class="hidden md:flex flex-1 max-w-sm mx-6">
+    <div class="relative w-full">
+      <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+      <input type="text"
+             placeholder="Search or command…"
+             class="w-full pl-9 pr-14 py-2 text-sm bg-slate-50 border border-slate-200 rounded-full
+                    text-slate-700 placeholder-slate-400 outline-none
+                    focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all duration-200">
+      <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-slate-400
+                   bg-white border border-slate-200 rounded px-1.5 py-0.5 leading-none">
         ⌘K
-      </div>
+      </span>
     </div>
   </div>
 
-  <!-- Right: Actions -->
-  <div class="d-flex align-items-center gap-2">
+  <!-- Right: actions -->
+  <div class="flex items-center gap-2">
+
     <!-- Notifications -->
-    <button mat-icon-button class="position-relative text-dark">
-      <mat-icon>notifications_none</mat-icon>
-      <span class="position-absolute top-0 end-0 translate-middle p-1 bg-danger border border-light rounded-circle"
-        style="width: 10px; height: 10px; top: 10px !important; right: 8px !important;"></span>
+    <button class="relative w-9 h-9 flex items-center justify-center rounded-lg text-slate-500
+                   hover:bg-slate-100 hover:text-slate-700 transition-colors duration-150">
+      <mat-icon class="text-xl">notifications_none</mat-icon>
+      <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
     </button>
 
-    <div class="dropdown ms-2">
-      <button mat-button [matMenuTriggerFor]="userMenu"
-        class="rounded-pill hover-bg-light" style="height: auto; padding: 4px 8px; min-width: auto;">
-        <div class="d-flex align-items-center" style="white-space: nowrap;">
-          <div class="avatar text-white rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0"
-            style="width: 32px; height: 32px; font-size: 0.85rem; font-weight: 600; background-color: var(--primary-color);">
-            {{ (user$ | async)?.email?.charAt(0)?.toUpperCase() || 'A' }}
-          </div>
-          <span class="d-none d-sm-inline-block text-dark fw-medium small me-1 text-truncate" style="max-width: 150px;">
-            {{ (user$ | async)?.email || 'Admin' }}
-          </span>
-          <mat-icon class="icon-sm text-muted ms-1">expand_more</mat-icon>
-        </div>
-      </button>
-    </div>
+    <!-- User menu -->
+    <button [matMenuTriggerFor]="userMenu"
+            class="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full hover:bg-slate-100 transition-colors duration-150">
+      <!-- Avatar -->
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-xs font-bold">
+          {{ (user$ | async)?.email?.charAt(0)?.toUpperCase() || 'A' }}
+        </span>
+      </div>
+      <!-- Name -->
+      <span class="hidden sm:block text-sm font-medium text-slate-700 max-w-[130px] truncate">
+        {{ (user$ | async)?.email || 'Admin' }}
+      </span>
+      <mat-icon class="text-slate-400 text-base !w-4 !h-4">expand_more</mat-icon>
+    </button>
   </div>
 
+  <!-- Dropdown Menu -->
   <mat-menu #userMenu="matMenu" class="mt-2">
     <button mat-menu-item routerLink="/kkk/settings">
       <mat-icon>person_outline</mat-icon>
@@ -54,9 +65,10 @@
       <span>Settings</span>
     </button>
     <mat-divider></mat-divider>
-    <button mat-menu-item class="text-danger" (click)="logout()">
-      <mat-icon class="text-danger">logout</mat-icon>
+    <button mat-menu-item (click)="logout()" class="!text-red-500">
+      <mat-icon class="!text-red-500">logout</mat-icon>
       <span>Logout</span>
     </button>
   </mat-menu>
-</mat-toolbar>
+
+</header>
