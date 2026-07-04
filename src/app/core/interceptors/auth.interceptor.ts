@@ -3,6 +3,8 @@ import { inject } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { catchError, switchMap, throwError } from 'rxjs';
 
+let isRefreshing = false;
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const auth = inject(AuthService);
 
@@ -14,8 +16,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(authReq).pipe(
         catchError(error => {
             if (error.status === 401) {
+                if (isRefreshing) {
+                    return throwError(() => error);
+                }
+                isRefreshing = true;
                 return auth.restoreSession().pipe(
                     switchMap(() => {
+                        isRefreshing = false;
                         const newToken = auth.getToken();
                         const retryReq = newToken
                             ? req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
@@ -23,6 +30,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                         return next(retryReq);
                     }),
                     catchError(err => {
+                        isRefreshing = false;
                         auth.logout();
                         return throwError(() => err);
                     })

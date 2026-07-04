@@ -22,7 +22,7 @@ import { map } from 'rxjs';
 export class PlayerRegistrationFormComponent {
   form!: FormGroup;
   isEdit: boolean = false;
-
+  minDate: Date = new Date(1970, 0, 1); // Set a minimum date for DOB (e.g., Jan 1, 1970)  ̰
   roles = [
     { label: 'Batsman', value: 'Batsman' },
     { label: 'Bowler', value: 'Bowler' },
@@ -103,7 +103,7 @@ InitForm() {
       Name: ['', Validators.required],
       FatherName: ['', Validators.required],
       Mobile: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
-      Email: ['', [Validators.email]],
+      Email: [''],
       DOB: ['', Validators.required],
       Age: [{ value: '', disabled: true }],
       Address: [''],
@@ -122,7 +122,7 @@ InitForm() {
       Notes: [''],
       Bio: [''],
       Nickname: [''],
-      EmergencyContact: ['', [Validators.pattern(/^[6-9]\d{9}$/)]],
+      EmergencyContact: [''],
       PhotoURL: [''],
       AuctionSession: ['']
     });

@@ -350,6 +350,12 @@
                 <button class="btn-auction-register-player" (click)="scrollTo('register', auction, 'player')">
                   <i class="bi bi-person-fill-add me-2"></i> Register Player
                 </button>
+                <button class="btn-auction-copy" (click)="copyRegistrationLink(auction, 'team')">
+                  <i class="bi bi-clipboard me-2"></i> Copy Team Link
+                </button>
+                <button class="btn-auction-copy btn-auction-copy-player" (click)="copyRegistrationLink(auction, 'player')">
+                  <i class="bi bi-clipboard me-2"></i> Copy Player Link
+                </button>
               </div>
 
 

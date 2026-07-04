@@ -4,7 +4,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-slate-100 py-8 px-4">
 
   <!-- Back nav -->
-  <div class="max-w-5xl mx-auto mb-4">
+  <div class="max-w-5xl mx-auto mb-4" *ngIf="!hideBack">
     <a [routerLink]="['/']"
        class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 font-medium transition-colors no-underline group">
       <mat-icon class="text-base group-hover:-translate-x-0.5 transition-transform">arrow_back</mat-icon>

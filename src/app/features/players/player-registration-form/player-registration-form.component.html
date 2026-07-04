@@ -35,7 +35,7 @@
                                 placeholder="Father's full name" type="text" icon="bi-person-badge" />
                         </div>
                         <div class="col-md-6">
-                            <app-datepicker label="Date of Birth *" [control]="form.get('DOB')!"></app-datepicker>
+                            <app-datepicker [minDate]="minDate" label="Date of Birth *" [control]="form.get('DOB')!"></app-datepicker>
                         </div>
                         <div class="col-md-6">
                             <app-mobile-input label="Mobile Number *" [control]="form.get('Mobile')!"
