@@ -340,5 +340,38 @@ body {
 }
 
 .animate-fade    { animation: fadeIn 0.3s ease-in-out; }
-.animate-slide-up { animation: fadeInUp 0.4s ease-out; }
+ .animate-slide-up { animation: fadeInUp 0.4s ease-out; }
+
+ /* SweetAlert2 Custom Styles */
+ .swal2-popup {
+   border-radius: 12px !important;
+   padding: 24px !important;
+ }
+
+ .swal2-title {
+   font-size: 1.5rem !important;
+   font-weight: 600 !important;
+   color: #1e293b !important;
+ }
+
+ .swal2-html-container {
+   font-size: 1rem !important;
+   color: #64748b !important;
+ }
+
+ .swal2-confirm {
+   font-weight: 500 !important;
+   border-radius: 8px !important;
+   padding: 10px 24px !important;
+ }
+
+ .swal2-cancel {
+   font-weight: 500 !important;
+   border-radius: 8px !important;
+   padding: 10px 24px !important;
+ }
+
+ .swal2-icon {
+   margin: 16px auto 12px !important;
+ }
 

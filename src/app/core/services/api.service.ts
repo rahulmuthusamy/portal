@@ -13,7 +13,7 @@ export class ApiService {
 
     private normalizeOptions(optionsOrParams?: any): any {
         if (!optionsOrParams) {
-            return {};
+            return { withCredentials: true };
         }
 
         const isOptionsObject =
@@ -21,9 +21,10 @@ export class ApiService {
             optionsOrParams.headers !== undefined ||
             optionsOrParams.withCredentials !== undefined;
 
+        const baseOptions = { withCredentials: true };
         return isOptionsObject
-            ? optionsOrParams
-            : { params: optionsOrParams };
+            ? { ...baseOptions, ...optionsOrParams }
+            : { ...baseOptions, params: optionsOrParams };
     }
 
     get<T>(url: string, paramsOrOptions?: any): Observable<T> {
@@ -37,25 +38,22 @@ export class ApiService {
         const isFormData = body instanceof FormData;
         // For FormData: do NOT set Content-Type — browser must set it automatically
         // so that the multipart boundary is included correctly.
-        const options = isFormData ? {} : this.normalizeOptions(optionsOrParams);
+        const options = isFormData ? { withCredentials: true } : this.normalizeOptions(optionsOrParams);
         return this.http.post<any>(fullUrl, body, options as any) as Observable<T>;
     }
 
     put<T>(url: string, body: any): Observable<T> {
         const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
-        const isFormData = body instanceof FormData;
-        // Same as post: let browser set Content-Type for FormData automatically
-        const options = isFormData ? {} : {};
-        return this.http.put<any>(fullUrl, body, options as any) as Observable<T>;
+        return this.http.put<any>(fullUrl, body, { withCredentials: true }) as Observable<T>;
     }
 
     delete<T>(url: string): Observable<T> {
         const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
-        return this.http.delete<any>(fullUrl) as Observable<T>;
+        return this.http.delete<any>(fullUrl, { withCredentials: true }) as Observable<T>;
     }
 
     patch<T>(url: string, body: any): Observable<T> {
         const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
-        return this.http.patch<any>(fullUrl, body) as Observable<T>;
+        return this.http.patch<any>(fullUrl, body, { withCredentials: true }) as Observable<T>;
     }
 }

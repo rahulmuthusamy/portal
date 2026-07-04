@@ -78,13 +78,23 @@ export class TeamsComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.teamService.delete(event.row.TeamID).subscribe({
-            next: () => {
-              Swal.fire('Deleted!', 'The team has been deleted.', 'success');
-              this.ngOnInit();
-            },
-            error: (err: any) => {
-              Swal.fire('Error!', err.error?.message || 'Failed to delete team.', 'error');
-            }
+next: () => {
+               Swal.fire({
+                 icon: 'success',
+                 title: 'Deleted!',
+                 text: 'The team has been deleted.',
+                 confirmButtonColor: '#0ea5e9'
+               });
+               this.ngOnInit();
+             },
+             error: (err: any) => {
+               Swal.fire({
+                 icon: 'error',
+                 title: 'Error!',
+                 text: err.error?.message || 'Failed to delete team.',
+                 confirmButtonColor: '#0ea5e9'
+               });
+             }
           });
         }
       });

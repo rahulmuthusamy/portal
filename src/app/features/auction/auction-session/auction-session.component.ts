@@ -83,13 +83,23 @@ export class AuctionSessionComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.auctionSessionService.delete(event.row.SessionID).subscribe({
-            next: () => {
-              Swal.fire('Deleted!', 'The session has been deleted.', 'success');
-              this.ngOnInit();
-            },
-            error: (err: any) => {
-              Swal.fire('Error!', err.error?.message || 'Failed to delete session.', 'error');
-            }
+next: () => {
+               Swal.fire({
+                 icon: 'success',
+                 title: 'Deleted!',
+                 text: 'The session has been deleted.',
+                 confirmButtonColor: '#0ea5e9'
+               });
+               this.ngOnInit();
+             },
+             error: (err: any) => {
+               Swal.fire({
+                 icon: 'error',
+                 title: 'Error!',
+                 text: err.error?.message || 'Failed to delete session.',
+                 confirmButtonColor: '#0ea5e9'
+               });
+             }
           });
         }
       });

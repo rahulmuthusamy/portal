@@ -53,13 +53,23 @@ export class TournamentsListComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.tournamentService.delete(tournament.TournamentID).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'The tournament has been deleted.', 'success');
-            this.loadTournaments();
-          },
-          error: (err: any) => {
-            Swal.fire('Error!', err.error?.message || 'Failed to delete tournament.', 'error');
-          }
+next: () => {
+             Swal.fire({
+               icon: 'success',
+               title: 'Deleted!',
+               text: 'The tournament has been deleted.',
+               confirmButtonColor: '#0ea5e9'
+             });
+             this.loadTournaments();
+           },
+           error: (err: any) => {
+             Swal.fire({
+               icon: 'error',
+               title: 'Error!',
+               text: err.error?.message || 'Failed to delete tournament.',
+               confirmButtonColor: '#0ea5e9'
+             });
+           }
         });
       }
     });

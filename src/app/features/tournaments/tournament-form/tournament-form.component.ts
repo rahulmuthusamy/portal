@@ -7,6 +7,7 @@ import { TeamsService } from '@features/teams/services/teams.service';
 import { ToastService } from '@shared/services/toast.service';
 import { ImageUploadComponent, InputComponent, SelectComponent, DatepickerComponent } from '@shared/forms/form-controls';
 import { environment } from '@environments/environment';
+import moment from 'moment';
 
 @Component({
   selector: 'app-tournament-form',
@@ -178,8 +179,8 @@ export class TournamentFormComponent implements OnInit {
         Name: t.Name,
         Description: t.Description,
         Type: t.Type,
-        StartDate: t.StartDate ? new Date(t.StartDate).toISOString().split('T')[0] : '',
-        EndDate: t.EndDate ? new Date(t.EndDate).toISOString().split('T')[0] : '',
+        StartDate: t.StartDate ? moment(t.StartDate) : null,
+        EndDate: t.EndDate ? moment(t.EndDate) : null,
         Status: t.Status,
         LogoURL: t.LogoURL,
         BannerURL: t.BannerURL,
@@ -189,8 +190,8 @@ export class TournamentFormComponent implements OnInit {
         Rules: t.Rules,
         Category: t.Category,
         // Registration
-        RegistrationStartDate: t.RegistrationStartDate ? new Date(t.RegistrationStartDate).toISOString().split('T')[0] : '',
-        RegistrationEndDate: t.RegistrationEndDate ? new Date(t.RegistrationEndDate).toISOString().split('T')[0] : '',
+        RegistrationStartDate: t.RegistrationStartDate ? moment(t.RegistrationStartDate) : null,
+        RegistrationEndDate: t.RegistrationEndDate ? moment(t.RegistrationEndDate) : null,
         IsRegistrationOpen: t.IsRegistrationOpen ?? true,
         MaxTeams: t.MaxTeams || 16,
         MinTeams: t.MinTeams || 4,
@@ -281,6 +282,21 @@ export class TournamentFormComponent implements OnInit {
     return this.selectedTeamIds().includes(id);
   }
 
+  formatDateForPicker(dateStr: string): string {
+    if (!dateStr) return '';
+    // If backend returns a date-only string like YYYY-MM-DD, parse it as date-only
+    const isoDateOnlyMatch = /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+    if (isoDateOnlyMatch) {
+      return moment(dateStr, 'YYYY-MM-DD').format('DD/MM/YYYY');
+    }
+
+    // Otherwise let moment handle ISO datetimes. Avoid using `new Date()` which
+    // can apply timezone offsets and cause the date to shift by one day.
+    const m = moment(dateStr);
+    if (!m.isValid()) return '';
+    return m.format('DD/MM/YYYY');
+  }
+
   onSubmit(): void {
     if (this.tournamentForm.invalid) {
       this.tournamentForm.markAllAsTouched();
@@ -318,7 +334,14 @@ export class TournamentFormComponent implements OnInit {
           return;
         }
 
-        if (key === 'PrizeDetails' && Array.isArray(formVal[key])) {
+        // Convert date fields from DD/MM/YYYY to ISO format for backend
+        if (key === 'StartDate' || key === 'EndDate' || key === 'RegistrationStartDate' || key === 'RegistrationEndDate') {
+          const dateValue = formVal[key];
+          const parsedDate = this.parseDateForSubmit(dateValue);
+          if (parsedDate) {
+            payload.append(key, parsedDate);
+          }
+        } else if (key === 'PrizeDetails' && Array.isArray(formVal[key])) {
           payload.append(key, JSON.stringify(formVal[key]));
         } else {
           payload.append(key, formVal[key]);
@@ -329,7 +352,6 @@ export class TournamentFormComponent implements OnInit {
     // Handle Team Selection (Send as a proper JSON string or multiple entries)
     const teamIds = this.selectedTeamIds();
     if (teamIds.length > 0) {
-      // Backend usually expects 'teams' to be a JSON string or individual entries
       payload.append('teams', JSON.stringify(teamIds));
     }
 
@@ -348,6 +370,21 @@ export class TournamentFormComponent implements OnInit {
         this.isSubmitting.set(false);
       }
     });
+  }
+
+  parseDateForSubmit(dateValue: any): string | null {
+    if (!dateValue) return null;
+
+    if (moment.isMoment(dateValue)) {
+      return dateValue.format('YYYY-MM-DD');
+    }
+
+    if (dateValue instanceof Date) {
+      return moment(dateValue).format('YYYY-MM-DD');
+    }
+
+    const parsed = moment(String(dateValue), ['DD/MM/YYYY', 'YYYY-MM-DD', moment.ISO_8601], true);
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD') : null;
   }
 
   cancel(): void {

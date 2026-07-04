@@ -4,7 +4,7 @@ import {
   signal, WritableSignal, inject, DestroyRef
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { environment } from '@environments/environment';
 import { AuctionSessionService } from '@features/auction/services/auction-session.service';
 import { PlayerService } from '@features/players/services/players.service';
@@ -194,6 +194,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   private liveMatchInterval: any;
   private matchService = inject(MatchService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   constructor(
     private teamService: TeamsService,
@@ -825,6 +826,32 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
     if (!this.isBrowser) return;
     const el = document.getElementById(id);
     if (el) el.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' });
+  }
+
+  copyRegistrationLink(auction: any, type: 'team' | 'player') {
+    if (!this.isBrowser || !auction) return;
+    const sessionId = auction.SessionID || auction.id || auction._id;
+    const route = type === 'player' ? '/register-player' : '/register-owner';
+    const url = `${window.location.origin}${route}?sessionId=${encodeURIComponent(sessionId)}&hideBack=1`;
+    const successText = type === 'player'
+      ? 'Player registration link copied to clipboard.'
+      : 'Team registration link copied to clipboard.';
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Link copied!',
+          text: successText,
+          timer: 1800,
+          showConfirmButton: false
+        });
+      }).catch(() => {
+        window.prompt('Copy this link', url);
+      });
+    } else {
+      window.prompt('Copy this link', url);
+    }
   }
 
   redirectTo(url: string) { if (this.isBrowser) window.open(url, '_blank'); }

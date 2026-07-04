@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OnboardingService } from '@core/services/onboarding.service';
@@ -36,6 +36,7 @@ export class OwnerRegistrationPageComponent implements OnInit {
   isRegistering = false;
   registrationError = '';
   showPassword = false;
+  hideBack = false;
 
   activeSessions = signal<any[]>([]);
   selectedSessionData: any = null;
@@ -43,6 +44,8 @@ export class OwnerRegistrationPageComponent implements OnInit {
   availableLocations = signal<any[]>([]);
   locationSearch = '';
   showLocationDropdown = false;
+
+  private route = inject(ActivatedRoute);
 
   constructor(
     private onboardingService: OnboardingService,
@@ -52,6 +55,13 @@ export class OwnerRegistrationPageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      const sessionId = params.get('sessionId');
+      const hideBack = params.get('hideBack');
+      if (sessionId) this.regForm.sessionId = sessionId;
+      this.hideBack = hideBack === '1' || hideBack === 'true';
+    });
+
     this.fetchActiveSessions();
     this.loadLocations();
   }
@@ -62,7 +72,8 @@ export class OwnerRegistrationPageComponent implements OnInit {
         const sessions = (res?.data?.sessions || []).filter((s: any) => s.Status !== 'completed');
         this.activeSessions.set(sessions);
         if (sessions.length > 0) {
-          this.regForm.sessionId = sessions[0].SessionID || sessions[0].id;
+          const selected = sessions.find((s: any) => (s.SessionID || s.id) == this.regForm.sessionId);
+          this.regForm.sessionId = selected ? (selected.SessionID || selected.id) : sessions[0].SessionID || sessions[0].id;
           this.onSessionChange();
         }
       },
