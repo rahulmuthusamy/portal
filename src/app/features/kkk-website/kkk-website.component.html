@@ -353,7 +353,8 @@
                 <button class="btn-auction-copy" (click)="copyRegistrationLink(auction, 'team')">
                   <i class="bi bi-clipboard me-2"></i> Copy Team Link
                 </button>
-                <button class="btn-auction-copy btn-auction-copy-player" (click)="copyRegistrationLink(auction, 'player')">
+                <button class="btn-auction-copy btn-auction-copy-player"
+                  (click)="copyRegistrationLink(auction, 'player')">
                   <i class="bi bi-clipboard me-2"></i> Copy Player Link
                 </button>
               </div>
@@ -521,20 +522,73 @@
 <!-- ═══════════════════════════════════════════════════════
       PLAYERS SECTION
 ══════════════════════════════════════════════════════════ -->
-<section id="players" class="section-players">
+<section id="players" class="players-section">
   <div class="section-container">
     <div class="section-header">
       <div>
         <span class="section-eyebrow">Squad</span>
-        <h2 class="section-title">The Players</h2>
-        <p class="section-sub">{{ players.length }} registered athletes</p>
+        <h2 class="section-title">Registered Players : {{ players.length }}</h2>
       </div>
     </div>
 
-    <div class="coming-soon-section">
-      <i class="bi bi-clock-history"></i>
-      <h3>Coming Soon</h3>
-      <p>Player profiles will be available once registrations are complete.</p>
+    <div class="players-controls">
+      <div class="players-search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" class="players-search" placeholder="Search players..." [(ngModel)]="searchQuery"
+          (input)="onSearchChange()" id="player-search-input" />
+      </div>
+      <div class="players-filters">
+        <button *ngFor="let role of ['All','Batsman','Bowler','All-Rounder','Wicket Keeper']" class="filter-btn"
+          [class.active]="activeFilter === role" (click)="applyPlayerFilter(role)">{{ role }}</button>
+      </div>
+    </div>
+
+    <div class="players-slider-wrap" *ngIf="filteredPlayers.length > 0">
+      <button class="slide-nav slide-nav-left" (click)="scrollSlider('left')" aria-label="Scroll left">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="players-track" #playersTrack>
+        <div class="player-card-new" *ngFor="let player of filteredPlayers">
+          <div class="player-card-inner">
+            <div class="player-avatar-wrap">
+              <img [src]="player.PhotoURL || 'assets/avatars/default.jpg'" class="player-avatar" [alt]="player.Name"
+                onerror="this.src='assets/avatars/default.jpg'" />
+
+            </div>
+            <div class="player-details">
+
+              <h4 class="player-name">{{ player.Name }} <span>
+                  {{ getRoleIcon(player.Role) }}
+                </span></h4>
+              <div class="player-meta">
+                <span class="player-number">PlayerID# {{ player.PlayerID }}</span>
+                <span *ngIf="player.BattingStyle"><i class="bi bi-award-fill"></i> {{ player.BattingStyle }}</span>
+                <span *ngIf="player.BowlingStyle"><i class="bi bi-lightning-fill"></i> {{ player.BowlingStyle }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="slide-nav slide-nav-right" (click)="scrollSlider('right')" aria-label="Scroll right">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="players-empty" *ngIf="filteredPlayers.length === 0">
+      <i class="bi bi-person-x"></i>
+      <p>No players found{{ searchQuery ? ' for "' + searchQuery + '"' : '' }}.</p>
+    </div>
+
+    <div class="players-pagination" *ngIf="totalPages > 1">
+      <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        <i class="bi bi-chevron-right"></i>
+      </button>
     </div>
   </div>
 </section>
@@ -573,7 +627,7 @@
     </div>
 
     <div class="sponsors-track">
-      <a *ngFor="let s of dynamicSponsors()" [href]="s.WebsiteURL" target="_blank" class="sponsor-card">
+      <a *ngFor="let s of dynamicSponsors()" class="sponsor-card">
         <img [src]="s.LogoURL" [alt]="s.Name" class="sponsor-logo">
         <span class="sponsor-name">{{ s.Name }}</span>
         <span class="sponsor-desc">{{ s.Description }}</span>
@@ -799,8 +853,10 @@
           <div class="master-match-copy">
             <strong>{{ existingTeamMatch.Name }}</strong>
             <span class="match-details">
-              <span *ngIf="existingTeamMatch.OwnerName"><i class="bi bi-person"></i> {{ existingTeamMatch.OwnerName }}</span>
-              <span *ngIf="existingTeamMatch.Captain"><i class="bi bi-person-badge"></i> Capt: {{ existingTeamMatch.Captain }}</span>
+              <span *ngIf="existingTeamMatch.OwnerName"><i class="bi bi-person"></i> {{ existingTeamMatch.OwnerName
+                }}</span>
+              <span *ngIf="existingTeamMatch.Captain"><i class="bi bi-person-badge"></i> Capt: {{
+                existingTeamMatch.Captain }}</span>
             </span>
           </div>
           <button type="button" (click)="applyExistingTeam(existingTeamMatch)">Use details</button>
@@ -921,7 +977,8 @@
 
         <div class="master-match-card" *ngIf="existingPlayerMatch">
           <div class="master-match-icon">
-            <img *ngIf="existingPlayerMatch.PhotoURL" [src]="existingPlayerMatch.PhotoURL" alt="Photo" class="match-avatar">
+            <img *ngIf="existingPlayerMatch.PhotoURL" [src]="existingPlayerMatch.PhotoURL" alt="Photo"
+              class="match-avatar">
             <i *ngIf="!existingPlayerMatch.PhotoURL" class="bi bi-person-check"></i>
           </div>
           <div class="master-match-copy">

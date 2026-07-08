@@ -228,7 +228,7 @@ export class SettingsComponent implements OnInit {
         const images = res.data.gallery.map((item: any) => ({
           id: item.id,
           src: `${environment.apiUrl}${item.ImageURL}`,
-          thumbnail: item.ThumbnailURL ? `${environment.apiUrl}${item.ThumbnailURL}` : `${environment.apiUrl.replace('/api', '')}${item.ImageURL}`,
+          thumbnail: item.ThumbnailURL ? `${environment.apiUrl}${item.ThumbnailURL}` : `${environment.apiUrl}${item.ImageURL}`,
           caption: item.Description || item.Title || '',
           category: item.Category,
           uploadDate: new Date(item.createdAt),

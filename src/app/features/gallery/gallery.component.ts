@@ -34,7 +34,7 @@ interface Album {
   styleUrl: './gallery.component.scss'
 })
 export class GalleryComponent implements OnInit {
-  private baseUrl = environment.apiUrl.replace('/api', '');
+  private baseUrl = environment.apiUrl;
 
   // View Mode
   viewMode = signal<'grid' | 'masonry' | 'album'>('grid');

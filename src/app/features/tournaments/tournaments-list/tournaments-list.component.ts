@@ -29,7 +29,7 @@ export class TournamentsListComponent implements OnInit {
           const getImageUrl = (url: string) => {
             if (!url) return null;
             if (url.startsWith('http')) return url;
-            if (url.startsWith('/api')) return environment.apiUrl.replace('/api', '') + url;
+            if (url.startsWith('/api')) return environment.apiUrl + url;
             return environment.apiUrl + url;
           };
           t.FullLogoURL = getImageUrl(t.LogoURL) || 'assets/logo.jpeg';

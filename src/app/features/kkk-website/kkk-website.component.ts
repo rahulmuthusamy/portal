@@ -1,7 +1,9 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Component, HostListener, OnInit, OnDestroy, Inject, PLATFORM_ID,
-  signal, WritableSignal, inject, DestroyRef
+  signal, WritableSignal, inject, DestroyRef,
+  ViewChild,
+  ElementRef
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -135,6 +137,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   locationSearch = '';
   showLocationDropdown = false;
 
+
   get filteredLocations() {
     const q = this.locationSearch.toLowerCase();
     return this.availableLocations().filter(loc =>
@@ -154,6 +157,21 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   // ─── Franchise detail view ────────────────────────────────────────────────
   franchiseDetailOpen = signal(false);
   selectedFranchise = signal<any | null>(null);
+
+  @ViewChild('playersTrack') playersTrack!: ElementRef<HTMLDivElement>;
+
+  scrollSlider(direction: 'left' | 'right'): void {
+    if (!this.playersTrack) return;
+    const track = this.playersTrack.nativeElement;
+    const firstCard = track.querySelector('.player-card-new') as HTMLElement;
+    const cardWidth = firstCard ? firstCard.clientWidth : 210;
+    const gap = 20;
+    const scrollAmount = cardWidth + gap;
+    track.scrollBy({
+      left: direction === 'right' ? scrollAmount : -scrollAmount,
+      behavior: 'smooth'
+    });
+  }
 
   openFranchiseDetail(team: any) {
     this.selectedFranchise.set(team);
@@ -208,20 +226,124 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadAppSettings();
-    this.loadCarousel();
-    this.loadSponsors();
-    this.loadGallery();
-    this.getAuctionList();
-    this.getTeamList();
-    this.getPlayerList();
-    this.loadAllMatches();
-    this.loadLocations();
+    this.loadWebsiteInitData();
 
     if (this.isBrowser) {
       this.updateActiveSection();
       this.liveMatchInterval = setInterval(() => this.loadAllMatches(), 30000);
     }
+  }
+
+  loadWebsiteInitData() {
+    this.settingsService.getWebsiteInitData().subscribe({
+      next: (res: any) => {
+        const data = res?.data || {};
+
+        // Settings
+        const rawSettings = data.appSettings?.settings || data.appSettings || {};
+        const settings = { ...rawSettings };
+        settings.appName = settings.AppName;
+        settings.logo = settings.AppLogoURL;
+        if (settings?.logo) {
+          settings.logoUrl = settings.logo.startsWith('http') || settings.logo.startsWith('assets') ? settings.logo : environment.apiUrl + settings.logo;
+        }
+        if (settings?.UPIScannerImageURL && !settings.UPIScannerImageURL.startsWith('http') && !settings.UPIScannerImageURL.startsWith('assets')) {
+          settings.UPIScannerImageURL = environment.apiUrl + settings.UPIScannerImageURL;
+        }
+        this.appSettings.set(settings || {});
+        if (settings) {
+          if (settings.facebook) this.contactInfo.facebook = settings.facebook;
+          if (settings.instagram) this.contactInfo.instagram = settings.instagram;
+          if (settings.twitter) this.contactInfo.twitter = settings.twitter;
+          if (settings.youtube) this.contactInfo.youtube = settings.youtube;
+        }
+
+        // Carousel
+        const cItems = data.carousel?.carousel || data.carousel || [];
+        this.carouselItems.set(Array.isArray(cItems) ? cItems.map((item: any) => ({
+          ...item,
+          title: item.Title || item.title || 'Kattur Premier League',
+          description: item.Description || item.description || 'The Battle of Champions',
+          imageUrl: (item.ImageURL || item.imageUrl)
+            ? ((item.ImageURL || item.imageUrl).startsWith('http') ? (item.ImageURL || item.imageUrl) : environment.apiUrl + (item.ImageURL || item.imageUrl))
+            : 'assets/MV_4.jpeg'
+        })) : []);
+
+        // Sponsors
+        const sp = data.sponsors?.sponsors || data.sponsors?.sponsorships || data.sponsors || [];
+        this.dynamicSponsors.set(Array.isArray(sp) ? sp.map((s: any) => ({
+          ...s,
+          Name: s.Name || s.name || '',
+          Description: s.Description || s.description || '',
+          WebsiteURL: s.WebsiteURL || s.website || '#',
+          LogoURL: s.LogoURL ? (s.LogoURL.startsWith('http') ? s.LogoURL : environment.apiUrl + s.LogoURL) : ''
+        })) : []);
+
+        // Gallery
+        const g = data.gallery?.gallery || data.gallery || [];
+        this.dynamicGallery.set(Array.isArray(g) ? g.map((img: any) => ({
+          ...img,
+          Title: img.Title || '',
+          Category: img.Category || 'Other',
+          url: img.ImageURL ? (img.ImageURL.startsWith('http') ? img.ImageURL : environment.apiUrl + img.ImageURL) : ''
+        })) : []);
+
+        // Auction
+        this.auctionList = (data.auctionSessions ?? [])
+          .sort((a: any, b: any) => new Date(a.StartDate).getTime() - new Date(b.StartDate).getTime())
+          .map((session: any) => ({
+            ...session,
+            registeredTeams: (session.registeredTeams ?? []).map((t: any) => ({
+              ...t,
+              logoUrl: t.logoUrl
+                ? (t.logoUrl.startsWith('http') ? t.logoUrl : environment.apiUrl + t.logoUrl)
+                : 'assets/logo.jpeg'
+            }))
+          }));
+        if (this.isBrowser) this.startCountdown();
+
+        // Locations
+        this.availableLocations.set(data.locations?.locations || data.locations || []);
+
+        // Teams
+        const tms = data.teams ?? [];
+        const mappedTms = tms.map((team: any) => {
+          let logo = team.LogoURL;
+          if (logo && !logo.startsWith('http') && !logo.startsWith('assets')) {
+            logo = environment.apiUrl + logo;
+          } else if (!logo) {
+            const fallbacks: { [key: string]: string } = {
+              'KKK Juniors': 'assets/teams/kkkjuniors.png',
+              '7 Star': 'assets/teams/sevenstar.png',
+              'GJ Warriors': 'assets/teams/gjwarriors.png',
+              'Power Hitters': 'assets/teams/powerhitter.png'
+            };
+            logo = fallbacks[team.Name] || 'assets/logo.jpeg';
+          }
+          return { ...team, LogoURL: logo };
+        });
+        this.teams.set(mappedTms);
+        this.computeStandings(mappedTms);
+
+        // Players
+        this.players = (data.players ?? []).map((p: any) => ({
+          ...p,
+          PhotoURL: p.PhotoURL ? (p.PhotoURL.startsWith('http') ? p.PhotoURL : environment.apiUrl + p.PhotoURL) : ''
+        }));
+        this.applyPlayerFilter();
+        this.computeTopPerformers();
+
+        // Matches
+        const allM: FixtureMatch[] = data.matches?.matches || data.matches || [];
+        this.liveMatches.set(allM.filter(m => m.Status === 'Live'));
+        this.upcomingMatches.set(allM.filter(m => m.Status === 'Scheduled')
+          .sort((a, b) => new Date(a.MatchDate).getTime() - new Date(b.MatchDate).getTime()));
+        this.completedMatches.set(allM.filter(m => m.Status === 'Completed')
+          .sort((a, b) => new Date(b.MatchDate).getTime() - new Date(a.MatchDate).getTime()));
+        this.computeStandingsFromMatches(allM);
+      },
+      error: (err) => console.error('Website Init Error:', err)
+    });
   }
 
   ngOnDestroy() {
@@ -240,38 +362,38 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadAppSettings() {
-    this.settingsService.getAppSettings().subscribe({
-      next: (res: any) => {
-        const rawSettings = res.data?.settings || res.data || res;
-        const settings = { ...rawSettings };
+  // loadAppSettings() {
+  //   this.settingsService.getAppSettings().subscribe({
+  //     next: (res: any) => {
+  //       const rawSettings = res.data?.settings || res.data || res;
+  //       const settings = { ...rawSettings };
 
-        // Map backend fields to frontend properties
-        settings.appName = settings.AppName;
-        settings.logo = settings.AppLogoURL;
+  //       // Map backend fields to frontend properties
+  //       settings.appName = settings.AppName;
+  //       settings.logo = settings.AppLogoURL;
 
-        if (settings?.logo) {
-          settings.logoUrl = settings.logo.startsWith('http') || settings.logo.startsWith('assets')
-            ? settings.logo : environment.apiUrl.replace('/api', '') + settings.logo;
-        }
+  //       if (settings?.logo) {
+  //         settings.logoUrl = settings.logo.startsWith('http') || settings.logo.startsWith('assets')
+  //           ? settings.logo : environment.apiUrl + settings.logo;
+  //       }
 
-        // Fix UPI scanner image URL — prepend apiUrl for relative paths
-        if (settings?.UPIScannerImageURL &&
-          !settings.UPIScannerImageURL.startsWith('http') &&
-          !settings.UPIScannerImageURL.startsWith('assets')) {
-          settings.UPIScannerImageURL = environment.apiUrl + settings.UPIScannerImageURL;
-        }
-        this.appSettings.set(settings || {});
-        if (settings) {
-          if (settings.facebook) this.contactInfo.facebook = settings.facebook;
-          if (settings.instagram) this.contactInfo.instagram = settings.instagram;
-          if (settings.twitter) this.contactInfo.twitter = settings.twitter;
-          if (settings.youtube) this.contactInfo.youtube = settings.youtube;
-        }
-      },
-      error: (err) => console.error('Settings error:', err)
-    });
-  }
+  //       // Fix UPI scanner image URL — prepend apiUrl for relative paths
+  //       if (settings?.UPIScannerImageURL &&
+  //         !settings.UPIScannerImageURL.startsWith('http') &&
+  //         !settings.UPIScannerImageURL.startsWith('assets')) {
+  //         settings.UPIScannerImageURL = environment.apiUrl + settings.UPIScannerImageURL;
+  //       }
+  //       this.appSettings.set(settings || {});
+  //       if (settings) {
+  //         if (settings.facebook) this.contactInfo.facebook = settings.facebook;
+  //         if (settings.instagram) this.contactInfo.instagram = settings.instagram;
+  //         if (settings.twitter) this.contactInfo.twitter = settings.twitter;
+  //         if (settings.youtube) this.contactInfo.youtube = settings.youtube;
+  //       }
+  //     },
+  //     error: (err) => console.error('Settings error:', err)
+  //   });
+  // }
 
   loadCarousel() {
     this.settingsService.getCarousel().subscribe({
@@ -915,5 +1037,20 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
     const note = match.ResultNote;
     if (note.toLowerCase().includes('won')) return note;
     return note;
+  }
+
+  getRoleIcon(role: string): string {
+    switch (role?.toLowerCase()) {
+      case 'batsman':
+        return '🏏';
+      case 'bowler':
+        return '🥎';
+      case 'all-rounder':
+        return '🏏';
+      case 'wicket-keeper':
+        return '🧤';
+      default:
+        return '👤';
+    }
   }
 }

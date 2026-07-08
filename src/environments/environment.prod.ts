@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api-xzxz.onrender.com/api',
+  apiUrl: 'https://eclapi.theravens.in/api',
   idleTimeout: 1800,
 };

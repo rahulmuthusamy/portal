@@ -6,7 +6,7 @@
   <!-- Back nav -->
   <div class="max-w-5xl mx-auto mb-4" *ngIf="!hideBack">
     <a [routerLink]="['/']"
-       class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 font-medium transition-colors no-underline group">
+      class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-sky-600 font-medium transition-colors no-underline group">
       <mat-icon class="text-base group-hover:-translate-x-0.5 transition-transform">arrow_back</mat-icon>
       Back to Website
     </a>
@@ -14,7 +14,8 @@
 
   <!-- Page title -->
   <div class="max-w-5xl mx-auto mb-6 text-center">
-    <div class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center mx-auto mb-3 border border-amber-100 shadow-sm">
+    <div
+      class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center mx-auto mb-3 border border-amber-100 shadow-sm">
       <mat-icon class="text-amber-500 !text-3xl">shield</mat-icon>
     </div>
     <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight mb-1">Franchise Registration</h1>
@@ -34,7 +35,7 @@
 
         <!-- Error banner -->
         <div *ngIf="registrationError"
-             class="flex items-center gap-2.5 px-4 py-3 mb-5 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
+          class="flex items-center gap-2.5 px-4 py-3 mb-5 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
           <mat-icon class="text-base flex-shrink-0">error_outline</mat-icon>
           {{ registrationError }}
         </div>
@@ -42,15 +43,16 @@
         <!-- ─── Section: Auction & Franchise Info ─── -->
         <div class="mb-5">
           <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 flex items-center gap-2">
-            <span class="flex-1 h-px bg-slate-100"></span>Auction &amp; Franchise Info<span class="flex-1 h-px bg-slate-100"></span>
+            <span class="flex-1 h-px bg-slate-100"></span>Auction &amp; Franchise Info<span
+              class="flex-1 h-px bg-slate-100"></span>
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
             <!-- Session -->
             <div class="sm:col-span-2 form-group">
               <label class="form-label">Auction Session <span class="text-red-500">*</span></label>
-              <select [(ngModel)]="regForm.sessionId" name="sessionId" (change)="onSessionChange()"
-                      required class="form-input">
+              <select [disabled]="true" [(ngModel)]="regForm.sessionId" name="sessionId" (change)="onSessionChange()"
+                required class="form-input">
                 <option [ngValue]="null" disabled>Select an Auction</option>
                 <option *ngFor="let session of activeSessions()" [value]="session.SessionID || session.id">
                   {{ session.Name }} ({{ session.Year }})
@@ -60,38 +62,49 @@
 
             <div class="sm:col-span-2 form-group">
               <label class="form-label">Franchise / Team Name <span class="text-red-500">*</span></label>
-              <input type="text" [(ngModel)]="regForm.teamName" name="teamName"
-                     placeholder="e.g. Kattur Kings" required class="form-input">
+              <input type="text" [(ngModel)]="regForm.teamName" name="teamName" placeholder="e.g. Kattur Kings" required
+                class="form-input">
             </div>
 
             <div class="form-group">
               <label class="form-label">Owner Name <span class="text-red-500">*</span></label>
-              <input type="text" [(ngModel)]="regForm.ownerName" name="ownerName"
-                     placeholder="e.g. John Doe" required class="form-input">
+              <input type="text" [(ngModel)]="regForm.ownerName" name="ownerName" placeholder="e.g. John Doe" required
+                class="form-input">
             </div>
 
             <div class="form-group">
               <label class="form-label">Mobile Number <span class="text-red-500">*</span></label>
-              <input type="tel" [(ngModel)]="regForm.contactNumber" name="contactNumber"
-                     placeholder="10-digit number" required class="form-input">
+
+              <input type="tel" appPhoneNumber [(ngModel)]="regForm.contactNumber" name="mobile" #mobile="ngModel"
+                required maxlength="10" class="form-input" placeholder="10-digit number" />
+              <div *ngIf="mobile.errors?.['required'] && (mobile.dirty || mobile.touched)"
+                class="text-red-500 text-sm mt-1">
+                Mobile number is required.
+              </div>
+
+              <div
+                *ngIf="mobile.errors?.['invalidPhoneNumber'] && !mobile.errors?.['required'] && (mobile.dirty || mobile.touched)"
+                class="text-red-500 text-sm mt-1">
+                Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.
+              </div>
             </div>
 
             <!-- Location with dropdown -->
             <div class="form-group relative sm:col-span-2">
               <label class="form-label">Location</label>
               <div class="relative">
-                <input type="text" [(ngModel)]="locationSearch" name="locationSearch"
-                       placeholder="Search location…"
-                       (focus)="onLocationSearchFocus()" (blur)="onLocationSearchBlur()"
-                       autocomplete="off" class="form-input pr-10">
-                <mat-icon class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-base">
+                <input type="text" [(ngModel)]="locationSearch" name="locationSearch" placeholder="Search location…"
+                  (focus)="onLocationSearchFocus()" (blur)="onLocationSearchBlur()" autocomplete="off"
+                  class="form-input pr-10">
+                <mat-icon
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-base">
                   location_on
                 </mat-icon>
               </div>
               <ul *ngIf="showLocationDropdown && filteredLocations.length > 0"
-                  class="absolute top-full left-0 right-0 z-20 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg py-1 max-h-48 overflow-y-auto">
+                class="absolute top-full left-0 right-0 z-20 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg py-1 max-h-48 overflow-y-auto">
                 <li *ngFor="let loc of filteredLocations" (mousedown)="selectLocation(loc)"
-                    class="px-4 py-2.5 text-sm text-slate-700 cursor-pointer hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2 transition-colors">
+                  class="px-4 py-2.5 text-sm text-slate-700 cursor-pointer hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2 transition-colors">
                   <mat-icon class="text-sm text-slate-400">place</mat-icon>
                   {{ loc.Name }}
                   <small *ngIf="loc.District" class="text-slate-400">({{ loc.District }})</small>
@@ -103,11 +116,10 @@
             <div class="form-group sm:col-span-2">
               <label class="form-label">Password <span class="text-red-500">*</span></label>
               <div class="relative">
-                <input [type]="showPassword ? 'text' : 'password'"
-                       [(ngModel)]="regForm.password" name="password"
-                       placeholder="Create a password" required class="form-input pr-12">
+                <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="regForm.password" name="password"
+                  placeholder="Create a password" required class="form-input pr-12">
                 <button type="button" (click)="showPassword = !showPassword" tabindex="-1"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                   <mat-icon class="text-base">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
               </div>
@@ -115,7 +127,7 @@
             </div>
 
             <!-- Personal UPI QR Code -->
-            <div class="sm:col-span-2 form-group">
+            <!-- <div class="sm:col-span-2 form-group">
               <label class="form-label">
                 Your Personal UPI QR Code
                 <span class="text-slate-400 font-normal text-xs ml-1">(Optional)</span>
@@ -135,7 +147,7 @@
                 </div>
               </div>
               <p class="text-xs text-slate-400 mt-1">Upload so players can easily pay you later</p>
-            </div>
+            </div> -->
 
           </div>
         </div>
@@ -167,7 +179,7 @@
 
       <!-- Placeholder when no session selected -->
       <div *ngIf="!selectedSessionData"
-           class="bg-white rounded-2xl shadow border border-slate-100 p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]">
+        class="bg-white rounded-2xl shadow border border-slate-100 p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]">
         <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
           <mat-icon class="text-slate-300 !text-3xl">payments</mat-icon>
         </div>
@@ -193,7 +205,8 @@
 
       <!-- Step badge -->
       <div class="flex items-center gap-2 mb-4">
-        <span class="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">2</span>
+        <span
+          class="w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">2</span>
         <h2 class="font-bold text-slate-700 text-sm">Pay Registration Fee</h2>
       </div>
 
@@ -216,8 +229,7 @@
 
         <div class="flex flex-col items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
           <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm">
-            <img [src]="selectedSessionData.UPIScannerImageURL" alt="UPI QR Code"
-                 class="w-48 h-48 object-contain">
+            <img [src]="selectedSessionData.UPIScannerImageURL" alt="UPI QR Code" class="w-48 h-48 object-contain">
           </div>
           <div class="text-center space-y-1.5">
             <div class="flex items-center justify-center gap-2">
@@ -226,7 +238,8 @@
             </div>
             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-lg">
               <mat-icon class="text-slate-400 text-xs">account_balance_wallet</mat-icon>
-              <span class="text-xs font-mono font-semibold text-slate-600 select-all">{{ selectedSessionData.UPIId }}</span>
+              <span class="text-xs font-mono font-semibold text-slate-600 select-all">{{ selectedSessionData.UPIId
+                }}</span>
             </div>
           </div>
           <p class="text-xs text-slate-400 text-center mt-1">
@@ -236,7 +249,8 @@
       </div>
 
       <!-- No QR fallback -->
-      <div *ngIf="!selectedSessionData.UPIScannerImageURL" class="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+      <div *ngIf="!selectedSessionData.UPIScannerImageURL"
+        class="mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl">
         <div class="flex items-start gap-2">
           <mat-icon class="text-amber-500 text-base flex-shrink-0 mt-0.5">info</mat-icon>
           <p class="text-xs text-amber-700">
@@ -244,7 +258,8 @@
           </p>
         </div>
         <div *ngIf="selectedSessionData.UPIId" class="mt-2">
-          <p class="text-xs text-amber-800 font-semibold">UPI ID: <span class="font-mono select-all">{{ selectedSessionData.UPIId }}</span></p>
+          <p class="text-xs text-amber-800 font-semibold">UPI ID: <span class="font-mono select-all">{{
+              selectedSessionData.UPIId }}</span></p>
         </div>
       </div>
 
@@ -260,8 +275,9 @@
         </label>
         <div class="relative">
           <input type="text" [(ngModel)]="regForm.transactionId" name="transactionId_payment"
-                 placeholder="e.g. 4356789012345" class="form-input pr-10">
-          <mat-icon class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 text-base pointer-events-none">tag</mat-icon>
+            placeholder="e.g. 4356789012345" class="form-input pr-10">
+          <mat-icon
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 text-base pointer-events-none">tag</mat-icon>
         </div>
         <p class="text-xs text-slate-400 mt-1">Found in your UPI app after payment</p>
       </div>
@@ -270,8 +286,7 @@
       <div class="form-group">
         <label class="form-label">Payment Screenshot <span class="text-red-500">*</span></label>
 
-        <div *ngIf="receiptPreviewUrl"
-             class="rounded-xl border border-emerald-200 bg-emerald-50 overflow-hidden">
+        <div *ngIf="receiptPreviewUrl" class="rounded-xl border border-emerald-200 bg-emerald-50 overflow-hidden">
           <div class="flex items-center gap-2 px-3 py-2 bg-emerald-100 border-b border-emerald-200">
             <mat-icon class="text-emerald-600 text-sm">check_circle</mat-icon>
             <span class="text-xs font-semibold text-emerald-700">Screenshot uploaded</span>
@@ -282,12 +297,12 @@
           </div>
           <div class="flex justify-center p-3">
             <img [src]="receiptPreviewUrl" alt="Receipt"
-                 class="max-h-36 rounded-lg object-contain border border-emerald-200 shadow-sm">
+              class="max-h-36 rounded-lg object-contain border border-emerald-200 shadow-sm">
           </div>
         </div>
 
         <div *ngIf="!receiptPreviewUrl"
-             class="border-2 border-dashed border-slate-200 rounded-xl p-4 hover:border-sky-300 hover:bg-sky-50/40 transition-all">
+          class="border-2 border-dashed border-slate-200 rounded-xl p-4 hover:border-sky-300 hover:bg-sky-50/40 transition-all">
           <label class="flex flex-col items-center gap-2 cursor-pointer">
             <mat-icon class="text-slate-300 !text-3xl">upload_file</mat-icon>
             <span class="text-sm text-slate-500 font-medium">Click to upload screenshot</span>
