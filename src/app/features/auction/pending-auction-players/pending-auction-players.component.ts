@@ -27,8 +27,8 @@ import { environment } from '@environments/environment';
 export class PendingAuctionPlayersComponent implements OnInit {
   pendingPlayers = signal<any[]>([]);
   loading = signal(true);
-  
-  displayedColumns: string[] = ['photo', 'playerName', 'roleInfo', 'contact', 'payment', 'actions'];
+
+  displayedColumns: string[] = ['photo', 'playerName', 'age', 'roleInfo', 'contact', 'payment', 'actions'];
 
   private onboardingService = inject(OnboardingService);
   private snackBar = inject(MatSnackBar);
@@ -36,6 +36,28 @@ export class PendingAuctionPlayersComponent implements OnInit {
   ngOnInit() {
     this.loadPendingPlayers();
   }
+
+
+  calculateAge(dob: string | Date): number {
+    if (!dob) return 0;
+
+    const birthDate = new Date(dob);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
+
 
   getFileUrl(path: string | undefined): string {
     if (!path) return '';
@@ -46,7 +68,14 @@ export class PendingAuctionPlayersComponent implements OnInit {
     this.loading.set(true);
     this.onboardingService.getPendingAuctionPlayers().subscribe({
       next: (res: any) => {
-        this.pendingPlayers.set(res.data || []);
+        this.pendingPlayers.set(Array.isArray(res.data) ? res.data.map((item: any) => ({
+          ...item,
+          imageUrl: (item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL)
+            ? ((item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL).startsWith('http') ? (item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL) : environment.apiUrl + (item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL))
+            : 'assets/avatars/default.jpg',
+          age: this.calculateAge(item.PlayerMaster.DOB)
+
+        })) : []);
         this.loading.set(false);
       },
       error: (err: any) => {
@@ -57,10 +86,10 @@ export class PendingAuctionPlayersComponent implements OnInit {
   }
 
   verifyPlayer(auctionPlayerId: number, status: 'approved' | 'rejected') {
-    const confirmMessage = status === 'approved' ? 
-      'Are you sure you want to approve this player for the auction?' : 
+    const confirmMessage = status === 'approved' ?
+      'Are you sure you want to approve this player for the auction?' :
       'Are you sure you want to REJECT this player?';
-      
+
     if (!confirm(confirmMessage)) return;
 
     this.onboardingService.verifyAuctionPlayer(auctionPlayerId, status).subscribe({

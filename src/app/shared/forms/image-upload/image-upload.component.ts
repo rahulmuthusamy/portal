@@ -95,7 +95,7 @@ export class ImageUploadComponent {
     if (!this.defaultUrl) return 'assets/avatars/default.jpg';
     
     if (this.defaultUrl.startsWith('http')) return this.defaultUrl;
-    if (this.defaultUrl.startsWith('/api')) return environment.apiUrl.replace('/api', '') + this.defaultUrl;
+    if (this.defaultUrl.startsWith('/api')) return environment.apiUrl + this.defaultUrl;
     return environment.apiUrl + this.defaultUrl;
   }
   onFileChange(event: Event) {

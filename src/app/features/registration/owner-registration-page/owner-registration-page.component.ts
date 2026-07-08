@@ -18,18 +18,18 @@ import Swal from 'sweetalert2';
   styleUrls: ['./owner-registration-page.component.scss']
 })
 export class OwnerRegistrationPageComponent implements OnInit {
-  regForm = { 
-    ownerName: '', 
-    contactNumber: '', 
-    password: '', 
-    teamName: '', 
-    location: '', 
-    slogan: '', 
-    sessionId: null as any, 
-    transactionId: '', 
-    notes: '' 
+  regForm = {
+    ownerName: '',
+    contactNumber: '',
+    password: '',
+    teamName: '',
+    location: '',
+    slogan: '',
+    sessionId: null as any,
+    transactionId: '',
+    notes: ''
   };
-  
+
   selectedReceiptFile: File | null = null;
   receiptPreviewUrl: string | null = null;
 
@@ -40,7 +40,7 @@ export class OwnerRegistrationPageComponent implements OnInit {
 
   activeSessions = signal<any[]>([]);
   selectedSessionData: any = null;
-  
+
   availableLocations = signal<any[]>([]);
   locationSearch = '';
   showLocationDropdown = false;
@@ -52,7 +52,7 @@ export class OwnerRegistrationPageComponent implements OnInit {
     private auctionSessionService: AuctionSessionService,
     private settingsService: SettingsService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe(params => {
@@ -82,7 +82,7 @@ export class OwnerRegistrationPageComponent implements OnInit {
       }
     });
   }
-  
+
   loadLocations() {
     this.settingsService.getLocations(true).subscribe({
       next: (res: any) => {
@@ -165,10 +165,10 @@ export class OwnerRegistrationPageComponent implements OnInit {
       this.registrationError = 'Please fill all required fields.';
       return;
     }
-    
+
     // Check if receipt and transaction ID are present (only if fee exists or is enforced globally)
-    if (!this.regForm.transactionId || !this.selectedReceiptFile) {
-      this.registrationError = 'Payment receipt and Transaction ID are required for team registration.';
+    if (!this.selectedReceiptFile) {
+      this.registrationError = 'Payment receipt are required for team registration.';
       return;
     }
 

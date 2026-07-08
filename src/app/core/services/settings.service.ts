@@ -14,6 +14,10 @@ export class SettingsService {
         return this.api.get(`${this.endpoint}/app-settings`);
     }
 
+    getWebsiteInitData(): Observable<any> {
+        return this.api.get(`/website/init`);
+    }
+
     updateAppSettings(data: any, logoFile?: File, upiScannerFile?: File): Observable<any> {
         const formData = new FormData();
         Object.keys(data).forEach(key => formData.append(key, data[key]));

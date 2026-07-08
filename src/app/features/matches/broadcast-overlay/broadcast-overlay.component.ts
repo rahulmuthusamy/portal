@@ -96,13 +96,13 @@ export class BroadcastOverlayComponent implements OnInit, OnDestroy {
     teamALogo = computed(() => {
         const m = this.match();
         if (!m?.TeamA?.LogoURL) return null;
-        return `${environment.apiUrl.replace('/api', '')}/${m.TeamA.LogoURL}`;
+        return `${environment.apiUrl}/${m.TeamA.LogoURL}`;
     });
 
     teamBLogo = computed(() => {
         const m = this.match();
         if (!m?.TeamB?.LogoURL) return null;
-        return `${environment.apiUrl.replace('/api', '')}/${m.TeamB.LogoURL}`;
+        return `${environment.apiUrl}/${m.TeamB.LogoURL}`;
     });
 
     // Which team is batting
