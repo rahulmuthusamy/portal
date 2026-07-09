@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -17,7 +17,7 @@ import { PhoneNumberDirective } from '@shared/directive/phone-number.directive';
   templateUrl: './player-registration-page.component.html',
   styleUrls: ['./player-registration-page.component.scss']
 })
-export class PlayerRegistrationPageComponent implements OnInit {
+export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
   playerRegForm = {
     playerName: '',
     fatherName: '',
@@ -31,12 +31,15 @@ export class PlayerRegistrationPageComponent implements OnInit {
     jerseySize: 'M',
     basePrice: 100,
     sessionId: null as any,
-    transactionId: ''
+    transactionId: '',
+    aadharUrl: ''
   };
   maxDate: string = new Date().toISOString().split('T')[0];
   selectedPhotoFile: File | null = null;
   selectedReceiptFile: File | null = null;
   receiptPreviewUrl: string | null = null;
+  selectedAadharFile: File | null = null;
+  aadharPreviewUrl: string | null = null;
 
   isRegistering = false;
   registrationError = '';
@@ -44,6 +47,13 @@ export class PlayerRegistrationPageComponent implements OnInit {
   IsAgeEligible = signal<boolean>(false);
   activeSessions = signal<any[]>([]);
   selectedSessionData: any = null;
+
+  countdownDays: number = 0;
+  countdownHours: number = 0;
+  countdownMinutes: number = 0;
+  countdownSeconds: number = 0;
+  countdownInterval: any;
+  showCountdown: boolean = false;
 
   private route = inject(ActivatedRoute);
 
@@ -62,6 +72,12 @@ export class PlayerRegistrationPageComponent implements OnInit {
     });
 
     this.fetchActiveSessions();
+  }
+
+  ngOnDestroy() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
   }
 
   fetchActiveSessions() {
@@ -92,9 +108,47 @@ export class PlayerRegistrationPageComponent implements OnInit {
           ? (qrUrl.startsWith('http') ? qrUrl : `${environment.apiUrl}${qrUrl}`)
           : null
       };
+      this.startCountdown(session.EndDate);
     } else {
       this.selectedSessionData = null;
+      this.showCountdown = false;
+      if (this.countdownInterval) clearInterval(this.countdownInterval);
     }
+  }
+
+  startCountdown(endDateStr: string) {
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
+    this.showCountdown = false;
+
+    if (!endDateStr) return;
+
+    const endDate = new Date(endDateStr).getTime();
+    if (isNaN(endDate)) return;
+
+    this.showCountdown = true;
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const distance = endDate - now;
+
+      if (distance < 0) {
+        clearInterval(this.countdownInterval);
+        this.countdownDays = 0;
+        this.countdownHours = 0;
+        this.countdownMinutes = 0;
+        this.countdownSeconds = 0;
+        this.showCountdown = false;
+        return;
+      }
+
+      this.countdownDays = Math.floor(distance / (1000 * 60 * 60 * 24));
+      this.countdownHours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      this.countdownMinutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      this.countdownSeconds = Math.floor((distance % (1000 * 60)) / 1000);
+    };
+
+    updateTimer();
+    this.countdownInterval = setInterval(updateTimer, 1000);
   }
 
   onPhotoSelected(event: any) {
@@ -121,6 +175,23 @@ export class PlayerRegistrationPageComponent implements OnInit {
     }
   }
 
+ 
+
+  onAadharSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedAadharFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.aadharPreviewUrl = e.target.result as string;
+        this.playerRegForm.aadharUrl = e.target.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+
+
   selectedPersonalQrFile: File | null = null;
   personalQrPreviewUrl: string | null = null;
 
@@ -143,7 +214,7 @@ export class PlayerRegistrationPageComponent implements OnInit {
 
   onDobChange(dob: string): void {
     const age = this.calculateAge(dob);
-    if (age < 19 || age > 35) {
+    if (age < 19) {
       this.IsAgeEligible.set(false);
     } else {
       this.IsAgeEligible.set(true);
@@ -175,7 +246,7 @@ export class PlayerRegistrationPageComponent implements OnInit {
       this.registrationError = 'Please enter a valid 10-digit mobile number.';
       return;
     }
-    if (!this.playerRegForm.playerName || !this.playerRegForm.fatherName || !this.playerRegForm.contactNumber || !this.playerRegForm.sessionId || !this.playerRegForm.dob) {
+    if (!this.playerRegForm.photoUrl ||!this.playerRegForm.aadharUrl || !this.playerRegForm.playerName || !this.playerRegForm.fatherName || !this.playerRegForm.contactNumber || !this.playerRegForm.sessionId || !this.playerRegForm.dob) {
       this.registrationError = 'Please fill all required fields.';
       return;
     }
@@ -198,6 +269,9 @@ export class PlayerRegistrationPageComponent implements OnInit {
     if (this.selectedPersonalQrFile) {
       payload.qrCodeFile = this.selectedPersonalQrFile;
     }
+    if (this.selectedAadharFile) {
+      payload.aadharFile = this.selectedAadharFile;
+    }
 
     this.onboardingService.registerPlayerForAuction(payload, this.selectedReceiptFile || undefined).subscribe({
       next: () => {
@@ -213,7 +287,6 @@ export class PlayerRegistrationPageComponent implements OnInit {
       },
       error: (err: any) => {
         this.isRegistering = false;
-        this.IsAgeEligible.set(false);
         this.registrationError = err.error?.message || 'Registration failed. Please try again.';
       }
     });

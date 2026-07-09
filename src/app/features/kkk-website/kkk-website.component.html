@@ -558,13 +558,16 @@
             </div>
             <div class="player-details">
 
-              <h4 class="player-name">{{ player.Name }} <span>
-                  {{ getRoleIcon(player.Role) }}
-                </span></h4>
+              <h4 class="player-name text-truncate text-uppercase" [title]="player.Name">{{ player.Name }}</h4>
+              <div class="mb-2">
+                 <span class="badge rounded-pill fw-bold" [ngClass]="getRoleClass(player.Role)">
+                    {{ getRoleIcon(player.Role) }} {{ player.Role }}
+                 </span>
+              </div>
               <div class="player-meta">
                 <span class="player-number">PlayerID# {{ player.PlayerID }}</span>
-                <span *ngIf="player.BattingStyle"><i class="bi bi-award-fill"></i> {{ player.BattingStyle }}</span>
-                <span *ngIf="player.BowlingStyle"><i class="bi bi-lightning-fill"></i> {{ player.BowlingStyle }}</span>
+                <span *ngIf="player.BattingStyle">🏏  {{ player.BattingStyle }} </span>
+                <span *ngIf="player.BowlingStyle">⚾  {{ player.BowlingStyle }} </span>
               </div>
             </div>
           </div>
@@ -994,21 +997,33 @@
         <div class="reg-form-row">
           <div class="reg-form-group">
             <label>Batting Style</label>
-            <select [(ngModel)]="playerRegForm.battingStyle" name="battingStyle">
-              <option value="Right-hand bat">Right-hand bat</option>
-              <option value="Left-hand bat">Left-hand bat</option>
-            </select>
+            <div class="reg-style-picker">
+              <button type="button" *ngFor="let option of battingStyleOptions"
+                      class="reg-style-card reg-style-card--image"
+                      [class.active]="playerRegForm.battingStyle === option.value"
+                      (click)="playerRegForm.battingStyle = option.value">
+                <img [src]="option.image" alt="{{ option.label }}" class="reg-style-image" />
+                <span class="reg-style-copy">
+                  <span class="reg-style-title">{{ option.label }}</span>
+                  <span class="reg-style-desc">{{ option.description }}</span>
+                </span>
+              </button>
+            </div>
           </div>
           <div class="reg-form-group">
             <label>Bowling Style</label>
-            <select [(ngModel)]="playerRegForm.bowlingStyle" name="bowlingStyle">
-              <option value="Right-arm fast">Right-arm fast</option>
-              <option value="Right-arm medium">Right-arm medium</option>
-              <option value="Right-arm spin">Right-arm spin</option>
-              <option value="Left-arm fast">Left-arm fast</option>
-              <option value="Left-arm medium">Left-arm medium</option>
-              <option value="Left-arm spin">Left-arm spin</option>
-            </select>
+            <div class="reg-style-picker reg-style-picker--compact">
+              <button type="button" *ngFor="let option of bowlingStyleOptions"
+                      class="reg-style-card reg-style-card--image"
+                      [class.active]="playerRegForm.bowlingStyle === option.value"
+                      (click)="playerRegForm.bowlingStyle = option.value">
+                <img [src]="option.image" alt="{{ option.label }}" class="reg-style-image" />
+                <span class="reg-style-copy">
+                  <span class="reg-style-title">{{ option.label }}</span>
+                  <span class="reg-style-desc">{{ option.description }}</span>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 

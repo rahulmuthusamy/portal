@@ -17,6 +17,59 @@
                         <app-input label="Age" [control]="form.get('Age')!" placeholder="Auto-calculated" type="number"
                             [readonly]="true" icon="bi-clock-history" />
                     </div>
+
+
+                    <div class="premium-card mt-4">
+                        <h5 class="section-title">
+                            <i class="bi bi-person-vcard me-2"></i>
+                            Aadhaar Document
+                        </h5>
+
+                        <div *ngIf="form.get('AadharURL')?.value" class="border rounded-3 p-3 bg-light-subtle">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="fw-semibold text-secondary">Aadhaar document uploaded</span>
+                                <span class="badge bg-success-subtle text-success-emphasis">Ready</span>
+                            </div>
+
+                            <div class="mb-3" *ngIf="isImage(form.get('AadharURL')?.value)">
+                                <img [src]="form.get('AadharURL')?.value" class="img-fluid rounded border" alt="Aadhaar preview" />
+                            </div>
+
+                            <div *ngIf="!isImage(form.get('AadharURL')?.value)" class="d-flex align-items-center gap-2 border rounded-3 p-3 bg-white">
+                                <i class="bi bi-file-earmark-pdf-fill fs-3 text-danger"></i>
+                                <div>
+                                    <div class="fw-semibold">PDF document uploaded</div>
+                                    <div class="small text-muted">You can view or replace it anytime.</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <a *ngIf="form.get('AadharURL')?.value" [href]="form.get('AadharURL')?.value" target="_blank"
+                                    class="btn btn-sm btn-outline-primary flex-grow-1">
+                                    <i class="bi bi-eye me-1"></i> View
+                                </a>
+                                <label class="btn btn-sm btn-outline-warning flex-grow-1 m-0" style="cursor: pointer;">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Change
+                                    <input type="file" class="d-none" accept=".jpg,.jpeg,.png,.pdf"
+                                        (change)="onAadhaarSelected($event)" />
+                                </label>
+                                <button type="button" class="btn btn-sm btn-outline-danger flex-grow-1"
+                                    (click)="removeAadhaar()">
+                                    <i class="bi bi-trash me-1"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!form.get('AadharURL')?.value">
+                            <label class="border border-dashed rounded-3 p-4 d-flex flex-column align-items-center justify-content-center text-center cursor-pointer bg-light-subtle" style="cursor: pointer;">
+                                <i class="bi bi-cloud-arrow-up fs-2 text-primary"></i>
+                                <span class="fw-semibold text-secondary mt-2">Upload Aadhaar document</span>
+                                <span class="text-muted small mt-1">JPG, PNG or PDF (Max 5MB)</span>
+                                <input type="file" class="d-none" accept=".jpg,.jpeg,.png,.pdf"
+                                    (change)="onAadhaarSelected($event)" />
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -35,15 +88,16 @@
                                 placeholder="Father's full name" type="text" icon="bi-person-badge" />
                         </div>
                         <div class="col-md-6">
-                            <app-datepicker [minDate]="minDate" label="Date of Birth *" [control]="form.get('DOB')!"></app-datepicker>
+                            <app-datepicker [minDate]="minDate" label="Date of Birth *"
+                                [control]="form.get('DOB')!"></app-datepicker>
                         </div>
                         <div class="col-md-6">
                             <app-mobile-input label="Mobile Number *" [control]="form.get('Mobile')!"
                                 placeholder="Primary Contact" type="text"></app-mobile-input>
                         </div>
                         <div class="col-md-6">
-                            <app-email label="Email Address *" [control]="form.get('Email')!" placeholder="Primary email"
-                                type="email"></app-email>
+                            <app-email label="Email Address *" [control]="form.get('Email')!"
+                                placeholder="Primary email" type="email"></app-email>
                         </div>
                         <div class="col-md-6">
                             <app-input label="Emergency Contact *" [control]="form.get('EmergencyContact')!"
@@ -125,7 +179,7 @@
                     </div>
                 </div>
 
-<!-- Physical Stats -->
+                <!-- Physical Stats -->
                 <div class="premium-card mb-4">
                     <h5 class="section-title"><i class="bi bi-heart-pulse me-2"></i>Physical Stats & Kit</h5>
                     <div class="row g-3">

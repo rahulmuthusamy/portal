@@ -1,6 +1,6 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mat-h2 m-0 text-uppercase fw-bold" style="color: var(--primary-color);">Pending Auction Players</h2>
+        <h2 class="mat-h2 m-0 text-uppercase fw-bold" style="color: var(--primary-color);">Pending Auction Players ({{ pendingPlayers().length }})</h2>
         <button mat-flat-button color="primary" (click)="loadPendingPlayers()">
             <mat-icon>refresh</mat-icon> Refresh
         </button>
@@ -16,92 +16,90 @@
             <h3 class="mat-h3 mt-3 text-muted">No pending player registrations.</h3>
         </mat-card-content>
 
-        <table mat-table [dataSource]="pendingPlayers()" class="w-100"
-            *ngIf="!loading() && pendingPlayers().length > 0">
-            <!-- Photo Column -->
-            <ng-container matColumnDef="photo">
-                <th mat-header-cell *matHeaderCellDef> Photo </th>
-                <td mat-cell *matCellDef="let player">
-                    <img *ngIf="player.imageUrl" [src]="getFileUrl(player.imageUrl)" class="rounded-circle"
-                        style="width: 40px; height: 40px; object-fit: cover;">
-                    <mat-icon *ngIf="!player.imageUrl" class="text-muted"
-                        style="font-size: 40px; width: 40px; height: 40px;">account_circle</mat-icon>
-                </td>
-            </ng-container>
-
-            <!-- Player Name Column -->
-            <ng-container matColumnDef="playerName">
-                <th mat-header-cell *matHeaderCellDef> Player Name </th>
-                <td mat-cell *matCellDef="let player">
-                    <div class="fw-bold">{{ player.PlayerMaster.Name }}</div>
-                    <small class="text-muted">{{ player.PlayerMaster.FatherName }}</small>
-                </td>
-            </ng-container>
-
-            <!-- Age Column -->
-            <ng-container matColumnDef="age">
-                <th mat-header-cell *matHeaderCellDef> Age </th>
-                <td mat-cell *matCellDef="let player">
-                    <div class="fw-bold">{{ player.age }}</div>
-                </td>
-            </ng-container>
-
-            <!-- Role Info Column -->
-            <ng-container matColumnDef="roleInfo">
-                <th mat-header-cell *matHeaderCellDef> Role & Base Price </th>
-                <td mat-cell *matCellDef="let player">
-                    <span class="badge bg-secondary mb-1">{{ player.PlayerMaster?.Role || 'Player' }}</span><br>
-                    <small class="text-muted">BP: ₹{{ player.BasePrice }}</small>
-                </td>
-            </ng-container>
-
-            <!-- Contact Column -->
-            <ng-container matColumnDef="contact">
-                <th mat-header-cell *matHeaderCellDef> Contact </th>
-                <td mat-cell *matCellDef="let player">
-                    {{ player.PlayerMaster.Mobile }}
-                </td>
-            </ng-container>
-
-            <!-- Payment Details Column -->
-            <ng-container matColumnDef="payment">
-                <th mat-header-cell *matHeaderCellDef> Payment Details </th>
-                <td mat-cell *matCellDef="let player">
-                    <ng-container *ngIf="player.paymentStatus !== 'paid'">
-                        <div class="mb-1"><strong>Txn ID:</strong> {{ player.TransactionID }}</div>
-                        <div *ngIf="player.ReceiptPath">
-                            <a [href]="getFileUrl(player.ReceiptPath)" target="_blank"
-                                class="text-primary text-decoration-none">
-                                <mat-icon
-                                    style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle;">open_in_new</mat-icon>
-                                View Receipt
-                            </a>
-                        </div>
-                        <div class="mt-1"><strong>Amount:</strong> {{ player.amount | currency }}</div>
-                    </ng-container>
-                    <div *ngIf="player.paymentStatus !== 'paid'" class="text-muted">
-                        No payment info
-                    </div>
-                </td>
-            </ng-container>
-
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="text-end"> Actions </th>
-                <td mat-cell *matCellDef="let player" class="text-end">
-                    <button mat-flat-button color="primary" class="me-2 rounded-pill px-4"
-                        (click)="verifyPlayer(player.AuctionPlayerID, 'approved')">
-                        <mat-icon>check_circle</mat-icon> APPROVE
-                    </button>
-                    <button mat-stroked-button color="warn" class="rounded-pill"
-                        (click)="verifyPlayer(player.AuctionPlayerID, 'rejected')">
-                        <mat-icon>cancel</mat-icon> Reject
-                    </button>
-                </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-bg"></tr>
-        </table>
+        <app-data-table *ngIf="!loading() && pendingPlayers().length > 0" 
+            [config]="tableConfig" 
+            [data]="pendingPlayers()" 
+            (actionClick)="handleAction($event)">
+        </app-data-table>
     </mat-card>
 </div>
+
+<ng-template #approvalDialog let-data>
+    <h2 mat-dialog-title class="fw-bold m-0 text-uppercase" style="color: var(--primary-color);">Player Registration Details</h2>
+    <mat-dialog-content>
+        <div class="d-flex flex-column gap-3 py-3">
+            <div class="d-flex align-items-center mb-3">
+                <img *ngIf="data.imageUrl" [src]="getFileUrl(data.imageUrl)" class="rounded-circle me-3 border" style="width: 80px; height: 80px; object-fit: cover;">
+                <mat-icon *ngIf="!data.imageUrl" class="text-muted me-3" style="font-size: 80px; width: 80px; height: 80px;">account_circle</mat-icon>
+                <div>
+                    <h3 class="m-0 fw-bold">{{ data.PlayerMaster.Name }}</h3>
+                    <div class="text-muted">{{ data.PlayerMaster.FatherName }}</div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-4 text-muted">Age</div>
+                <div class="col-sm-8 fw-bold">{{ data.age }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 text-muted">Role</div>
+                <div class="col-sm-8"><span class="badge bg-secondary">{{ data.PlayerMaster?.Role || 'Player' }}</span></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 text-muted">Base Price</div>
+                <div class="col-sm-8 text-success fw-bold">₹{{ data.BasePrice }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 text-muted">Contact</div>
+                <div class="col-sm-8">{{ data.PlayerMaster.Mobile }}</div>
+            </div>
+            
+            <div class="row mt-2">
+                <div class="col-sm-4 text-muted">Aadhar Document</div>
+                <div class="col-sm-8">
+                    <a *ngIf="data.AadharURL" [href]="data.AadharURL" target="_blank" class="text-primary text-decoration-none d-inline-flex align-items-center">
+                        <mat-icon style="font-size: 20px; width: 20px; height: 20px;" class="me-1">contact_page</mat-icon> View Aadhar
+                    </a>
+                    <span *ngIf="!data.AadharURL" class="text-muted">Not provided</span>
+                </div>
+            </div>
+            
+            <hr class="my-2">
+            
+            <h4 class="fw-bold mb-2">Payment Details</h4>
+            <div>
+                <div class="row mb-1">
+                    <div class="col-sm-4 text-muted">Transaction ID</div>
+                    <div class="col-sm-8">{{ data.TransactionID }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">Amount</div>
+                    <div class="col-sm-8 fw-bold">{{data.age < 19 ? '₹0' : '₹200'}}</div>
+                </div>
+                <div class="row">
+                     <div class="col-sm-4 text-muted">Receipt </div>
+                    <div class="col-sm-8">
+                        <a [href]="getFileUrl(data.ReceiptPath)" target="_blank" class="text-primary text-decoration-none d-inline-flex align-items-center">
+                            <mat-icon style="font-size: 20px; width: 20px; height: 20px;" class="me-1">receipt</mat-icon> View Receipt Screenshot
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="data.PaymentStatus === 'unpaid'" class="text-muted text-center p-3 bg-light rounded">
+                Payment marked as paid.
+            </div>
+            <div *ngIf="data.PaymentStatus !== 'unpaid'" class="text-muted text-center p-3 bg-light rounded">
+                No payment information provided.
+            </div>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end" class="px-4 pb-4">
+        <button mat-button mat-dialog-close class="me-2">Cancel</button>
+        <button mat-stroked-button color="warn" class="rounded-pill me-2" (click)="verifyPlayer(data.AuctionPlayerID, 'rejected')">
+            <mat-icon>cancel</mat-icon> Reject
+        </button>
+        <button mat-flat-button color="primary" class="rounded-pill px-4" (click)="verifyPlayer(data.AuctionPlayerID, 'approved')">
+            <mat-icon>check_circle</mat-icon> APPROVE
+        </button>
+    </mat-dialog-actions>
+</ng-template>

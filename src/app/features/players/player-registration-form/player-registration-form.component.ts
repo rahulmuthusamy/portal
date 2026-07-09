@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SHARED_FORM_COMPONENTS } from '@shared/forms/form-controls';
 import { PlayerService } from '../services/players.service';
@@ -7,6 +7,7 @@ import { ToastService } from '@shared/services/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuctionSessionService } from '@features/auction/services/auction-session.service';
 import { map } from 'rxjs';
+import { environment } from '@environments/environment';
 
 
 @Component({
@@ -19,7 +20,7 @@ import { map } from 'rxjs';
   templateUrl: './player-registration-form.component.html',
   styleUrl: './player-registration-form.component.scss'
 })
-export class PlayerRegistrationFormComponent {
+export class PlayerRegistrationFormComponent implements OnDestroy {
   form!: FormGroup;
   isEdit: boolean = false;
   minDate: Date = new Date(1970, 0, 1); // Set a minimum date for DOB (e.g., Jan 1, 1970)  ̰
@@ -73,16 +74,18 @@ export class PlayerRegistrationFormComponent {
   private auctionSessionService = inject(AuctionSessionService)
   redirectUrl: string = '/kkk/players-list';
   auctionSessions: any[] = [];
+  aadhaarFile?: File;
+  private aadhaarPreviewObjectUrl: string | null = null;
 
   ngOnInit(): void {
     this.InitForm();
-    
+
     this.auctionSessionService.getAll().pipe(
       map((response: any) => (response?.data?.sessions || []).map((s: any) => ({ label: s.Name, value: s.SessionID })))
     ).subscribe(sessions => {
       this.auctionSessions = sessions;
     });
-    
+
     const id = this.route.snapshot.paramMap.get('id')!;;
     if (id) {
       this.isEdit = true;
@@ -97,7 +100,7 @@ export class PlayerRegistrationFormComponent {
     });
   }
 
-InitForm() {
+  InitForm() {
     this.form = this.fb.group({
       PlayerID: [],
       Name: ['', Validators.required],
@@ -124,8 +127,13 @@ InitForm() {
       Nickname: [''],
       EmergencyContact: [''],
       PhotoURL: [''],
-      AuctionSession: ['']
+      AuctionSession: [''],
+      AadharURL: [''],
     });
+  }
+
+  ngOnDestroy(): void {
+    this.revokeAadhaarPreview();
   }
 
   calculateAge(birthDate: Date): number {
@@ -148,9 +156,7 @@ InitForm() {
         if (!players) {
           console.warn('No Teams data found');
           return;
-        }
-
-        this.form.patchValue(players);
+        } 
 
         // Calculate age if DOB exists
         if (players.DOB) {
@@ -161,6 +167,14 @@ InitForm() {
         if (players.PhotoURL && !players.PhotoURL.startsWith('http')) {
           // PhotoURL preview logic handled by component or service
         }
+        if (players.AadharURL) {
+          players.AadharURL = players.AadharURL.startsWith('http')
+            ? players.AadharURL
+            : environment.apiUrl + players.AadharURL;
+        }
+        this.form.patchValue({ ...players, AadharURL: players.AadharURL || '' });
+        this.aadhaarFile = undefined;
+
       },
       error: (error: any) => {
         console.error('Error fetching Teams:', error);
@@ -185,7 +199,13 @@ InitForm() {
       const photoStr = player.PhotoURL.url || player.PhotoURL.path || '';
       payload.append('PhotoURL', photoStr);
     }
-    const { PhotoURL, Age, ...playerData } = player;
+    const { PhotoURL, Age, AadharURL, ...playerData } = player;
+
+    if (this.aadhaarFile) {
+      payload.append('AadharURL', this.aadhaarFile);
+    } else if (typeof AadharURL === 'string' && AadharURL && !AadharURL.startsWith('data:') && !AadharURL.startsWith('blob:')) {
+      payload.append('AadharURL', AadharURL);
+    }
 
     Object.keys(playerData).forEach(key => {
       if (playerData[key] !== null && playerData[key] !== undefined) {
@@ -211,5 +231,48 @@ InitForm() {
 
   close() {
     this.router.navigate([this.redirectUrl]);
+  }
+
+
+
+  onAadhaarSelected(event: any): void {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    this.revokeAadhaarPreview();
+    this.aadhaarFile = file;
+    this.aadhaarPreviewObjectUrl = URL.createObjectURL(file);
+
+    this.form.patchValue({
+      AadharURL: this.aadhaarPreviewObjectUrl
+    });
+
+    if (event.target) {
+      event.target.value = '';
+    }
+  }
+
+  removeAadhaar(): void {
+    this.revokeAadhaarPreview();
+    this.aadhaarFile = undefined;
+    this.form.patchValue({ AadharURL: '' });
+  }
+
+  private revokeAadhaarPreview(): void {
+    if (this.aadhaarPreviewObjectUrl) {
+      URL.revokeObjectURL(this.aadhaarPreviewObjectUrl);
+      this.aadhaarPreviewObjectUrl = null;
+    }
+  }
+
+  isImage(url: string | null | undefined): boolean {
+    if (!url) {
+      return false;
+    }
+
+    return /\.(jpg|jpeg|png|gif|webp)$/i.test(url) || url.startsWith('data:image/');
   }
 }

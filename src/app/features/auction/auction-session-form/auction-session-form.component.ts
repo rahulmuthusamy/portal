@@ -35,7 +35,7 @@ export class AuctionSessionFormComponent {
     private auctionSessionService: AuctionSessionService,
     private tournamentService: TournamentService,
     private toast: ToastService,
-    private router: Router
+    public router: Router
   ) { }
 
   ngOnInit(): void {
@@ -46,6 +46,47 @@ export class AuctionSessionFormComponent {
       this.isEdit = true;
       this.getByID(+id);
     }
+  }
+
+  private toDateTimeLocalValue(value: any): string {
+    if (!value) return '';
+
+    if (value instanceof Date) {
+      const pad = (n: number) => String(n).padStart(2, '0');
+      return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}T${pad(value.getHours())}:${pad(value.getMinutes())}`;
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+
+      const parsed = new Date(trimmed);
+      if (!isNaN(parsed.getTime())) {
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}T${pad(parsed.getHours())}:${pad(parsed.getMinutes())}`;
+      }
+
+      return trimmed;
+    }
+
+    return '';
+  }
+
+  private toApiDateTimeValue(value: any): string | null {
+    if (!value) return null;
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+
+      const parsed = new Date(trimmed);
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toISOString();
+      }
+      return trimmed;
+    }
+
+    return null;
   }
 
   loadTournaments() {
@@ -80,8 +121,8 @@ export class AuctionSessionFormComponent {
           SessionID: session.SessionID,
           Name: session.Name,
           Status: session.Status,
-          StartDate: session.StartDate,
-          EndDate: session.EndDate,
+          StartDate: this.toDateTimeLocalValue(session.StartDate),
+          EndDate: this.toDateTimeLocalValue(session.EndDate),
           Year: session.Year,
           MaxBudget: session.MaxBudget,
           MaxPlayersPerTeam: session.MaxPlayersPerTeam,
@@ -145,6 +186,9 @@ export class AuctionSessionFormComponent {
     const formValue = { ...this.form.value };
     const sessionId = formValue.SessionID;  // null when creating
     delete formValue.SessionID;
+
+    formValue.StartDate = this.toApiDateTimeValue(formValue.StartDate);
+    formValue.EndDate = this.toApiDateTimeValue(formValue.EndDate);
 
     // Map Description → Notes (model column name)
     if (formValue.Description !== undefined) {
