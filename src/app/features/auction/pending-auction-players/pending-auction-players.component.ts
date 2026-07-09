@@ -41,8 +41,8 @@ export class PendingAuctionPlayersComponent implements OnInit {
       { key: 'PlayerName', label: 'Player Name', searchable: true },
       { key: 'age', label: 'Age', searchable: true },
       { key: 'PlayerRole', label: 'Role', searchable: true },
-      { key: 'BasePrice', label: 'Base Price (₹)' },
       { key: 'PlayerContact', label: 'Contact', searchable: true },
+      {key: 'ReceiptPath', label: 'Receipt Path', type: 'link', render: (row: any) => row.ReceiptPath ? `<a href="${environment.apiUrl}${row.ReceiptPath}" target="_blank">View</a>` : 'N/A'},
       {
         key: 'actions',
         label: 'Actions',
@@ -101,6 +101,7 @@ export class PendingAuctionPlayersComponent implements OnInit {
           PlayerName: item.PlayerMaster.Name,
           PlayerRole: item.PlayerMaster.Role || 'Player',
           PlayerContact: item.PlayerMaster.Mobile,
+          ReceiptPath: item.ReceiptPath,
           AadharURL: item.PlayerMaster.AadharURL ? (item.PlayerMaster.AadharURL.startsWith('http') ? item.PlayerMaster.AadharURL : environment.apiUrl + item.PlayerMaster.AadharURL) : null
         })) : []);
         this.loading.set(false);
