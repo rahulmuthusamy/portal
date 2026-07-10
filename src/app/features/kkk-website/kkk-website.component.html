@@ -290,7 +290,7 @@
           [class.active]="first">
           <div class="auction-card">
             <div class="auction-card-left">
-              <span class="auction-badge"><i class="bi bi-broadcast me-2"></i> AUCTION</span>
+              <span class="auction-badge"><i class="bi bi-hammer me-2"></i> AUCTION</span>
               <h2 class="auction-title">{{ auction.Name }}</h2>
               <p class="auction-desc">Bid on star players. Build your franchise. Conquer the league.</p>
 
@@ -582,17 +582,7 @@
     <div class="players-empty" *ngIf="filteredPlayers.length === 0">
       <i class="bi bi-person-x"></i>
       <p>No players found{{ searchQuery ? ' for "' + searchQuery + '"' : '' }}.</p>
-    </div>
-
-    <div class="players-pagination" *ngIf="totalPages > 1">
-      <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
-        <i class="bi bi-chevron-right"></i>
-      </button>
-    </div>
+    </div>  
   </div>
 </section>
 

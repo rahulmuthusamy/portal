@@ -48,10 +48,10 @@ export class AuctionSessionComponent implements OnInit {
       key: 'actions',
       label: 'Actions',
       actions: [
-        { text: 'Manage', type: 'Manage', class: 'btn-outline-primary' },
-        { text: 'Edit', type: 'Edit', class: 'btn-outline-info' },
-        { text: 'Report', type: 'Report', class: 'btn-outline-success' },
-        { text: 'Delete', type: 'Delete', class: 'btn-outline-danger ms-2' }
+        { text: 'Manage', type: 'Manage', title: 'Manage Session', icon: 'bi-gear-fill', class: 'btn-outline-primary' },
+        { text: 'Edit', type: 'Edit', title: 'Edit Session', icon: 'bi-pencil-square', class: 'btn-outline-info' },
+        { text: 'Report', type: 'Report', title: 'View Session Report', icon: 'bi-bar-chart-line-fill', class: 'btn-outline-success' },
+        { text: 'Delete', type: 'Delete', title: 'Delete Session', icon: 'bi-trash-fill', class: 'btn-outline-danger ms-2' }
       ]
     }
   ]

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OnboardingService } from '@core/services/onboarding.service';
 import { AuctionSessionService } from '@features/auction/services/auction-session.service';
+import { PlayerService } from '@features/players/services/players.service';
 import { environment } from '@environments/environment';
 import Swal from 'sweetalert2';
 import { PhoneNumberDirective } from '@shared/directive/phone-number.directive';
@@ -47,6 +48,10 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
   IsAgeEligible = signal<boolean>(false);
   activeSessions = signal<any[]>([]);
   selectedSessionData: any = null;
+  existingPlayers: any[] = [];
+  lookupMessage = '';
+  lookupMessageType: 'info' | 'success' | 'error' = 'info';
+  private phoneLookupTimer: any;
 
   countdownDays: number = 0;
   countdownHours: number = 0;
@@ -60,6 +65,7 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
   constructor(
     private onboardingService: OnboardingService,
     private auctionSessionService: AuctionSessionService,
+    private playerService: PlayerService,
     private router: Router
   ) { }
 
@@ -72,6 +78,7 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
     });
 
     this.fetchActiveSessions();
+    this.loadExistingPlayers();
   }
 
   ngOnDestroy() {
@@ -211,6 +218,106 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
     return String(value || '').replace(/\D/g, '').slice(-10);
   }
 
+
+  loadExistingPlayers() {
+    this.playerService.getAll().subscribe({
+      next: (res: any) => {
+        const raw = Array.isArray(res) ? res : (res?.data?.players || res?.players || []);
+        this.existingPlayers = Array.isArray(raw) ? raw : [];
+      },
+      error: () => {
+        this.existingPlayers = [];
+      }
+    });
+  }
+
+  onContactNumberChange(value: string) {
+    const phone = this.normalizePhone(value);
+
+    if (this.phoneLookupTimer) {
+      clearTimeout(this.phoneLookupTimer);
+    }
+
+    if (!phone || phone.length < 10) {
+      this.lookupMessage = '';
+      this.lookupMessageType = 'info';
+      return;
+    }
+
+    this.phoneLookupTimer = setTimeout(() => {
+      this.lookupExistingPlayer(phone);
+    }, 350);
+  }
+
+  lookupExistingPlayer(phone: string) {
+    if (!phone || phone.length < 10) {
+      this.lookupMessage = '';
+      this.lookupMessageType = 'info';
+      return;
+    }
+
+    const match = this.existingPlayers.find((player: any) => {
+      const existingPhone = this.normalizePhone(player.Mobile || player.contactNumber || player.Contact || player.mobile || '');
+      return existingPhone === phone;
+    });
+
+    if (match) {
+      const basicInfo = [
+        match.Name ? `<div><strong>Name:</strong> ${match.Name}</div>` : null,
+        match.FatherName ? `<div><strong>Father:</strong> ${match.FatherName}</div>` : null,
+        match.DOB ? `<div><strong>DOB:</strong> ${match.DOB}</div>` : null,
+        match.Role ? `<div><strong>Role:</strong> ${match.Role}</div>` : null
+      ].filter(Boolean).join('');
+
+      Swal.fire({
+        icon: 'question',
+        title: 'Existing information found',
+        html: `We found an existing profile for this phone number.<br><br><div style="text-align:left; line-height:1.6;">${basicInfo || '<div>No additional details available.</div>'}</div><br>Do you want to use these details?`,
+        showCancelButton: true,
+        confirmButtonText: 'Yes, use it',
+        cancelButtonText: 'No, clear phone',
+        confirmButtonColor: '#0ea5e9',
+        cancelButtonColor: '#ef4444'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.applyExistingPlayer(match);
+          this.lookupMessage = 'Existing profile details were applied.';
+          this.lookupMessageType = 'success';
+        } else {
+          this.playerRegForm = { ...this.playerRegForm, contactNumber: '' };
+          this.lookupMessage = 'Phone number cleared. You can enter a new number or continue with fresh details.';
+          this.lookupMessageType = 'error';
+        }
+      });
+    } else {
+      this.lookupMessage = 'No existing profile found for this number. You can continue with a new registration.';
+      this.lookupMessageType = 'error';
+    }
+  }
+
+  applyExistingPlayer(player: any) {
+    this.playerRegForm = {
+      ...this.playerRegForm,
+      playerName: this.playerRegForm.playerName || player.Name || '',
+      fatherName: this.playerRegForm.fatherName || player.FatherName || '',
+      dob: this.playerRegForm.dob || player.DOB || '',
+      role: this.playerRegForm.role || player.Role || 'Batsman',
+      battingStyle: this.playerRegForm.battingStyle || player.BattingStyle || 'Right-hand bat',
+      bowlingStyle: this.playerRegForm.bowlingStyle || player.BowlingStyle || 'Right-arm medium',
+      jerseySize: this.playerRegForm.jerseySize || player.JerseySize || 'M',
+      photoUrl: this.playerRegForm.photoUrl || this.normalizePhotoUrl(player.PhotoURL),
+      aadharUrl: this.playerRegForm.aadharUrl || this.normalizePhotoUrl(player.AadharURL)
+    };
+
+    if (this.playerRegForm.dob) {
+      this.onDobChange(this.playerRegForm.dob);
+    }
+  }
+
+  private normalizePhotoUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    return url.startsWith('http') ? url : `${environment.apiUrl}${url}`;
+  }
 
   onDobChange(dob: string): void {
     const age = this.calculateAge(dob);

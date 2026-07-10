@@ -94,7 +94,6 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   activeFilter = 'All';
   searchQuery = '';
   currentPage = 1;
-  playersPerPage = 8;
 
   // ─── Gallery ───────────────────────────────────────────────────────────────
   selectedCategory = 'all';
@@ -611,18 +610,12 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
         (p.Team || '').toLowerCase().includes(q)
       );
     }
-    const start = (this.currentPage - 1) * this.playersPerPage;
-    this.filteredPlayers = filtered.slice(start, start + this.playersPerPage);
+     this.filteredPlayers = filtered;
     this._totalFilteredCount = filtered.length;
   }
 
   _totalFilteredCount = 0;
-
-  get totalPages() { return Math.ceil(this._totalFilteredCount / this.playersPerPage); }
-
-  prevPage() { if (this.currentPage > 1) { this.currentPage--; this.applyPlayerFilter(); } }
-  nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.applyPlayerFilter(); } }
-
+ 
   onSearchChange() { this.currentPage = 1; this.applyPlayerFilter(); }
 
   getRoleBadgeClass(role: string) {

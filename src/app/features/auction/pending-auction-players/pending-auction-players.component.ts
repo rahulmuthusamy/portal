@@ -42,12 +42,27 @@ export class PendingAuctionPlayersComponent implements OnInit {
       { key: 'age', label: 'Age', searchable: true },
       { key: 'PlayerRole', label: 'Role', searchable: true },
       { key: 'PlayerContact', label: 'Contact', searchable: true },
-      {key: 'ReceiptPath', label: 'Receipt Path', type: 'link', render: (row: any) => row.ReceiptPath ? `<a href="${environment.apiUrl}${row.ReceiptPath}" target="_blank">View</a>` : 'N/A'},
+      {
+        key: 'createdAt',
+        label: 'Submitted',
+        searchable: true,
+        render: (row: any) =>
+          row.createdAt
+            ? new Date(row.createdAt).toLocaleString('en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+              year: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+            : '—',
+      }, { key: 'ReceiptPath', label: 'Receipt Path', type: 'link', render: (row: any) => row.ReceiptPath ? `<a href="${environment.apiUrl}${row.ReceiptPath}" target="_blank">View</a>` : 'N/A' },
       {
         key: 'actions',
         label: 'Actions',
         actions: [
-          { text: 'View', type: 'View', class: 'btn-outline-primary', icon: 'visibility' }
+          { text: 'View', type: 'View', class: 'btn-outline-primary', icon: 'bi-eye-fill' }
         ]
       }
     ]
@@ -92,7 +107,7 @@ export class PendingAuctionPlayersComponent implements OnInit {
     this.loading.set(true);
     this.onboardingService.getPendingAuctionPlayers().subscribe({
       next: (res: any) => {
-        this.pendingPlayers.set(Array.isArray(res.data) ? res.data.map((item: any) => ({
+        const mapped = Array.isArray(res.data) ? res.data.map((item: any) => ({
           ...item,
           imageUrl: (item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL)
             ? ((item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL).startsWith('http') ? (item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL) : environment.apiUrl + (item.PlayerMaster.PhotoURL || item.PlayerMaster.PhotoURL))
@@ -102,8 +117,15 @@ export class PendingAuctionPlayersComponent implements OnInit {
           PlayerRole: item.PlayerMaster.Role || 'Player',
           PlayerContact: item.PlayerMaster.Mobile,
           ReceiptPath: item.ReceiptPath,
-          AadharURL: item.PlayerMaster.AadharURL ? (item.PlayerMaster.AadharURL.startsWith('http') ? item.PlayerMaster.AadharURL : environment.apiUrl + item.PlayerMaster.AadharURL) : null
-        })) : []);
+          AadharURL: item.PlayerMaster.AadharURL ? (item.PlayerMaster.AadharURL.startsWith('http') ? item.PlayerMaster.AadharURL : environment.apiUrl + item.PlayerMaster.AadharURL) : null,
+          createdAt: item.CreatedAt || item.createdAt
+        })) : [];
+        mapped.sort((a: any, b: any) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        this.pendingPlayers.set(mapped);
         this.loading.set(false);
       },
       error: (err: any) => {

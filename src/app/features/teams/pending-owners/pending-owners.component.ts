@@ -30,7 +30,7 @@ import { environment } from '@environments/environment';
 export class PendingOwnersComponent implements OnInit {
   pendingOwners = signal<any[]>([]);
   loading = signal(true);
-  
+
   @ViewChild('approvalDialog') approvalDialogTemplate!: TemplateRef<any>;
 
   tableConfig: TableConfig = {
@@ -42,10 +42,25 @@ export class PendingOwnersComponent implements OnInit {
       { key: 'TeamName', label: 'Proposed Team Name', searchable: true },
       { key: 'TeamLocation', label: 'Location' },
       {
+        key: 'createdAt',
+        label: 'Submitted',
+        searchable: true,
+        render: (row: any) =>
+          row.createdAt
+            ? new Date(row.createdAt).toLocaleString('en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+              year: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+            : '—',
+      }, {
         key: 'actions',
         label: 'Actions',
         actions: [
-          { text: 'View', type: 'View', class: 'btn-outline-primary', icon: 'visibility' }
+          { text: 'View', type: 'View', class: 'btn-outline-primary', icon: 'bi-eye-fill' }
         ]
       }
     ]
@@ -71,8 +86,14 @@ export class PendingOwnersComponent implements OnInit {
         const mappedData = (res.data || []).map((owner: any) => ({
           ...owner,
           TeamName: owner.Team?.Name || '',
-          TeamLocation: owner.Team?.Location || '-'
+          TeamLocation: owner.Team?.Location || '-',
+          createdAt: owner.CreatedAt || owner.createdAt
         }));
+        mappedData.sort((a: any, b: any) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
         this.pendingOwners.set(mappedData);
         this.loading.set(false);
       },
@@ -97,10 +118,10 @@ export class PendingOwnersComponent implements OnInit {
   }
 
   verifyOwner(ownerId: number, status: 'approved' | 'rejected') {
-    const confirmMessage = status === 'approved' ? 
-      'Are you sure you want to approve this team?' : 
+    const confirmMessage = status === 'approved' ?
+      'Are you sure you want to approve this team?' :
       'Are you sure you want to REJECT this team?';
-      
+
     if (!confirm(confirmMessage)) return;
 
     this.onboardingService.verifyOwner(ownerId, status).subscribe({

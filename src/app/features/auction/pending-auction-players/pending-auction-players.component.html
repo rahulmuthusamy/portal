@@ -53,6 +53,10 @@
                 <div class="col-sm-4 text-muted">Contact</div>
                 <div class="col-sm-8">{{ data.PlayerMaster.Mobile }}</div>
             </div>
+            <div class="row" *ngIf="data.createdAt">
+                <div class="col-sm-4 text-muted">Submitted On</div>
+                <div class="col-sm-8 fw-bold">{{ data.createdAt | date:'medium' }}</div>
+            </div>
             
             <div class="row mt-2">
                 <div class="col-sm-4 text-muted">Aadhar Document</div>

@@ -147,15 +147,24 @@
               <label class="form-label">Mobile Number <span class="text-red-500">*</span></label>
 
               <input type="tel" appPhoneNumber [(ngModel)]="playerRegForm.contactNumber" name="contactNumber"
-                #mobile="ngModel" required maxlength="10" class="form-input" placeholder="10-digit number" />
+                #mobile="ngModel" required maxlength="10" class="form-input" placeholder="10-digit number"
+                (ngModelChange)="onContactNumberChange($event)" />
 
-              <div *ngIf="mobile.errors?.['required'] && (mobile.dirty || mobile.touched)"
+              <div *ngIf="lookupMessage" class="mt-2 text-sm" [ngClass]="{
+                'text-emerald-600': lookupMessageType === 'success',
+                'text-amber-600': lookupMessageType === 'info',
+                'text-red-600': lookupMessageType === 'error'
+              }">
+                {{ lookupMessage }}
+              </div>
+
+              <div *ngIf="mobile?.errors?.['required'] && (mobile?.dirty || mobile?.touched)"
                 class="text-red-500 text-sm mt-1">
                 Mobile number is required.
               </div>
 
               <div
-                *ngIf="mobile.errors?.['invalidPhoneNumber'] && !mobile.errors?.['required'] && (mobile.dirty || mobile.touched)"
+                *ngIf="mobile?.errors?.['invalidPhoneNumber'] && !mobile?.errors?.['required'] && (mobile?.dirty || mobile?.touched)"
                 class="text-red-500 text-sm mt-1">
                 Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.
               </div>
