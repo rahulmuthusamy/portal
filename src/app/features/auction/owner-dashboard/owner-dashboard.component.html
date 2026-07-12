@@ -1,62 +1,177 @@
-<div class="owner-dashboard">
-  <div class="dashboard-header">
-    <h1>Owner Dashboard</h1>
-    <button class="logout-btn" (click)="logout()">Logout</button>
+<div class="dashboard-wrapper">
+  <!-- Real-time notification banner -->
+  <div class="realtime-notification" *ngIf="notification">
+    <span class="material-icons me-2">notifications_active</span>
+    {{ notification }}
   </div>
 
-  <div class="loading" *ngIf="loading">Loading dashboard...</div>
+  <!-- Top Navbar -->
+  <div class="dashboard-navbar d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="nav-icon-box">
+        <span class="material-icons text-gold">dashboard</span>
+      </div>
+      <h1 class="m-0 text-white fw-bold">Owner Dashboard</h1>
+    </div>
+    <button class="action-btn logout-btn d-flex align-items-center gap-2" (click)="logout()">
+      <span class="material-icons">logout</span> Logout
+    </button>
+  </div>
 
-  <div class="error" *ngIf="error">{{ error }}</div>
+  <div class="loading-state d-flex flex-column align-items-center justify-content-center p-5 text-white" *ngIf="loading">
+    <div class="spinner-border text-gold mb-3" style="width: 3rem; height: 3rem;"></div>
+    <h4>Loading your franchise...</h4>
+  </div>
 
-  <div class="dashboard-content" *ngIf="!loading && !error">
-    <section class="card owner-info" *ngIf="ownerData">
-      <h2>Your Profile</h2>
-      <p><strong>Name:</strong> {{ ownerData.fullName }}</p>
-      <p><strong>Contact:</strong> {{ ownerData.contactNumber }}</p>
-      <p><strong>Verification:</strong> {{ ownerData.verificationStatus }}</p>
-      <p><strong>Payment:</strong> {{ ownerData.feePaymentStatus }}</p>
-    </section>
-    <section class="card owner-info" *ngIf="!ownerData && !teamData && !auctionSession">
-      <h2>Welcome!</h2>
-      <p>Please complete your team registration to participate in the auction.</p>
-    </section>
+  <div class="error-state alert alert-danger glass-alert" *ngIf="error">
+    <span class="material-icons">error_outline</span> {{ error }}
+  </div>
 
-    <section class="card team-info" *ngIf="teamData">
-      <h2>{{ teamData.name }}</h2>
-      <img [src]="getTeamLogo(teamData.logoUrl)" [alt]="teamData.name" class="team-logo">
-      <p><strong>Location:</strong> {{ teamData.location }}</p>
-      <p *ngIf="teamData.slogan"><strong>Slogan:</strong> {{ teamData.slogan }}</p>
-    </section>
+  <div class="dashboard-content container-fluid p-0" *ngIf="!loading && !error">
+    
+    <!-- Welcome/Pending State -->
+    <div class="glass-card welcome-card text-center p-5 mb-4" *ngIf="!ownerData && !teamData && !auctionSession">
+      <span class="material-icons huge-icon text-gold mb-3">waving_hand</span>
+      <h2 class="text-white fw-bold mb-3">Welcome to the Franchise Portal!</h2>
+      <p class="text-white-50 lead mb-4">Please complete your team registration and wait for admin approval to participate in the auction.</p>
+    </div>
 
-    <section class="card auction-info" *ngIf="auctionSession">
-      <h2>Auction: {{ auctionSession.name }}</h2>
-      <p><strong>Status:</strong> {{ auctionSession.status }}</p>
-      <p><strong>Max Budget:</strong> ₹{{ auctionSession.maxBudget | number }}</p>
-      <p><strong>Max Players:</strong> {{ auctionSession.maxPlayersPerTeam }}</p>
-      <a routerLink="/auction-live" class="cta-btn">Enter Auction Room</a>
-    </section>
-
-    <section class="card squad-info" *ngIf="squad.length">
-      <h2>Your Squad ({{ squad.length }})</h2>
-      <div class="squad-list">
-        <div class="squad-player" *ngFor="let p of squad">
-          <img [src]="getPlayerPhoto(p.photo)" [alt]="p.name" class="player-photo">
-          <div class="player-details">
-            <span class="player-name">{{ p.name }}</span>
-            <span class="player-role">{{ p.role }}</span>
-            <span class="player-price">₹{{ p.soldPrice | number }}</span>
+    <!-- Main Grid Layout -->
+    <div class="row g-4" *ngIf="ownerData || teamData">
+      
+      <!-- Left Column: Profile & Team -->
+      <div class="col-lg-4 d-flex flex-column gap-4">
+        
+        <!-- Team Profile Card -->
+        <div class="glass-card team-card text-center p-4" *ngIf="teamData">
+          <div class="team-logo-wrapper mx-auto mb-3">
+            <img [src]="getTeamLogo(teamData.logoUrl)" [alt]="teamData.name" class="team-logo">
+          </div>
+          <h2 class="text-white fw-bolder mb-1">{{ teamData.name }}</h2>
+          <p class="text-white-50 mb-3"><span class="material-icons small-icon">location_on</span> {{ teamData.location }}</p>
+          <div class="slogan-box px-3 py-2" *ngIf="teamData.slogan">
+            <span class="text-gold fst-italic">"{{ teamData.slogan }}"</span>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section class="card player-info" *ngIf="playerProfile">
-      <h2>Your Player Profile</h2>
-      <img [src]="getPlayerPhoto(playerProfile.photo)" [alt]="playerProfile.name" class="player-avatar">
-      <p><strong>Name:</strong> {{ playerProfile.name }}</p>
-      <p><strong>Role:</strong> {{ playerProfile.role }}</p>
-      <p *ngIf="playerProfile.battingStyle"><strong>Batting:</strong> {{ playerProfile.battingStyle }}</p>
-      <p *ngIf="playerProfile.bowlingStyle"><strong>Bowling:</strong> {{ playerProfile.bowlingStyle }}</p>
-    </section>
+        <!-- Owner Profile Card -->
+        <div class="glass-card owner-card p-4" *ngIf="ownerData">
+          <h4 class="text-white d-flex align-items-center gap-2 mb-4 border-bottom border-secondary pb-2">
+            <span class="material-icons text-gold">person</span> Franchise Owner
+          </h4>
+          <div class="info-row mb-3">
+            <span class="label text-white-50">Name</span>
+            <span class="value text-white fw-bold">{{ ownerData.fullName }}</span>
+          </div>
+          <div class="info-row mb-3">
+            <span class="label text-white-50">Contact</span>
+            <span class="value text-white fw-bold">{{ ownerData.contactNumber }}</span>
+          </div>
+          
+          <div class="status-box mt-4 p-3 rounded">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-white-50">Verification</span>
+              <span class="badge" [ngClass]="ownerData.verificationStatus === 'approved' ? 'bg-success' : 'bg-warning text-dark'">
+                {{ ownerData.verificationStatus | uppercase }}
+              </span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-white-50">Fee Payment</span>
+              <span class="badge" [ngClass]="ownerData.feePaymentStatus === 'paid' ? 'bg-success' : 'bg-warning text-dark'">
+                {{ ownerData.feePaymentStatus | uppercase }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Auction & Squad -->
+      <div class="col-lg-8 d-flex flex-column gap-4">
+        
+        <!-- Auction Overview Card -->
+        <div class="glass-card auction-card p-4" *ngIf="auctionSession">
+          <div class="d-flex justify-content-between align-items-start mb-4 border-bottom border-secondary pb-3">
+            <div>
+              <h3 class="text-white fw-bolder m-0">{{ auctionSession.name }}</h3>
+              <span class="text-white-50 d-flex align-items-center gap-1 mt-1">
+                <span class="material-icons fs-6">circle</span> Status: 
+                <span class="text-uppercase fw-bold" [ngClass]="auctionSession.status === 'live' ? 'text-danger' : 'text-gold'">
+                  {{ auctionSession.status }}
+                </span>
+              </span>
+            </div>
+            <a *ngIf="ownerData?.verificationStatus === 'approved' && ownerData?.feePaymentStatus === 'paid' && auctionTeam && auctionSession?.status === 'live'" 
+               routerLink="/auction-live" 
+               class="action-btn enter-auction-btn d-flex align-items-center gap-2">
+              <span class="material-icons">gavel</span> ENTER AUCTION
+            </a>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="stat-box p-3 rounded text-center h-100">
+                <span class="d-block text-white-50 small text-uppercase mb-1">Max Budget</span>
+                <span class="d-block text-white fs-4 fw-bold">₹{{ (auctionSession.maxBudget || 0).toLocaleString() }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-box p-3 rounded text-center h-100">
+                <span class="d-block text-white-50 small text-uppercase mb-1">Remaining Budget</span>
+                <span class="d-block text-gold fs-4 fw-bolder">₹{{ (auctionTeam?.remainingBudget ?? auctionSession.maxBudget ?? 0).toLocaleString() }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-box p-3 rounded text-center h-100">
+                <span class="d-block text-white-50 small text-uppercase mb-1">Squad Size</span>
+                <span class="d-block text-white fs-4 fw-bold">
+                  {{ auctionTeam?.playersCount || 0 }} <span class="text-white-50 fs-6">/ {{ auctionSession.maxPlayersPerTeam }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="alert glass-alert mt-4 mb-0" *ngIf="ownerData?.verificationStatus !== 'approved' || ownerData?.feePaymentStatus !== 'paid'">
+            <span class="material-icons text-warning me-2">info</span> 
+            <span class="text-white">You must be fully approved and paid to enter the live auction room.</span>
+          </div>
+          <div class="alert glass-alert mt-4 mb-0" *ngIf="ownerData?.verificationStatus === 'approved' && ownerData?.feePaymentStatus === 'paid' && !auctionTeam">
+             <span class="material-icons text-warning me-2">hourglass_empty</span>
+             <span class="text-white">Waiting for admin to add your franchise to this auction session.</span>
+          </div>
+          <div class="alert glass-alert mt-4 mb-0" *ngIf="ownerData?.verificationStatus === 'approved' && ownerData?.feePaymentStatus === 'paid' && auctionTeam && auctionSession?.status !== 'live'">
+             <span class="material-icons text-info me-2">schedule</span>
+             <span class="text-white">The auction room will open here once the admin starts the session.</span>
+          </div>
+        </div>
+
+        <!-- Squad Card -->
+        <div class="glass-card squad-card p-4 flex-grow-1 d-flex flex-column" *ngIf="squad.length > 0">
+          <h4 class="text-white d-flex align-items-center gap-2 mb-4 border-bottom border-secondary pb-2">
+            <span class="material-icons text-gold">groups</span> My Squad ({{ squad.length }})
+          </h4>
+          
+          <div class="squad-grid row g-3">
+            <div class="col-md-6 col-xl-4" *ngFor="let p of squad">
+              <div class="player-card glass-item p-3 rounded d-flex flex-column align-items-center text-center h-100">
+                <img [src]="getPlayerPhoto(p.photo)" [alt]="p.name" class="player-photo mb-2">
+                <h5 class="text-white fw-bold m-0 mb-1">{{ p.name }}</h5>
+                <span class="text-white-50 small mb-2">{{ p.role }}</span>
+                <div class="mt-auto pt-2 border-top border-secondary w-100">
+                  <span class="text-gold fw-bolder">₹{{ (p.soldPrice || 0).toLocaleString() }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass-card p-5 text-center text-white-50" *ngIf="auctionTeam && squad.length === 0">
+          <span class="material-icons huge-icon mb-3 opacity-50">group_off</span>
+          <h4>Your squad is currently empty.</h4>
+          <p>Join the auction and win some bids to build your team!</p>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>

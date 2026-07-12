@@ -55,9 +55,9 @@ export class AuctionSessionDetailComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      if (params['id']) {
-        this.sessionId.set(+params['id']);
+    this.route.parent?.params.subscribe(params => {
+      if (params['sessionId']) {
+        this.sessionId.set(+params['sessionId']);
         this.loadAllData();
       }
     });
@@ -161,11 +161,11 @@ export class AuctionSessionDetailComponent implements OnInit {
     this.auctionMgt.startAuction(this.sessionId()!).subscribe({
       next: () => {
         this.snackBar.open('Auction Started!', 'Success', { duration: 3000 });
-        this.router.navigate(['/kkk/auction-room'], { queryParams: { id: this.sessionId() } });
+        this.router.navigate(['/workspace', this.sessionId(), 'live-room']);
       },
       error: (err: any) => {
         if (err.error?.message === 'Auction is already live') {
-          this.router.navigate(['/kkk/auction-room'], { queryParams: { id: this.sessionId() } });
+          this.router.navigate(['/workspace', this.sessionId(), 'live-room']);
         } else {
           this.snackBar.open(err.error?.message || 'Error starting auction', 'Error', { duration: 3000 });
         }

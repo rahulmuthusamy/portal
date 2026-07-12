@@ -1,0 +1,46 @@
+/* Main layout */
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 256px;
+  background: #0f172a !important;
+  border-right: none !important;
+}
+
+mat-sidenav-content {
+  background-color: #f0f9ff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  padding: 2rem 2.5rem;
+  flex: 1;
+  color: #1e293b;
+  font-family: 'Inter', sans-serif;
+  overflow: auto;
+}
+
+/* ── Dark room mode (live-room route): route-driven class on :host ── */
+:host.dark-room-mode {
+  mat-sidenav-content {
+    background: radial-gradient(circle at 10% 20%, rgb(14, 26, 64) 0%, rgb(4, 8, 20) 90%) !important;
+    color: white !important;
+  }
+
+  .main-content {
+    padding: 0 !important;
+    background: transparent !important;
+    color: white !important;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidenav { width: 280px; }
+  .main-content { padding: 1rem; }
+  :host.dark-room-mode .main-content { padding: 0 !important; }
+}

@@ -4,6 +4,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 import { SocketService } from '@core/services/socket.service';
 import { OnboardingService } from '@core/services/onboarding.service';
 import { AuctionManagementService } from '../services/auction-management.service';
@@ -13,7 +15,7 @@ import { environment } from '@environments/environment';
 @Component({
     selector: 'app-owner-auction-live',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, MatProgressSpinnerModule, MatButtonModule],
     templateUrl: './owner-auction-live.component.html',
     styleUrl: './owner-auction-live.component.scss'
 })
@@ -39,6 +41,7 @@ export class OwnerAuctionLiveComponent implements OnInit, OnDestroy {
     bidHistory = signal<any[]>([]);
     allTeams = signal<any[]>([]);
     mySquad = signal<any[]>([]);
+    allPlayers = signal<any[]>([]);
     myTeamId = signal<number | null>(null);
     notification = signal<string | null>(null);
 
@@ -80,7 +83,7 @@ export class OwnerAuctionLiveComponent implements OnInit, OnDestroy {
         this.onboardingService.getOwnerDashboard().subscribe({
             next: (res: any) => {
                 const d = res?.data || {};
-                this.myTeamId.set(d.team?.id ?? null);
+                this.myTeamId.set(d.team?.teamId ?? null);
 
                 if (!this.myTeamId()) {
                     this.error.set('Your account is not linked to a team. Please contact the admin.');
@@ -122,14 +125,32 @@ export class OwnerAuctionLiveComponent implements OnInit, OnDestroy {
     }
 
     setupSocket(sessionId: number) {
-        // Connect to the shared /auction namespace (same as admin)
+        // Connect to the shared /auction namespace
         this.socketService.connect('/auction');
+
+        // Handle connection errors (bad token, server down, etc.)
+        this.socketService.onConnectError('/auction').subscribe((err: any) => {
+            this.error.set(`Socket connection failed: ${err.message || 'Unknown error'}. Please refresh.`);
+            this.loading.set(false);
+        });
+
+        // join-session is emitted inside emit() only after socket.connected is true
         this.socketService.emit('/auction', 'join-session', { sessionId });
+
+        // Safety timeout: if session-state is never received in 12s, show error
+        const loadTimeout = setTimeout(() => {
+            if (this.loading()) {
+                this.error.set('Connection timed out. Please check the backend is running and refresh.');
+                this.loading.set(false);
+            }
+        }, 12000);
 
         // Full state on join
         this.socketService.on('/auction', 'session-state').subscribe((state: any) => {
+            clearTimeout(loadTimeout);
             this.sessionInfo.set(state.session);
             this.allTeams.set(state.teams ?? []);
+            this.allPlayers.set(state.players ?? []);
             this.currentPlayer.set(state.currentPlayer ?? null);
             this.secondsLeft.set(state.secondsLeft ?? 30);
 

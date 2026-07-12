@@ -16,6 +16,10 @@ export class AuctionSessionService extends BaseCrudService<Player> {
         return this.api.get('/sessions/upcoming');
     }
 
+    getLiveAuctions() {
+        return this.api.get('/auction/sessions/live'); // NEW: Hits the comprehensive auction routes
+    }
+
     /** Create session with optional UPI QR scanner image file */
     createSessionWithFile(data: any, qrFile?: File | null): Observable<any> {
         const formData = new FormData();

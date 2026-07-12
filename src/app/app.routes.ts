@@ -22,7 +22,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auction/owner-auction-live/owner-auction-live.component').then(m => m.OwnerAuctionLiveComponent),
         canActivate: [authGuard],
     },
-    // ── Broadcast System (All standalone, no layout wrapper) ──
+    // ── Broadcast System (All standalone, no layout wrapper, no auth guard) ──
+    {
+        path: 'auction-board/:sessionId',
+        loadComponent: () => import('./features/auction/auction-board/auction-board.component').then(m => m.AuctionBoardComponent),
+    },
     // Scorecard Overlay for OBS: http://localhost:4200/overlay/{matchId}
     {
         path: 'overlay/:id',
@@ -63,17 +67,55 @@ export const routes: Routes = [
     },
 
     {
+        path: 'workspace/:sessionId',
+        loadComponent: () => import('./layouts/workspace-layout/workspace-layout.component').then(m => m.WorkspaceLayoutComponent),
+        canActivate: [authGuard],
+        children: [
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+            {
+                path: 'dashboard',
+                data: { breadcrumb: 'Workspace Dashboard' },
+                loadComponent: () => import('@features/auction/auction-session-detail/auction-session-detail.component').then(m => m.AuctionSessionDetailComponent),
+            },
+            {
+                path: 'players',
+                data: { breadcrumb: 'Registered Players' },
+                loadComponent: () => import('@features/auction/auction-player/auction-player.component').then(m => m.AuctionPlayerComponent),
+            },
+            {
+                path: 'teams',
+                data: { breadcrumb: 'Registered Teams' },
+                loadComponent: () => import('@features/teams/teams/teams.component').then(m => m.TeamsComponent),
+            },
+            {
+                path: 'live-room',
+                data: { breadcrumb: 'Live Auction Room' },
+                loadComponent: () => import('@features/auction/auction-room/auction-room.component').then(m => m.AuctionRoomComponent),
+            },
+            {
+                path: 'pending-players',
+                data: { breadcrumb: 'Pending Players' },
+                loadComponent: () => import('@features/auction/pending-auction-players/pending-auction-players.component').then(m => m.PendingAuctionPlayersComponent),
+            },
+            {
+                path: 'franchise-players',
+                data: { breadcrumb: 'Pending Registrations' },
+                loadComponent: () => import('@features/teams/pending-owners/pending-owners.component').then(m => m.PendingOwnersComponent),
+            }
+        ]
+    },
+    {
         path: 'kkk',
         component: MainLayoutComponent,
         canActivate: [authGuard],
         children: [
             // --- Defaults ---
-            { path: '', redirectTo: 'players-list', pathMatch: 'full' },
+            { path: '', redirectTo: 'auction-session-list', pathMatch: 'full' }, // Redirect to sessions list first
 
-            // --- Players Management ---
+            // --- Global Players Management ---
             {
                 path: 'players-list',
-                data: { breadcrumb: 'Players List' },
+                data: { breadcrumb: 'All Global Players' },
                 loadComponent: () => import('@features/players/player-registration/player-registration.component').then(m => m.PlayerRegistrationComponent),
             },
             {
@@ -87,63 +129,29 @@ export const routes: Routes = [
                 loadComponent: () => import('@features/players/player-registration-form/player-registration-form.component').then(m => m.PlayerRegistrationFormComponent),
             },
 
-            // --- Auction Management ---
+            // --- Auction Session Management (Global View) ---
             {
                 path: 'auction-session-list',
                 data: { breadcrumb: 'Auction Sessions' },
                 loadComponent: () => import('@features/auction/auction-session/auction-session.component').then(m => m.AuctionSessionComponent),
             },
             {
-                path: 'auction-player-register',
-                data: { breadcrumb: 'Register Player for Auction' },
-                loadComponent: () => import('@features/auction/auction-player/auction-player.component').then(m => m.AuctionPlayerComponent),
-            },
-            {
                 path: 'auction-session-form',
                 data: { breadcrumb: 'New Auction Session' },
                 loadComponent: () => import('@features/auction/auction-session-form/auction-session-form.component').then(m => m.AuctionSessionFormComponent),
             },
-            {
-                path: 'auction-session-detail/:id',
-                data: { breadcrumb: 'Manage Session' },
-                loadComponent: () => import('@features/auction/auction-session-detail/auction-session-detail.component').then(m => m.AuctionSessionDetailComponent),
-            },
-            {
-                path: 'auction-room',
-                data: { breadcrumb: 'Live Auction Room' },
-                loadComponent: () => import('@features/auction/auction-room/auction-room.component').then(m => m.AuctionRoomComponent),
-            },
-            {
-                path: 'auction-report/:id',
-                data: { breadcrumb: 'Auction Report' },
-                loadComponent: () => import('@features/auction/auction-report/auction-report.component').then(m => m.AuctionReportComponent),
-            },
+            // Note: Session Details, Room, Players, etc., are now in the Workspace Layout
 
-            // --- Teams Management ---
+            // --- Global Teams Management ---
             {
                 path: 'teams-list',
-                data: { breadcrumb: 'Teams' },
+                data: { breadcrumb: 'All Global Teams' },
                 loadComponent: () => import('@features/teams/teams/teams.component').then(m => m.TeamsComponent),
-            },
-            {
-                path: 'pending-owners',
-                data: { breadcrumb: 'Pending Registrations' },
-                loadComponent: () => import('@features/teams/pending-owners/pending-owners.component').then(m => m.PendingOwnersComponent),
-            },
-            {
-                path: 'pending-auction-players',
-                data: { breadcrumb: 'Pending Players' },
-                loadComponent: () => import('@features/auction/pending-auction-players/pending-auction-players.component').then(m => m.PendingAuctionPlayersComponent),
-            },
+            }, 
             {
                 path: 'teams-form',
                 data: { breadcrumb: 'Team Form' },
                 loadComponent: () => import('@features/teams/teams-form/teams-form.component').then(m => m.TeamsFormComponent),
-            },
-            {
-                path: 'team-dashboard',
-                data: { breadcrumb: 'Team Dashboard' },
-                loadComponent: () => import('@features/auction/team/team-dashboard/team-dashboard.component').then(m => m.TeamDashboardComponent),
             },
 
             // --- Settings & Gallery ---

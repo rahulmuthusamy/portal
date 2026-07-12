@@ -23,6 +23,10 @@ export class AuctionManagementService {
         return this.api.post(`${this.endpoint}/sessions/${sessionId}/start`, {});
     }
 
+    pauseAuction(sessionId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/sessions/${sessionId}/pause`, {});
+    }
+
     completeAuction(sessionId: number): Observable<any> {
         return this.api.post(`${this.endpoint}/sessions/${sessionId}/complete`, {});
     }
@@ -68,6 +72,10 @@ export class AuctionManagementService {
 
     markUnsold(sessionId: number, playerId: number): Observable<any> {
         return this.api.post(`${this.endpoint}/sessions/${sessionId}/unsold`, { playerId });
+    }
+
+    requeueUnsoldPlayers(sessionId: number): Observable<any> {
+        return this.api.post(`${this.endpoint}/sessions/${sessionId}/requeue-unsold`, {});
     }
 
     // ── Results ──

@@ -1,0 +1,277 @@
+<div class="auction-board-wrapper">
+
+  <div *ngIf="loading()" class="board-loading">
+    <div class="spinner"></div>
+    <h2>Connecting to Live Auction...</h2>
+  </div>
+
+  <div *ngIf="error()" class="board-error">
+    <mat-icon>error_outline</mat-icon>
+    <h2>Connection Lost</h2>
+    <p>{{ error() }}</p>
+    <button class="reconnect-btn" (click)="setupSocket(sessionId()!)">Reconnect</button>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error()">
+
+    <!-- HEADER -->
+    <header class="board-header">
+      <div class="header-top">
+        <div class="title-block">
+          <h1 class="session-name">{{ sessionInfo()?.name || 'Auction' }}</h1>
+          <div class="live-badge" [class.ended]="isCompleted()">
+            <span class="live-dot"></span> {{ isCompleted() ? 'COMPLETED' : 'LIVE' }}
+          </div>
+        </div>
+
+        <div class="search-box">
+          <mat-icon>search</mat-icon>
+          <input
+            type="text"
+            placeholder="Search Players..."
+            [value]="searchQuery()"
+            (input)="onSearchInput($any($event.target).value)" />
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span class="stat-value">{{ allTeams().length }}</span><span class="stat-label">Teams</span></div>
+          <div class="stat"><span class="stat-value">{{ allPlayers().length }}</span><span class="stat-label">Players</span></div>
+        </div>
+      </div>
+
+      <!-- Functional tabs -->
+      <nav class="board-tabs">
+        <span class="tab" [class.active]="activeTab() === 'live'" (click)="setTab('live')">Live</span>
+        <span class="tab" [class.active]="activeTab() === 'completed'" (click)="setTab('completed')">Completed</span>
+        <span class="tab" [class.active]="activeTab() === 'players'" (click)="setTab('players')">Players</span>
+        <span class="tab" [class.active]="activeTab() === 'teams'" (click)="setTab('teams')">Teams</span>
+      </nav>
+    </header>
+
+    <!-- ============ LIVE TAB ============ -->
+    <div class="board-main" *ngIf="activeTab() === 'live'">
+
+      <!-- UPCOMING: only while the auction is still running -->
+      <aside class="sidebar available-sidebar" *ngIf="!isCompleted()">
+        <div class="sidebar-header">
+          <h3>Upcoming</h3>
+          <span class="count-pill">{{ availablePlayers.length }}</span>
+        </div>
+        <div class="sidebar-scroll">
+          <div *ngFor="let p of availablePlayers" class="player-row" [class.is-live]="p.status === 'live'">
+            <img [src]="p.photo || 'assets/images/default-avatar.png'" alt="" class="row-avatar">
+            <div class="row-info">
+              <div class="row-name">{{ p.name }}</div>
+              <div class="row-role">{{ p.role }}<span *ngIf="p.country"> · {{ p.country }}</span></div>
+            </div>
+            <div class="row-price">{{ formatPrice(p.basePrice) }}</div>
+          </div>
+          <div *ngIf="availablePlayers.length === 0" class="empty-state">No players match your search</div>
+        </div>
+      </aside>
+
+      <!-- SPOTLIGHT: current bidding, or a completed banner -->
+      <main class="spotlight">
+        <ng-container *ngIf="!isCompleted() && currentPlayer(); else completedOrWaiting">
+          <div class="spotlight-card" [ngClass]="currentPlayer().status">
+
+            <div class="status-badge sold" *ngIf="currentPlayer().status === 'sold'">SOLD</div>
+            <div class="status-badge unsold" *ngIf="currentPlayer().status === 'unsold'">UNSOLD</div>
+
+            <div class="player-photo-wrapper">
+              <img [src]="currentPlayer().photo || 'assets/images/default-avatar.png'" class="hero-photo" alt="Player">
+            </div>
+
+            <h2 class="hero-name">{{ currentPlayer().name }}</h2>
+            <div class="hero-role">
+              {{ currentPlayer().role }}
+              <span *ngIf="currentPlayer().country"> · {{ currentPlayer().country }}</span>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat-pill" *ngIf="currentPlayer().battingStyle">{{ currentPlayer().battingStyle }}</div>
+              <div class="stat-pill" *ngIf="currentPlayer().bowlingStyle">{{ currentPlayer().bowlingStyle }}</div>
+              <div class="stat-pill captain" *ngIf="currentPlayer().canCaptain">Captain</div>
+            </div>
+
+            <div class="bid-arena">
+              <div class="base-price-row">Base Price <span>{{ formatPrice(currentPlayer().basePrice) }}</span></div>
+
+              <div class="current-bid-box" [class.has-bid]="currentPlayer().highestBidTeamId">
+                <div class="bid-label">Current Bid</div>
+                <div class="bid-amount">{{ formatPrice(currentPlayer().currentBid) }}</div>
+
+                <div class="highest-bidder" *ngIf="currentPlayer().highestBidTeamId">
+                  <span class="team-badge">
+                    <img *ngIf="getTeamLogo(currentPlayer().highestBidTeamId) as logo" [src]="logo" class="team-logo" alt="">
+                    {{ getTeamName(currentPlayer().highestBidTeamId) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timer-container" *ngIf="currentPlayer().status === 'live'">
+              <div class="timer-text">{{ secondsLeft() }}s</div>
+              <div class="timer-bar">
+                <div class="timer-fill" [style.width.%]="(secondsLeft() / 30) * 100" [class.danger]="secondsLeft() <= 10"></div>
+              </div>
+            </div>
+
+          </div>
+        </ng-container>
+
+        <ng-template #completedOrWaiting>
+          <div class="waiting-state" *ngIf="isCompleted(); else noPlayer">
+            <mat-icon>check_circle</mat-icon>
+            <h2>Auction completed</h2>
+            <p>Check the Completed tab for final results.</p>
+          </div>
+          <ng-template #noPlayer>
+            <div class="waiting-state">
+              <mat-icon>hourglass_empty</mat-icon>
+              <h2>Waiting for next player...</h2>
+            </div>
+          </ng-template>
+        </ng-template>
+      </main>
+
+      <!-- SOLD: always relevant, live or completed -->
+      <aside class="sidebar sold-sidebar">
+        <div class="sidebar-header">
+          <h3>Sold</h3>
+          <span class="count-pill sold-count">{{ soldPlayers.length }}</span>
+        </div>
+        <div class="sidebar-scroll">
+          <div *ngFor="let p of soldPlayers" class="player-row sold-row">
+            <img [src]="p.photo || 'assets/images/default-avatar.png'" alt="" class="row-avatar">
+            <div class="row-info">
+              <div class="row-name">{{ p.name }}</div>
+              <div class="row-sold-to">
+                <img *ngIf="getTeamLogo(p.highestBidTeamId) as logo" [src]="logo" class="team-logo tiny" alt="">
+                {{ getTeamName(p.highestBidTeamId) }}
+              </div>
+            </div>
+            <div class="row-price sold-price">{{ formatPrice(p.currentBid) }}</div>
+          </div>
+          <div *ngIf="soldPlayers.length === 0" class="empty-state">No players sold yet</div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Unsold ticker only makes sense while live; completed players are on the Completed tab -->
+    <footer class="unsold-footer" *ngIf="activeTab() === 'live' && !isCompleted() && unsoldPlayers.length > 0">
+      <div class="unsold-label">UNSOLD</div>
+      <div class="unsold-ticker">
+        <div class="ticker-content">
+          <span *ngFor="let p of unsoldPlayers" class="unsold-item">
+            {{ p.name }} <span class="unsold-price">({{ formatPrice(p.basePrice) }})</span>
+          </span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ============ COMPLETED TAB ============ -->
+    <div class="table-view" *ngIf="activeTab() === 'completed'">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Status</th>
+            <th>Base Price</th>
+            <th>Final Price</th>
+            <th>Team</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of completedPlayers">
+            <td>
+              <div class="player-cell">
+                <img [src]="p.photo || 'assets/images/default-avatar.png'" alt="" class="table-avatar">
+                <div>
+                  <div class="player-cell-name">{{ p.name }}</div>
+                  <div class="player-cell-sub">{{ p.role }}<span *ngIf="p.country"> · {{ p.country }}</span></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill" [ngClass]="p.status">{{ statusLabel(p.status) }}</span>
+            </td>
+            <td>{{ formatPrice(p.basePrice) }}</td>
+            <td>{{ p.status === 'sold' || p.status === 'traded' ? formatPrice(p.finalPrice ?? p.currentBid) : '--' }}</td>
+            <td>
+              <div class="team-cell" *ngIf="p.highestBidTeamId; else noTeam">
+                <img *ngIf="getTeamLogo(p.highestBidTeamId) as logo" [src]="logo" class="team-logo" alt="">
+                {{ getTeamName(p.highestBidTeamId) }}
+              </div>
+              <ng-template #noTeam>--</ng-template>
+            </td>
+          </tr>
+          <tr *ngIf="completedPlayers.length === 0">
+            <td colspan="5" class="empty-state">No completed results yet</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============ PLAYERS TAB ============ -->
+    <div class="table-view" *ngIf="activeTab() === 'players'">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Base Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of playersList">
+            <td>
+              <div class="player-cell">
+                <img [src]="p.photo || 'assets/images/default-avatar.png'" alt="" class="table-avatar">
+                <div>
+                  <div class="player-cell-name">{{ p.name }}</div>
+                  <div class="player-cell-sub">{{ p.role }}<span *ngIf="p.country"> · {{ p.country }}</span></div>
+                </div>
+              </div>
+            </td>
+            <td>{{ formatPrice(p.basePrice) }}</td>
+          </tr>
+          <tr *ngIf="playersList.length === 0">
+            <td colspan="2" class="empty-state">No players match your search</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============ TEAMS TAB ============ -->
+    <div class="table-view" *ngIf="activeTab() === 'teams'">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Spent</th>
+            <th>Remaining</th>
+            <th>Players</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of allTeams()">
+            <td>
+              <div class="team-cell">
+                <img *ngIf="t.logo" [src]="t.logo" class="team-logo" alt="">
+                {{ t.name }}
+              </div>
+            </td>
+            <td>{{ formatPrice(t.budget - t.remainingBudget) }}</td>
+            <td>{{ formatPrice(t.remainingBudget) }}</td>
+            <td>{{ t.playersCount }} / 15</td>
+          </tr>
+          <tr *ngIf="allTeams().length === 0">
+            <td colspan="4" class="empty-state">No teams found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </ng-container>
+</div>

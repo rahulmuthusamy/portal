@@ -1,23 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 // ─── Design Tokens ───
-$bg-deep: #06080f;
-$bg-surface: #0c1021;
-$bg-card: #111827;
-$bg-glass: rgba(17, 24, 39, 0.65);
-$border: rgba(99, 102, 241, 0.12);
-$border-hover: rgba(99, 102, 241, 0.3);
-$text-primary: #f1f5f9;
-$text-secondary: #94a3b8;
-$text-muted: #64748b;
-$accent: #6366f1;
-$accent-light: #818cf8;
-$green: #10b981;
-$green-dark: #059669;
+$bg-deep: #dad7ee;
+$bg-surface: #0a0a1a;
+$bg-card: #121222;
+$bg-glass: rgba(22, 22, 34, 0.65);
+$border: rgba(139, 92, 246, 0.12);
+$border-hover: rgba(168, 85, 247, 0.3);
+$text-primary: #f8fafc;
+$text-secondary: #cbd5e1;
+$text-muted: #94a3b8;
+$accent: #8b5cf6;
+$accent-light: #a78bfa;
+$accent-bright: #c084fc;
+$green: #34d399;
+$green-dark: #10b981;
 $gold: #f59e0b;
-$cyan: #06b6d4;
+$cyan: #22d3ee;
 $purple: #a78bfa;
-$red: #ef4444;
+$red: #f87171;
 $radius-sm: 8px;
 $radius-md: 14px;
 $radius-lg: 20px;
@@ -30,7 +31,7 @@ $radius-xl: 24px;
   font-family: 'Inter', sans-serif;
   background: $bg-deep;
   min-height: 100vh;
-  color: $text-primary;
+  color: $text-primary !important;
   position: relative;
   overflow-x: hidden;
 }
@@ -68,11 +69,12 @@ $radius-xl: 24px;
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid $border;
   border-radius: $radius-lg;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 
   &:hover {
     border-color: $border-hover;
-    box-shadow: 0 8px 40px rgba(99, 102, 241, 0.08);
+    box-shadow: 0 8px 40px rgba(139, 92, 246, 0.15);
   }
 }
 
@@ -81,7 +83,7 @@ $radius-xl: 24px;
   position: relative;
   z-index: 1;
   padding: 32px 40px;
-  background: linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.06) 0%, transparent 100%);
   border-bottom: 1px solid $border;
 
   .hero-content {
@@ -106,9 +108,10 @@ $radius-xl: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(16, 185, 129, 0.1));
     border-radius: $radius-md;
     border: 1px solid $border;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
   }
 
   .session-meta {
@@ -129,13 +132,13 @@ $radius-xl: 24px;
     }
 
     .year-badge {
-      background: rgba(99, 102, 241, 0.12);
+      background: rgba(139, 92, 246, 0.12);
       color: $accent-light;
       font-size: 12px;
       font-weight: 700;
       padding: 3px 12px;
       border-radius: 20px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.2);
     }
 
     .status-pill {
@@ -153,26 +156,30 @@ $radius-xl: 24px;
         width: 8px;
         height: 8px;
         border-radius: 50%;
+        box-shadow: 0 0 10px currentColor;
       }
 
       &.status-upcoming {
-        background: rgba(234, 179, 8, 0.1);
+        background: rgba(245, 158, 11, 0.1);
         color: $gold;
-        border: 1px solid rgba(234, 179, 8, 0.25);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+
         .status-dot { background: $gold; }
       }
 
       &.status-live {
-        background: rgba(239, 68, 68, 0.1);
+        background: rgba(248, 113, 113, 0.1);
         color: $red;
-        border: 1px solid rgba(239, 68, 68, 0.25);
+        border: 1px solid rgba(248, 113, 113, 0.25);
+
         .status-dot { background: $red; animation: pulse-dot 1.4s ease-in-out infinite; }
       }
 
       &.status-completed {
-        background: rgba(100, 116, 139, 0.1);
+        background: rgba(148, 165, 185, 0.1);
         color: $text-muted;
-        border: 1px solid rgba(100, 116, 139, 0.25);
+        border: 1px solid rgba(148, 165, 185, 0.25);
+
         .status-dot { background: $text-muted; }
       }
     }
@@ -197,14 +204,14 @@ $radius-xl: 24px;
   letter-spacing: 0.3px;
 
   &.primary {
-    background: linear-gradient(135deg, $accent 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, $accent 0%, $purple 100%);
     color: white;
-    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.3);
 
     .btn-glow {
       position: absolute;
       inset: -2px;
-      background: linear-gradient(135deg, $accent 0%, #7c3aed 50%, $accent 100%);
+      background: linear-gradient(135deg, $accent 0%, $purple 50%, $accent 100%);
       border-radius: inherit;
       z-index: -1;
       opacity: 0;
@@ -214,7 +221,8 @@ $radius-xl: 24px;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.45);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
+
       .btn-glow { opacity: 1; }
     }
 
@@ -231,13 +239,13 @@ $radius-xl: 24px;
   &.accent {
     background: linear-gradient(135deg, $green-dark, $green);
     color: white;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 4px 16px rgba(52, 211, 153, 0.3);
     font-size: 13px;
     padding: 10px 20px;
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 6px 24px rgba(52, 211, 153, 0.45);
     }
 
     &:disabled {
@@ -293,7 +301,7 @@ $radius-xl: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(99, 102, 241, 0.08);
+      background: rgba(139, 92, 246, 0.08);
       border-radius: $radius-sm;
     }
 
@@ -364,7 +372,7 @@ $radius-xl: 24px;
     .tab-icon { font-size: 18px; }
 
     .tab-count {
-      background: rgba(100, 116, 139, 0.2);
+      background: rgba(148, 165, 185, 0.2);
       color: $text-muted;
       font-size: 11px;
       font-weight: 700;
@@ -388,11 +396,11 @@ $radius-xl: 24px;
     left: 4px;
     width: calc(50% - 4px);
     height: calc(100% - 8px);
-    background: linear-gradient(135deg, $accent, #7c3aed);
+    background: linear-gradient(135deg, $accent, $purple);
     border-radius: 10px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 0;
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
 
     &.right {
       transform: translateX(calc(100% + 4px));
@@ -425,19 +433,18 @@ $radius-xl: 24px;
     flex: 1;
   }
 
-  // Override Angular Material theming for dark mode
   .custom-field {
     width: 100%;
 
     ::ng-deep {
       .mat-mdc-text-field-wrapper {
-        background: rgba(17, 24, 39, 0.8) !important;
+        background: rgba(18, 18, 34, 0.8) !important;
         border-radius: $radius-sm !important;
       }
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: rgba(99, 102, 241, 0.2) !important;
+        border-color: rgba(139, 92, 246, 0.2) !important;
       }
       .mat-mdc-form-field-focus-indicator { display: none; }
       .mdc-floating-label { color: $text-muted !important; }
@@ -479,7 +486,7 @@ $radius-xl: 24px;
     height: 52px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid rgba(99, 102, 241, 0.25);
+    border: 2px solid rgba(139, 92, 246, 0.25);
     flex-shrink: 0;
     background: $bg-card;
 
@@ -518,14 +525,14 @@ $radius-xl: 24px;
     border-radius: 6px;
 
     &.budget-chip {
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(52, 211, 153, 0.1);
       color: $green;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(52, 211, 153, 0.2);
     }
     &.player-chip {
-      background: rgba(99, 102, 241, 0.1);
+      background: rgba(139, 92, 246, 0.1);
       color: $accent-light;
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.2);
     }
   }
 
@@ -570,7 +577,7 @@ $radius-xl: 24px;
 
   &.sold {
     opacity: 0.6;
-    border-color: rgba(16, 185, 129, 0.3);
+    border-color: rgba(52, 211, 153, 0.3);
   }
 
   .player-card-header {
@@ -585,7 +592,7 @@ $radius-xl: 24px;
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      background: linear-gradient(135deg, $accent, #7c3aed);
+      background: linear-gradient(135deg, $accent, $purple);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -614,7 +621,7 @@ $radius-xl: 24px;
       font-size: 10px;
       font-weight: 700;
       color: $accent-light;
-      background: rgba(99, 102, 241, 0.12);
+      background: rgba(139, 92, 246, 0.12);
       padding: 2px 8px;
       border-radius: 4px;
       text-transform: uppercase;
@@ -654,19 +661,19 @@ $radius-xl: 24px;
       letter-spacing: 0.5px;
 
       &.st-available {
-        background: rgba(99, 102, 241, 0.1);
+        background: rgba(139, 92, 246, 0.1);
         color: $accent-light;
-        border: 1px solid rgba(99, 102, 241, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.2);
       }
       &.st-sold {
-        background: rgba(16, 185, 129, 0.1);
+        background: rgba(52, 211, 153, 0.1);
         color: $green;
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(52, 211, 153, 0.2);
       }
       &.st-unsold {
-        background: rgba(239, 68, 68, 0.1);
+        background: rgba(248, 113, 113, 0.1);
         color: $red;
-        border: 1px solid rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(248, 113, 113, 0.2);
       }
     }
   }
@@ -679,18 +686,18 @@ $radius-xl: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(239, 68, 68, 0.08);
-  color: rgba(239, 68, 68, 0.5);
-  border: 1px solid rgba(239, 68, 68, 0.15);
+  background: rgba(248, 113, 113, 0.08);
+  color: rgba(248, 113, 113, 0.5);
+  border: 1px solid rgba(248, 113, 113, 0.15);
   border-radius: $radius-sm;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(248, 113, 113, 0.15);
     color: $red;
-    border-color: rgba(239, 68, 68, 0.4);
+    border-color: rgba(248, 113, 113, 0.4);
     transform: scale(1.05);
   }
 }
@@ -738,7 +745,7 @@ $radius-xl: 24px;
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    border: 3px solid rgba(99, 102, 241, 0.15);
+    border: 3px solid rgba(139, 92, 246, 0.15);
     border-top-color: $accent;
     animation: spin 0.8s linear infinite;
   }

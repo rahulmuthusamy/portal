@@ -1,0 +1,20 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav #drawer [mode]="isMobile ? 'over' : 'side'" [opened]="sidebarOpen" class="sidenav" fixedInViewport>
+    <app-workspace-sidebar [visible]="sidebarOpen"></app-workspace-sidebar>
+  </mat-sidenav>
+
+  <!-- Main content -->
+  <mat-sidenav-content>
+    <!-- Header -->
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+    <app-breadcrumb></app-breadcrumb>
+
+    <!-- Main router content -->
+    <div class="main-content animate-fade" (click)="closeSidebarOnMobile()">
+      <router-outlet></router-outlet>
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

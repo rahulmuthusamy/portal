@@ -1,45 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+// ─── Design Tokens ───
+$bg-deep: #030014;
+$bg-surface: #0a0a1a;
+$bg-card: #121222;
+$bg-glass: rgba(22, 22, 34, 0.65);
+$border: rgba(124, 58, 237, 0.12);
+$border-hover: rgba(168, 85, 247, 0.3);
+$text-primary: #f8fafc;
+$text-secondary: #cbd5e1;
+$text-muted: #94a3b8;
+$accent: #8b5cf6;
+$accent-light: #a78bfa;
+$accent-bright: #c084fc;
+$accent-dark: #7c3aed;
+$green: #34d399;
+$green-dark: #10b981;
+$red: #f87171;
+$red-dark: #ef4444;
+$radius-sm: 8px;
+$radius-md: 14px;
+$radius-lg: 20px;
+
+// ─── Global ───
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 .session-form-container {
   padding: 20px;
-  background: #f0f2f5;
+  background: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
+              $bg-deep;
   min-height: 100vh;
+  color: $text-primary;
+  font-family: 'Inter', sans-serif;
+
+  form {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  // ─── Angular Material fields (override light azure-blue theme) ───
+  .mat-mdc-form-field {
+    --mdc-outlined-text-field-label-text-color: #{$text-secondary};
+    --mdc-outlined-text-field-input-text-color: #{$text-primary};
+    --mdc-outlined-text-field-input-text-placeholder-color: #{$text-muted};
+    --mdc-outlined-text-field-outline-color: rgba(168, 85, 247, 0.3);
+    --mdc-outlined-text-field-hover-outline-color: #{$accent-light};
+    --mdc-outlined-text-field-focus-outline-color: #{$accent};
+    --mdc-outlined-text-field-focus-label-text-color: #{$accent-light};
+    --mdc-outlined-text-field-caret-color: #{$accent-light};
+    --mdc-outlined-text-field-disabled-input-text-color: #{$text-muted};
+    --mdc-outlined-text-field-disabled-outline-color: rgba(148, 163, 184, 0.2);
+    --mat-form-field-container-text-color: #{$text-primary};
+    --mat-form-field-label-text-color: #{$text-secondary};
+    --mat-select-placeholder-text-color: #{$text-muted};
+    --mat-select-enabled-arrow-color: #{$accent-light};
+    width: 100%;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .mat-mdc-form-field-focus-overlay { background-color: rgba(139, 92, 246, 0.05); }
+
+  .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+    background-color: rgba(139, 92, 246, 0.06);
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing { border-color: transparent !important; }
+
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+  }
+
+  .mat-mdc-form-field-error { color: $red; }
+
+  // ─── Native datetime-local inputs ───
+  input[type='datetime-local'].form-control {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 10px;
+    color: $text-primary;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+
+    &::placeholder { color: $text-muted; }
+
+    &:hover { border-color: $accent-light; background-color: rgba(139, 92, 246, 0.06); }
+
+    &:focus {
+      outline: none;
+      border-color: $accent;
+      background-color: rgba(139, 92, 246, 0.08);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+    }
+
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(0.8) sepia(1) saturate(3) hue-rotate(220deg);
+      cursor: pointer;
+    }
+  }
+
+  // ─── Bootstrap outline buttons (QR actions) ───
+  .btn-outline-primary {
+    color: $accent-light;
+    border-color: rgba(168, 85, 247, 0.4);
+    background: rgba(139, 92, 246, 0.06);
+    &:hover, &:focus {
+      color: #fff;
+      background: $accent;
+      border-color: $accent;
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+    }
+  }
+
+  .btn-outline-danger {
+    color: $red;
+    border-color: rgba(248, 113, 113, 0.4);
+    background: rgba(248, 113, 113, 0.06);
+    &:hover, &:focus {
+      color: #fff;
+      background: $red-dark;
+      border-color: $red-dark;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+    }
+  }
+
+  .btn-outline-secondary {
+    color: $text-secondary;
+    border-color: rgba(148, 163, 184, 0.35);
+    background: rgba(255, 255, 255, 0.02);
+    &:hover, &:focus {
+      color: #fff;
+      background: rgba(148, 163, 184, 0.25);
+      border-color: rgba(148, 163, 184, 0.6);
+    }
+  }
+
+  // ─── Submit button (app-button → .btn-primary) ───
+  .btn-primary {
+    background: linear-gradient(135deg, $accent 0%, $accent-dark 100%);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 0.6rem 1.6rem;
+    border-radius: $radius-md;
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
+    }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
 }
 
-form {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* ── Header ── */
+// ─── Header ───
 .form-header {
-  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
-  color: #fff;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(22, 185, 129, 0.15));
+  color: $text-primary;
   padding: 24px 28px;
   border-radius: 14px 14px 0 0;
-}
+  border: 1px solid $border;
 
-.form-header p {
-  color: rgba(255, 255, 255, 0.75);
+  p {
+    color: $text-secondary;
+  }
 }
 
 .header-icon {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(139, 92, 246, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
+  color: $accent-light;
   flex-shrink: 0;
+  border: 1px solid $border;
 }
 
-/* ── Form Sections ── */
+// ─── Form Sections ───
 .form-section {
-  background: #fff;
+  background: $bg-glass;
+  backdrop-filter: blur(20px);
   padding: 24px 28px 20px;
-  border-left: 1px solid #e3e8ef;
-  border-right: 1px solid #e3e8ef;
-  border-bottom: 1px solid #e3e8ef;
+  border-left: 1px solid $border;
+  border-right: 1px solid $border;
+  border-bottom: 1px solid $border;
+  color: $text-primary;
 
   &:last-of-type {
     border-bottom: none;
@@ -53,24 +214,20 @@ form {
   margin-bottom: 18px;
   font-weight: 700;
   font-size: 0.92rem;
-  color: #1565c0;
+  color: $accent-light;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-
-  i {
-    font-size: 1.1rem;
-  }
 }
 
-/* ── QR Upload ── */
+// ─── QR Upload ───
 .qr-preview-zone {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  border: 1px solid #e3e8ef;
+  border: 1px solid $border;
   border-radius: 12px;
   padding: 16px;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .qr-preview-img {
@@ -78,8 +235,8 @@ form {
   height: 110px;
   object-fit: contain;
   border-radius: 10px;
-  border: 1px solid #dee2e6;
-  background: #fff;
+  border: 1px solid $border;
+  background: $bg-card;
   padding: 4px;
   flex-shrink: 0;
 }
@@ -90,38 +247,40 @@ form {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 2px dashed #ced4da;
+  border: 2px dashed $border;
   border-radius: 12px;
   padding: 28px 16px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.25s, background 0.25s;
-  background: #f8fafc;
+  background: $bg-glass;
 
   &:hover {
-    border-color: #1565c0;
-    background: #e8f0fe;
+    border-color: $accent;
+    background: rgba(139, 92, 246, 0.05);
   }
 }
 
 .upload-icon {
   font-size: 2.2rem;
   line-height: 1;
+  color: $accent;
 }
 
-/* ── Footer Actions ── */
+// ─── Footer Actions ───
 .form-actions {
-  background: #fff;
+  background: $bg-glass;
+  backdrop-filter: blur(20px);
   padding: 20px 28px;
   border-radius: 0 0 14px 14px;
-  border: 1px solid #e3e8ef;
-  border-top: 2px solid #e3e8ef;
+  border: 1px solid $border;
+  border-top: 2px solid $border;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
-/* ── Responsive ── */
+// ─── Responsive ───
 @media (max-width: 768px) {
   .session-form-container {
     padding: 12px;

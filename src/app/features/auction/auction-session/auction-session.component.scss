@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+// ─── Design Tokens ───
+ $bg-deep: #f5f3ff;        // page background — soft violet-tinted white
+$bg-surface: #ffffff;     // main surface (was near-black)
+$bg-card: #ffffff;        // card background
+$bg-glass: rgba(255, 255, 255, 0.65); // frosted glass over bg-deep
+
+$border: rgba(124, 58, 237, 0.12);     // unchanged — works on light too
+$border-hover: rgba(139, 92, 246, 0.35);
+
+$text-primary: #1e1b2e;    // near-black, violet-tinted
+$text-secondary: #4b4560;  // muted dark violet-gray
+$text-muted: #8b849e;      // lightest legible gray
+
+$accent: #7c3aed;          // slightly deeper violet for contrast on white
+$accent-light: #8b5cf6;
+$accent-bright: #a855f7;
+
+$green: #10b981;
+$green-dark: #059669;
+$gold: #d97706;
+$cyan: #0891b2;
+$purple: #8b5cf6;
+$red: #dc2626;
+
+$radius-sm: 8px;
+$radius-md: 14px;
+$radius-lg: 20px;
+$radius-xl: 24px;
+
+// ─── Global ───
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.auction-session-wrapper {
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  color: $text-primary !important;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.session-table-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, $accent-bright 0%, $accent-light 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+.glass-card {
+  background: $bg-glass;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    border-color: $border-hover;
+    box-shadow: 0 8px 40px rgba(139, 92, 246, 0.15);
+  }
+}
+
+.neon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, $accent, $accent-bright, $accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+
+  &.primary {
+    background: linear-gradient(135deg, $accent, #7c3aed);
+    color: white;
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
+    }
+  }
+
+  &.danger {
+    background: linear-gradient(135deg, $red, #ef4444);
+    color: white;
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(239, 68, 68, 0.5);
+    }
+  }
+}
+
+  // ─── Dark Data-Table overrides (scoped to this page only) ───
+  .table-wrapper {
+    background: $bg-glass;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: $text-primary;
+
+      thead th {
+        position: sticky;
+        top: 0;
+        background: rgba(139, 92, 246, 0.12) !important;
+        color: $accent-light !important;
+        border-bottom: 1px solid $border !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+      }
+
+      td {
+        vertical-align: middle;
+        color: $text-secondary;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+  }
+
+  .custom-table {
+    margin-bottom: 0;
+
+    thead th {
+      border-top: none;
+    }
+  }
+
+  .table-row-hover {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(139, 92, 246, 0.08) !important;
+    }
+  }
+
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: $text-muted;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: rgba(139, 92, 246, 0.15) !important;
+      color: $accent-light;
+    }
+  }
+
+  .btn-outline-primary,
+  .btn-outline-info,
+  .btn-outline-success,
+  .btn-outline-warning,
+  .btn-outline-danger {
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+    }
+  }
+
+// ─── Animations ───
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

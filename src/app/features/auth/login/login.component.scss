@@ -1,45 +1,189 @@
-/* Angular Material form field overrides for dark glass login card */
-.login-field {
-  ::ng-deep .mat-mdc-text-field-wrapper {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-radius: 12px;
-  }
+:host { display: block; }
 
+.login-shell {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #f0f9ff 100%);
+}
+
+.aurora {
+  position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; pointer-events: none;
+}
+.aurora-1 { width: 520px; height: 520px; top: -160px; right: -120px;
+  background: radial-gradient(circle, #38bdf8, transparent 60%); }
+.aurora-2 { width: 460px; height: 460px; bottom: -160px; left: -140px;
+  background: radial-gradient(circle, #6366f1, transparent 60%); }
+.grid-overlay {
+  position: absolute; inset: 0; opacity: 0.4; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(15,23,42,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,23,42,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* ============ SPLIT CARD ============ */
+.split-card {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 1080px;
+  min-height: 640px;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow:
+    0 40px 100px -20px rgba(15, 23, 42, 0.25),
+    0 0 0 1px rgba(15, 23, 42, 0.05);
+  animation: rise .7s cubic-bezier(.16,1,.3,1) both;
+}
+
+/* ============ LEFT BRAND PANEL ============ */
+.brand-panel {
+  position: relative;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at top left, #0c4a6e 0%, transparent 60%),
+    radial-gradient(ellipse at bottom right, #4c1d95 0%, transparent 60%),
+    linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+}
+.brand-glow {
+  position: absolute; top: -30%; right: -20%;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(56,189,248,0.35), transparent 65%);
+  filter: blur(50px);
+  animation: drift 18s ease-in-out infinite;
+}
+.ball-accent {
+  position: absolute; bottom: -40px; right: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #dc2626, #7f1d1d 70%, #450a0a);
+  box-shadow: 0 30px 80px rgba(220, 38, 38, 0.3), inset -20px -20px 50px rgba(0,0,0,0.5);
+  opacity: 0.6;
+  .seam {
+    position: absolute; top: 50%; left: 10%; right: 10%; height: 3px;
+    background: repeating-linear-gradient(90deg, #fef3c7 0 8px, transparent 8px 14px);
+    transform: translateY(-50%) rotate(-24deg);
+  }
+}
+.brand-logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(56,189,248,0.4);
+  ring: 1px solid rgba(255,255,255,0.2);
+}
+.feature-dot {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #7dd3fc;
+  .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+/* ============ RIGHT FORM PANEL ============ */
+.form-panel {
+  padding: 3rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+.mobile-brand { display: none; }
+.brand-logo-sm {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, #0c4a6e, #1e1b4b);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem; overflow: hidden;
+}
+.field-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: #64748b;
+}
+
+/* Material light field */
+.light-field {
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background: #f8fafc !important;
+    border-radius: 12px !important;
+  }
   ::ng-deep .mdc-notched-outline__leading,
   ::ng-deep .mdc-notched-outline__notch,
   ::ng-deep .mdc-notched-outline__trailing {
-    border-color: rgba(255, 255, 255, 0.12) !important;
+    border-color: #e2e8f0 !important;
   }
-
-  ::ng-deep .mat-mdc-form-field-focus-overlay {
-    background: transparent;
-  }
-
   ::ng-deep input.mat-mdc-input-element {
-    color: #f1f5f9 !important;
-    font-size: 0.9rem;
-    caret-color: #38bdf8;
+    color: #0f172a !important; font-size: 0.92rem; caret-color: #0ea5e9;
   }
-
-  ::ng-deep input.mat-mdc-input-element::placeholder {
-    color: rgba(148, 163, 184, 0.6);
-  }
-
-  ::ng-deep .mat-mdc-form-field-icon-suffix .mat-icon {
-    color: #64748b;
-  }
-
+  ::ng-deep input.mat-mdc-input-element::placeholder { color: #94a3b8; }
+  ::ng-deep .mat-mdc-form-field-icon-suffix .mat-icon { color: #94a3b8; }
   &:focus-within {
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: #f0f9ff !important;
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+    }
     ::ng-deep .mdc-notched-outline__leading,
     ::ng-deep .mdc-notched-outline__notch,
     ::ng-deep .mdc-notched-outline__trailing {
-      border-color: #38bdf8 !important;
+      border-color: #0ea5e9 !important;
     }
   }
 }
 
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(30px, -30px) scale(1.1); }
-  66%       { transform: translate(-20px, 20px) scale(0.9); }
+/* CTA */
+.cta-button {
+  position: relative; overflow: hidden; isolation: isolate;
+  width: 100%; height: 52px; margin-top: 4px;
+  border-radius: 12px; border: 0; cursor: pointer;
+  font-weight: 700; font-size: 0.9rem; letter-spacing: 0.02em;
+  color: white;
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  box-shadow: 0 10px 25px -8px rgba(14, 165, 233, 0.55);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 35px -8px rgba(99, 102, 241, 0.6);
+    filter: brightness(1.08);
+  }
+  &:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  .cta-shimmer {
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%);
+    transform: translateX(-100%);
+    animation: shimmer 2.8s ease-in-out infinite;
+  }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+  .split-card { grid-template-columns: 1fr; min-height: auto; max-width: 460px; }
+  .brand-panel { display: none; }
+  .form-panel { padding: 2.5rem 1.75rem; }
+  .mobile-brand { display: block; }
+}
+
+/* Animations */
+@keyframes drift {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50%     { transform: translate(-40px, 30px) scale(1.1); }
+}
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  60%  { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

@@ -19,6 +19,29 @@ body {
   --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* ── Global: ensure dark pages override any parent layout colour ── */
+.auction-room-wrapper,
+.session-dashboard {
+  background: radial-gradient(circle at 10% 20%, rgb(14, 26, 64) 0%, rgb(4, 8, 20) 90%) !important;
+  color: #f1f5f9 !important;
+}
+
+/* mat-sidenav-content and .main-content when inside dark pages */
+mat-sidenav-content:has(.auction-room-wrapper),
+mat-sidenav-content:has(.session-dashboard) {
+  background: radial-gradient(circle at 10% 20%, rgb(14, 26, 64) 0%, rgb(4, 8, 20) 90%) !important;
+}
+
+.main-content:has(.session-dashboard) {
+  padding: 0 !important;
+  color: #f1f5f9 !important;
+}
+
+.main-content:has(.auction-room-wrapper) {
+  padding: 0 !important;
+  color: white !important;
+}
+
 .full-width {
   width: 100%;
   display: block;

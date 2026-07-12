@@ -1,149 +1,474 @@
-.auction-room-container {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+// ── Design Tokens ──
+$bg-deep: #030014;
+$bg-surface: #0a0a1a;
+$bg-card: #121222;
+$bg-glass: rgba(22, 22, 34, 0.65);
+$border: rgba(139, 92, 246, 0.12);
+$border-hover: rgba(168, 85, 247, 0.3);
+$text-primary: #f8fafc;
+$text-secondary: #cbd5e1;
+$text-muted: #94a3b8;
+$accent: #8b5cf6;
+$accent-light: #a78bfa;
+$accent-bright: #c084fc;
+$green: #34d399;
+$green-dark: #10b981;
+$gold: #f59e0b;
+$red: #f87171;
+$radius-sm: 8px;
+$radius-md: 14px;
+$radius-lg: 20px;
+$radius-xl: 24px;
+
+.auction-room-wrapper {
   min-height: 100vh;
-  background-color: #f0f2f5;
-  padding-top: 70px;
+  background: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
+              $bg-deep;
+  background-attachment: fixed;
+  padding-top: 80px;
+  padding-bottom: 20px;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: $text-primary !important;
 }
 
-.header-bar {
-  background: white;
-  height: 70px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-  padding: 0 20px;
-}
-
-.text-gradient {
-  background: linear-gradient(45deg, #1e3c72, #2a5298);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 800;
-}
-
-.premium-card {
-  border-radius: 16px;
-  border: none;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
+.main-layout {
+  flex-grow: 1;
   overflow: hidden;
 }
 
-.player-card {
-  .image-wrapper {
-    position: relative;
-    height: 100%;
-    background: #e9ecef;
-    overflow: hidden;
+.glass-header {
+  background: rgba(22, 22, 34, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid $border;
+  height: 70px;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
 
-    .player-img {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-    }
+.glass-card {
+  background: $bg-glass !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid $border !important;
+  border-radius: $radius-lg !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+  color: $text-primary !important;
 
-    .player-role-badge {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      background: white;
-      padding: 5px 15px;
-      border-radius: 50px;
-      font-weight: 700;
-      color: #1e3c72;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
+  &:hover {
+    border-color: $border-hover !important;
   }
 }
 
-.price {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #333;
-
-  &.highlight {
-    font-size: 2.5rem;
-    color: #4caf50;
-    line-height: 1;
-  }
+.card-header-glass {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 15px 20px;
+  border-bottom: 1px solid $border;
+  border-top-left-radius: $radius-lg;
+  border-top-right-radius: $radius-lg;
 }
 
-.bid-team {
-  font-weight: 600;
-  color: #1e3c72;
-  font-size: 1.1rem;
-
-  &.no-bid {
-    color: #999;
-    font-weight: 400;
-    font-style: italic;
-  }
-}
-
-.team-bid-box {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  border: 2px solid transparent;
+.glass-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid $border;
   transition: all 0.3s ease;
 
-  &.winning {
-    border-color: #4caf50;
-    background: rgba(76, 175, 80, 0.05);
-
-    &::after {
-      content: 'Winning';
-      display: block;
-      font-size: 10px;
-      color: #4caf50;
-      text-transform: uppercase;
-      font-weight: 800;
-      text-align: right;
-    }
-  }
-
-  .team-info {
-    margin-bottom: 10px;
-
-    .budget {
-      font-size: 11px;
-      color: #666;
-    }
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
   }
 }
 
-.huge-icon {
-  font-size: 80px;
-  width: 80px;
-  height: 80px;
-  color: #ddd;
-  margin-bottom: 20px;
+.team-summary-glass {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid $border;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
 
-.sold-snack {
-  background: #4caf50 !important;
+.text-gold {
+  color: $gold;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, $gold, #ff8c00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.border-gold {
+  border: 2px solid $gold;
+}
+
+.bg-gold {
+  background: linear-gradient(45deg, $gold, #ff8c00) !important;
+}
+
+.glass-btn {
+  background: rgba(139, 92, 246, 0.15) !important;
+  color: $text-primary !important;
+  border: 1px solid $border !important;
+
+  &:hover {
+    background: rgba(139, 92, 246, 0.25) !important;
+  }
+}
+
+.end-btn {
+  background: linear-gradient(135deg, #f87171, #ef4444) !important;
   color: white !important;
-  font-weight: 800;
-  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(248, 113, 113, 0.4) !important;
 }
 
-.summary-card {
-  .team-summary {
-    .badge {
-      font-size: 10px;
+.resume-btn {
+  background: rgba(52, 211, 153, 0.2) !important;
+  color: $green !important;
+  border: 1px solid rgba(52, 211, 153, 0.5) !important;
+
+  &:hover {
+    background: rgba(52, 211, 153, 0.35) !important;
+  }
+}
+
+.requeue-btn {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: $gold !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  font-size: 11px !important;
+  padding: 4px 10px !important;
+  min-width: unset !important;
+  height: 36px !important;
+
+  &:hover:not([disabled]) {
+    background: rgba(245, 158, 11, 0.3) !important;
+  }
+
+  &[disabled] {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+  }
+
+  mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 4px !important;
+  }
+}
+
+/* Player Pool List */
+.player-list-scroll {
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+  &::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 10px; }
+}
+
+.pool-player-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+
+  .mini-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid $border;
+  }
+
+  .pool-player-info {
+    flex-grow: 1;
+
+    .name {
+      font-weight: 600;
+      font-size: 14px;
+      color: $text-primary;
+    }
+
+    .role-price {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: $text-muted;
+    }
+  }
+
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-left: 10px;
+
+    &.available {
+      background: rgba(139, 92, 246, 0.15);
+      color: $accent-light;
+    }
+
+    &.live {
+      background: #ec4899;
+      color: white;
+      animation: pulse-soft 2s infinite;
+    }
+
+    &.sold {
+      background: $green;
+      color: white;
+    }
+
+    &.unsold,
+    &.skipped {
+      background: #9e9e9e;
+      color: white;
+    }
+  }
+
+  &.active {
+    background: rgba(236, 72, 153, 0.15);
+    border-color: rgba(236, 72, 153, 0.5);
+  }
+
+  &.sold {
+    opacity: 0.6;
+    filter: grayscale(50%);
+  }
+
+  &.unsold {
+    opacity: 0.5;
+  }
+}
+
+/* Spotlight */
+.player-spotlight {
+ .spotlight-image-wrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    padding: 8px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(16, 185, 129, 0.1));
+    border: 1px solid $border;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+    .spotlight-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+
+  .live-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-size: 12px;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.5);
+  }
+
+  .spotlight-name {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, $accent-bright, $accent-light);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.custom-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid $border;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+
+  &.captain {
+    background: linear-gradient(45deg, $gold, #ff8c00);
+    color: #000;
+    border: none;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* Stats Grid */
+.bidding-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 15px;
+
+  .stat-box {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $border;
+
+    .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: $text-muted;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    &.glass-accent {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.3);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.1) inset;
+
+      .value {
+        font-size: 2.5rem;
+      }
+
+      .bid-team {
+        margin-top: 5px;
+        font-weight: 600;
+        color: $gold;
+        font-size: 14px;
+      }
+
+      .no-bid {
+        color: $text-muted;
+        font-weight: 400;
+        font-style: italic;
+      }
+    }
+
+    &.danger {
+      background: rgba(248, 113, 113, 0.1);
+      border-color: rgba(248, 113, 113, 0.3);
+
+      .value {
+        color: $red;
+        animation: pulse 1s infinite;
+      }
     }
   }
 }
 
-.loading-overlay {
+/* Action Buttons */
+.action-btn {
+  border-radius: 12px !important;
+  padding: 10px 0 !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.sell-btn {
+  background: linear-gradient(135deg, $green-dark, $green) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4) !important;
+}
+
+.unsold-btn {
+  border: 2px solid $red !important;
+  color: $red !important;
+
+  &:hover {
+    background: rgba(248, 113, 113, 0.1) !important;
+  }
+}
+
+.start-bid-btn {
+  background: linear-gradient(135deg, #22d3ee, #06b6d4) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4) !important;
+}
+
+.skip-btn {
+  border: 2px solid $border !important;
+  color: $text-primary !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+}
+
+/* Utilities */
+.tracking-tight {
+  letter-spacing: -1px;
+}
+
+.tracking-wider {
+  letter-spacing: 2px;
+}
+
+.squad-count {
+  background: rgba(139, 92, 246, 0.15);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-weight: 700;
+  color: $accent-light;
+}
+
+.team-logo-small {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid $border;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-soft {
+  0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(236, 72, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+}
+
+.glass-loading-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(22, 22, 34, 0.8);
+  backdrop-filter: blur(10px);
   z-index: 2000;
   display: flex;
   flex-direction: column;

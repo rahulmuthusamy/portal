@@ -55,6 +55,25 @@
 
 
 <!-- ═══════════════════════════════════════════════════════
+     LIVE AUCTION BANNER (Only visible when an auction is live)
+══════════════════════════════════════════════════════════ -->
+<div class="global-live-banner" *ngIf="liveAuctions().length > 0" [ngClass]="{'upcoming-banner': liveAuctions()[0].Status === 'upcoming'}">
+  <div class="banner-inner">
+    <div class="pulse-ring" *ngIf="liveAuctions()[0].Status === 'live'"></div>
+    <div class="banner-text">
+      <strong *ngIf="liveAuctions()[0].Status === 'live'">LIVE NOW:</strong>
+      <strong *ngIf="liveAuctions()[0].Status === 'upcoming'" style="color: #facc15;">UPCOMING AUCTION:</strong>
+      {{ liveAuctions()[0].Name || 'ECL Player Auction' }}
+    </div>
+    <a [routerLink]="['/auction-board', liveAuctions()[0].SessionID]" target="_blank" class="watch-btn">
+      <mat-icon *ngIf="liveAuctions()[0].Status === 'live'">desktop_windows</mat-icon> 
+      <mat-icon *ngIf="liveAuctions()[0].Status === 'upcoming'">event</mat-icon> 
+      {{ liveAuctions()[0].Status === 'live' ? 'Watch Live' : 'Open Board' }}
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
      HERO SECTION
 ══════════════════════════════════════════════════════════ -->
 <section id="home" class="hero-section">
@@ -66,7 +85,7 @@
         <div class="hero-overlay"></div>
       </div>
       <div class="carousel-item active" *ngIf="carouselItems().length === 0">
-        <img src="assets/MV_4.jpeg" class="hero-img" alt="Cricket">
+        <img src="assets/default.png" class="hero-img" alt="Cricket">
         <div class="hero-overlay"></div>
       </div>
     </div>
@@ -261,7 +280,7 @@
      AUCTION SECTION
 ══════════════════════════════════════════════════════════ -->
 <section id="auction" class="section-auction">
-  <div class="auction-bg-img" style="background-image: url('assets/hero-image.jpeg')"></div>
+  <div class="auction-bg-img"></div>
   <div class="auction-bg-overlay"></div>
 
   <div class="section-container position-relative">

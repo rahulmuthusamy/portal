@@ -1880,7 +1880,6 @@
 }
 
 .auction-bg-img {
-  background-image: url('assets/hero-image.jpeg');
   background-size: cover;
   background-position: center;
   filter: saturate(1.05);
@@ -4990,4 +4989,90 @@
   object-position: center;
   display: block;
   transition: transform 0.4s ease;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIVE AUCTION BANNER
+══════════════════════════════════════════════════════════ */
+.global-live-banner {
+  background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+  border-bottom: 2px solid #ef4444;
+  padding: 12px 20px;
+  position: relative;
+  z-index: 1000;
+  margin-top: 70px; /* offset navbar height */
+  
+  .banner-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+  }
+  
+  .pulse-ring {
+    width: 16px;
+    height: 16px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  
+  .banner-text {
+    color: #f8fafc;
+    font-size: 1.1rem;
+    font-family: 'Inter', sans-serif;
+    strong {
+      color: #ef4444;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+  }
+  
+  .watch-btn {
+    background: #ef4444;
+    color: white;
+    text-decoration: none;
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    
+    &:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.6);
+    }
+  }
+
+  &.upcoming-banner {
+    border-bottom: 2px solid #facc15;
+    .watch-btn {
+      background: #facc15;
+      color: black;
+      box-shadow: 0 4px 12px rgba(250, 204, 21, 0.4);
+      &:hover {
+        background: #eab308;
+        box-shadow: 0 6px 16px rgba(250, 204, 21, 0.6);
+      }
+    }
+  }
 }

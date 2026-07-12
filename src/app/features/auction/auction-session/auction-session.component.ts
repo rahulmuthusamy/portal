@@ -68,7 +68,7 @@ export class AuctionSessionComponent implements OnInit {
       sessionStorage.setItem('SessionID', event.row.SessionID);
       this.router.navigate(['/kkk/auction-session-form'])
     } else if (event.type === 'Manage') {
-      this.router.navigate(['/kkk/auction-session-detail', event.row.SessionID]);
+      this.router.navigate(['/workspace', event.row.SessionID, 'dashboard']);
     } else if (event.type === 'Report') {
       this.router.navigate(['/kkk/auction-report', event.row.SessionID]);
     } else if (event.type === 'Delete') {

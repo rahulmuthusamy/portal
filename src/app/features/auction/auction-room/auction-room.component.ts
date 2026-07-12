@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +12,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from '@environments/environment';
+import { AuctionManagementService } from '../services/auction-management.service';
 
 @Component({
   selector: 'app-auction-room',
@@ -28,7 +30,8 @@ import { environment } from '@environments/environment';
     MatListModule,
     MatDividerModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   templateUrl: './auction-room.component.html',
   styleUrl: './auction-room.component.scss'
@@ -40,6 +43,7 @@ export class AuctionRoomComponent implements OnInit, OnDestroy {
   secondsLeft = signal<number>(30);
   bidHistory = signal<any[]>([]);
   auctionTeams = signal<any[]>([]);
+  allPlayers = signal<any[]>([]);
   loading = signal(true);
 
   apiUrl = environment.apiUrl;
@@ -48,9 +52,10 @@ export class AuctionRoomComponent implements OnInit, OnDestroy {
   private socketService = inject(SocketService);
   private snackBar = inject(MatSnackBar);
   public router = inject(Router);
+  private auctionService = inject(AuctionManagementService);
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id') || this.route.snapshot.queryParamMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id') || this.route.snapshot.queryParamMap.get('id') || this.route.parent?.snapshot.paramMap.get('sessionId');
     if (id) {
       this.sessionId.set(+id);
       this.setupSocket(+id);
@@ -66,13 +71,31 @@ export class AuctionRoomComponent implements OnInit, OnDestroy {
   }
 
   setupSocket(id: number): void {
-    // Reconnect/Join room
+    this.socketService.connect('/auction');
+
+    // Handle connection error (bad JWT, server down)
+    this.socketService.onConnectError('/auction').subscribe((err: any) => {
+      this.snackBar.open(`Socket failed: ${err.message}`, 'Error', { duration: 5000 });
+      this.loading.set(false);
+    });
+
+    // join-session buffered inside emit() until socket is connected
     this.socketService.emit('/auction', 'join-session', { sessionId: id });
+
+    // Safety timeout for loading
+    const loadTimeout = setTimeout(() => {
+      if (this.loading()) {
+        this.snackBar.open('Connection timed out — check the backend is running', 'Retry', { duration: 8000 });
+        this.loading.set(false);
+      }
+    }, 12000);
 
     // Handle full state payload
     this.socketService.on('/auction', 'session-state').subscribe((state: any) => {
+      clearTimeout(loadTimeout);
       this.sessionInfo.set(state.session);
       this.auctionTeams.set(state.teams);
+      this.allPlayers.set(state.players || []);
       this.currentPlayer.set(state.currentPlayer);
       this.secondsLeft.set(state.secondsLeft || 30);
       this.loading.set(false);
@@ -136,9 +159,51 @@ export class AuctionRoomComponent implements OnInit, OnDestroy {
     this.socketService.on('/auction', 'bid-rejected').subscribe((err: any) => {
       this.snackBar.open(`Bid Failed: ${err.reason}`, 'Error', { duration: 3000 });
     });
+
+    this.socketService.on('/auction', 'auction-paused').subscribe((data: any) => {
+      this.snackBar.open('Auction Paused', 'Info', { duration: 3000 });
+      this.sessionInfo.update(s => ({ ...s, status: 'upcoming' }));
+    });
+
+    this.socketService.on('/auction', 'auction-end').subscribe((data: any) => {
+      this.snackBar.open('Auction Ended', 'Info', { duration: 3000 });
+      this.sessionInfo.update(s => ({ ...s, status: 'completed' }));
+    });
   }
 
   // --- ADMIN ACTIONS ---
+  pauseAuction(): void {
+    const id = this.sessionId();
+    if (id) {
+      this.auctionService.pauseAuction(id).subscribe({
+        next: () => this.snackBar.open('Auction Paused Successfully', 'Success', { duration: 3000 }),
+        error: (err) => this.snackBar.open(`Failed to pause: ${err.error?.message || err.message}`, 'Error', { duration: 3000 })
+      });
+    }
+  }
+
+  resumeAuction(): void {
+    const id = this.sessionId();
+    if (id) {
+      this.auctionService.startAuction(id).subscribe({
+        next: () => this.snackBar.open('Auction Resumed Successfully', 'Success', { duration: 3000 }),
+        error: (err) => this.snackBar.open(`Failed to resume: ${err.error?.message || err.message}`, 'Error', { duration: 3000 })
+      });
+    }
+  }
+
+  endAuction(): void {
+    const id = this.sessionId();
+    if (id) {
+      if (confirm('Are you sure you want to end this auction?')) {
+        this.auctionService.completeAuction(id).subscribe({
+          next: () => this.snackBar.open('Auction Ended Successfully', 'Success', { duration: 3000 }),
+          error: (err) => this.snackBar.open(`Failed to end: ${err.error?.message || err.message}`, 'Error', { duration: 3000 })
+        });
+      }
+    }
+  }
+
   startPlayer(): void {
     this.socketService.emit('/auction', 'start-player', {});
   }
@@ -157,6 +222,24 @@ export class AuctionRoomComponent implements OnInit, OnDestroy {
       teamId: player.highestBidTeamId,
       finalBid: player.currentBid
     });
+  }
+
+  requeueUnsoldPlayers(): void {
+    const id = this.sessionId();
+    if (!id) return;
+    this.auctionService.requeueUnsoldPlayers(id).subscribe({
+      next: (res: any) => {
+        const count = res?.data?.requeuedCount ?? 0;
+        this.snackBar.open(`✅ ${count} player(s) re-queued for auction`, 'OK', { duration: 3000 });
+        // Refresh state from server
+        this.socketService.emit('/auction', 'get-state', {});
+      },
+      error: (err: any) => this.snackBar.open(`Failed: ${err.error?.message || err.message}`, 'Error', { duration: 3000 })
+    });
+  }
+
+  get unsoldCount(): number {
+    return this.allPlayers().filter(p => p.status === 'unsold' || p.status === 'skipped').length;
   }
 
   markUnsold(): void {

@@ -117,8 +117,8 @@
             <img [src]="qrScannerPreview() || existingQrUrl()" alt="QR Scanner Preview" class="qr-preview-img">
             <div class="flex-grow-1">
               <p class="mb-1 fw-semibold text-success small">
-                <span *ngIf="qrScannerPreview()">✅ New image selected</span>
-                <span *ngIf="!qrScannerPreview() && existingQrUrl()">📌 Existing QR image</span>
+                <span *ngIf="qrScannerPreview()"><i class="bi bi-check-circle-fill me-1"></i>New image selected</span>
+                <span *ngIf="!qrScannerPreview() && existingQrUrl()"><i class="bi bi-pin-fill me-1"></i>Existing QR image</span>
               </p>
               <p class="mb-2 text-muted small">
                 <span *ngIf="qrScannerFile()">{{ qrScannerFile()!.name }}</span>
@@ -140,7 +140,7 @@
           <!-- Upload zone -->
           <div *ngIf="!qrScannerPreview() && !existingQrUrl()">
             <label for="qrScannerInput" class="qr-upload-zone">
-              <span class="upload-icon">📲</span>
+              <span class="upload-icon"><i class="bi bi-qr-code-scan"></i></span>
               <span class="fw-semibold text-secondary">Click to upload QR Scanner</span>
               <span class="text-muted small">PNG, JPG up to 5 MB</span>
               <input id="qrScannerInput" type="file" class="d-none" accept="image/*"
@@ -171,7 +171,7 @@
       <button type="button" class="btn btn-outline-secondary px-4" (click)="router.navigate(['/kkk/auction-session-list'])">
         <i class="bi bi-x-lg me-1"></i> Cancel
       </button>
-      <app-button label="{{isEdit ? '✏️ Update' : '💾 Save'}} Session" [disabled]="form.invalid"
+      <app-button label="{{isEdit ? 'Update' : 'Save'}} Session" [disabled]="form.invalid"
         type="submit"></app-button>
     </div>
 

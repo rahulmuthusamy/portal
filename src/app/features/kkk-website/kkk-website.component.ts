@@ -15,6 +15,7 @@ import { SettingsService } from '@core/services/settings.service';
 import { OnboardingService } from '@core/services/onboarding.service';
 import { MatchService } from '../matches/services/match.service';
 import Swal from 'sweetalert2';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface Team {
   _id?: string;
@@ -67,7 +68,7 @@ export interface TopPerformer {
 @Component({
   selector: 'app-kkk-website',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule,MatIconModule],
   templateUrl: './kkk-website.component.html',
   styleUrl: './kkk-website.component.scss'
 })
@@ -205,6 +206,7 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   selectedSeason = '2026';
   availableSeasons = ['2024', '2025', '2026'];
   availableLocations = signal<any[]>([]);
+  liveAuctions = signal<any[]>([]); // New: holds active live auctions
 
   // ─── Fallback grid ─────────────────────────────────────────────────────────
   gridImages = [
@@ -238,11 +240,28 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadWebsiteInitData();
+    this.loadLiveAuctions(); // Load any active live auctions for the banner
 
     if (this.isBrowser) {
       this.updateActiveSection();
-      this.liveMatchInterval = setInterval(() => this.loadAllMatches(), 30000);
+      this.liveMatchInterval = setInterval(() => {
+        this.loadAllMatches();
+        this.loadLiveAuctions();
+      }, 30000);
     }
+  }
+
+  loadLiveAuctions() {
+    this.auctionSessionService.getLiveAuctions().subscribe({
+      next: (res: any) => {
+        if (res?.data?.sessions) {
+          // Show both upcoming and live sessions in the banner
+          const activeSessions = res.data.sessions.filter((s: any) => s.Status === 'live' || s.Status === 'upcoming');
+          this.liveAuctions.set(activeSessions);
+        }
+      },
+      error: () => console.error('Failed to load live auctions')
+    });
   }
 
   loadWebsiteInitData() {

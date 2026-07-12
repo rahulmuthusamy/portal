@@ -1,0 +1,60 @@
+<!-- =====================================================
+     WORKSPACE SIDEBAR
+     ===================================================== -->
+<div class="flex flex-col h-full bg-[#0f172a] overflow-hidden select-none">
+
+  <!-- ── Logo / Brand ── -->
+  <div class="flex items-center gap-3 px-4 py-5 border-b border-white/5">
+    <!-- Logo circle -->
+    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg overflow-hidden">
+      <ng-container *ngIf="appSettings.logoUrl; else defaultLogo">
+        <img [src]="appSettings.logoUrl" alt="Logo" class="w-full h-full object-cover">
+      </ng-container>
+      <ng-template #defaultLogo>
+        <mat-icon class="text-white">gavel</mat-icon>
+      </ng-template>
+    </div>
+
+    <!-- App name (hidden when collapsed) -->
+    <div *ngIf="visible" class="animate-fade-in overflow-hidden">
+      <h6 class="text-white font-bold text-sm tracking-wide leading-none m-0">Auction Workspace</h6>
+      <a routerLink="/kkk/auction-session-list" class="text-indigo-400 hover:text-indigo-300 text-[10px] font-medium tracking-widest uppercase flex items-center gap-1 mt-1 no-underline">
+        <mat-icon class="text-[12px] w-3 h-3">arrow_back</mat-icon> Back to Global
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Navigation ── -->
+  <nav class="flex-1 overflow-y-auto py-3 space-y-0.5 scrollbar-thin" *ngIf="visible && (user$ | async)">
+    <ng-container *ngFor="let section of filteredMenu">
+      <!-- Section label -->
+      <div *ngIf="section.label"
+           class="px-4 pt-4 pb-1.5 text-[9px] font-bold tracking-[0.15em] uppercase text-slate-500">
+        {{ section.label }}
+      </div>
+
+      <!-- Nav items -->
+      <a *ngFor="let item of section.items"
+         [routerLink]="item.route"
+         routerLinkActive="sidebar-active"
+         class="sidebar-item group flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg
+                text-slate-400 hover:text-white hover:bg-white/5
+                transition-all duration-150 no-underline">
+        <mat-icon class="sidebar-icon text-[20px] w-5 h-5 flex-shrink-0 transition-colors duration-150">
+          {{ item.icon }}
+        </mat-icon>
+        <span class="text-[13px] font-medium leading-none">{{ item.label }}</span>
+      </a>
+    </ng-container>
+  </nav>
+
+  <!-- ── Footer / Powered By ── -->
+  <div *ngIf="visible" class="px-3 py-4 border-t border-white/5">
+    <div class="flex items-center justify-between gap-2 bg-white/[0.03] border border-white/5 rounded-xl px-3 py-2.5">
+      <span class="text-slate-600 text-[9px] font-bold tracking-widest uppercase flex-shrink-0">Powered By</span>
+      <img src="assets/ravens-analytics.png" alt="The Ravens Analytics"
+           class="h-8 max-w-[110px] object-contain opacity-70" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2))">
+    </div>
+  </div>
+
+</div>

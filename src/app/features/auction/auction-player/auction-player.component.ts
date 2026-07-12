@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -10,6 +10,7 @@ import { SHARED_FORM_COMPONENTS } from '@shared/forms/form-controls';
 import { AuctionPlayerService } from '../services/auction-player.services';
 import { AuctionManagementService } from '../services/auction-management.service';
 import { ToastService } from '@shared/services/toast.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-auction-player',
@@ -66,6 +67,8 @@ export class AuctionPlayerComponent implements OnInit {
     });
   }
 
+  private route = inject(ActivatedRoute);
+
   loadSessions() {
     this.sessionsLoading = true;
     this.auctionMgt.getLiveSessions().subscribe({
@@ -75,10 +78,18 @@ export class AuctionPlayerComponent implements OnInit {
           label: `${s.Name} (${s.Year}) — ${s.Status}`,
           value: s.SessionID
         }));
-        // Auto-select if only one session
-        if (this.sessions.length === 1) {
-          this.form.patchValue({ SessionID: this.sessions[0].value });
-        }
+        
+        // Auto-select based on workspace URL parameters
+        this.route.parent?.params.subscribe(params => {
+          if (params['sessionId']) {
+            this.form.patchValue({ SessionID: +params['sessionId'] });
+            // Optionally, lock the dropdown if we are strictly in a workspace
+          } else if (this.sessions.length === 1) {
+            // Auto-select if only one session and no URL param
+            this.form.patchValue({ SessionID: this.sessions[0].value });
+          }
+        });
+
         this.sessionsLoading = false;
       },
       error: () => {
