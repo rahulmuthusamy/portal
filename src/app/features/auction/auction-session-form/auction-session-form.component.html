@@ -1,150 +1,179 @@
-<div class="container-fluid p-3">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="bg-white shadow rounded p-4">
-    <h4 class="mb-4 text-primary">Auction Session</h4>
+<div class="session-form-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-    <div class="row g-3">
-      <div class="col-md-3">
-        <app-input id="session_name" [control]="form.get('Name')!" [label]="'Auction Name *'"
-          placeholder="e.g., IPL 2026 Mega Auction">
-        </app-input>
+    <!-- Header -->
+    <div class="form-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="header-icon">
+          <i class="bi bi-calendar2-event"></i>
+        </div>
+        <div>
+          <h4 class="m-0 fw-bold">{{ isEdit ? 'Edit' : 'Create' }} Auction Session</h4>
+          <p class="m-0 text-muted small">{{ isEdit ? 'Update the session details below' : 'Fill in the details to create a new auction session' }}</p>
+        </div>
       </div>
+    </div>
 
-      <div class="col-md-1">
-        <app-input id="year" type="number" [control]="form.get('Year')!" [label]="'Year *'" placeholder="e.g., 2025"
-          [min]="2000" [max]="2100">
-        </app-input>
+    <!-- Section 1: Basic Information -->
+    <div class="form-section">
+      <div class="section-label">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>Basic Information</span>
       </div>
-
-      <div class="col-md-4">
-        <app-datepicker id="start_date" type="date" [control]="form.get('StartDate')!" [label]="'Start Date *'">
-        </app-datepicker>
+      <div class="row g-3">
+        <div class="col-md-5">
+          <app-input id="session_name" [control]="form.get('Name')!" [label]="'Auction Name *'"
+            placeholder="e.g., IPL 2026 Mega Auction">
+          </app-input>
+        </div>
+        <div class="col-md-2">
+          <app-input id="year" type="number" [control]="form.get('Year')!" [label]="'Year *'" placeholder="e.g., 2025"
+            [min]="2000" [max]="2100">
+          </app-input>
+        </div>
+        <div class="col-md-5">
+          <app-select id="TournamentID" [label]="'Linked Tournament'" [control]="form.get('TournamentID')!"
+            [options]="tournamentOptions" placeholder="Select tournament (optional)">
+          </app-select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold text-secondary mb-2 d-block">
+            <i class="bi bi-calendar-event me-1"></i> Start Date & Time *
+          </label>
+          <input type="datetime-local" class="form-control" formControlName="StartDate" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold text-secondary mb-2 d-block">
+            <i class="bi bi-calendar-event me-1"></i> End Date & Time *
+          </label>
+          <input type="datetime-local" class="form-control" formControlName="EndDate" />
+        </div>
       </div>
+    </div>
 
-      <div class="col-md-4">
-        <app-datepicker id="end_date" type="date" [control]="form.get('EndDate')!" [label]="'End Date *'">
-        </app-datepicker>
+    <!-- Section 2: Auction Settings -->
+    <div class="form-section">
+      <div class="section-label">
+        <i class="bi bi-sliders"></i>
+        <span>Auction Settings</span>
       </div>
-
-      <div class="col-md-3">
-        <app-select id="TournamentID" [label]="'Select Tournament'" [control]="form.get('TournamentID')!"
-          [options]="tournamentOptions" placeholder="Select linked tournament">
-        </app-select>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <app-input id="max_budget" type="number" [control]="form.get('MaxBudget')!" [label]="'Max Budget (Lakhs) *'"
+            placeholder="e.g., 100">
+          </app-input>
+        </div>
+        <div class="col-md-4">
+          <app-input id="max_players_per_team" type="number" [control]="form.get('MaxPlayersPerTeam')!"
+            [label]="'Max Players / Team *'" placeholder="e.g., 11">
+          </app-input>
+        </div>
+        <div class="col-md-4">
+          <app-select id="Status" [label]="'Session Status'" [control]="form.get('Status')!" [options]="StatusOptions"
+            placeholder="Select Status">
+          </app-select>
+        </div>
       </div>
+    </div>
 
-      <div class="col-md-3">
-        <app-input id="max_budget" type="number" [control]="form.get('MaxBudget')!" [label]="'Max Budget *'"
-          placeholder="e.g., 100">
-        </app-input>
+    <!-- Section 3: Registration & Payment -->
+    <div class="form-section">
+      <div class="section-label">
+        <i class="bi bi-credit-card-fill"></i>
+        <span>Registration & Payment</span>
       </div>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <app-input id="PlayerRegistrationFee" type="number" [control]="form.get('PlayerRegistrationFee')!"
+            [label]="'Player Reg Fee (₹)'" placeholder="e.g., 100">
+          </app-input>
+        </div>
+        <div class="col-md-3">
+          <app-input id="OwnerRegistrationFee" type="number" [control]="form.get('OwnerRegistrationFee')!"
+            [label]="'Owner Reg Fee (₹)'" placeholder="e.g., 5000">
+          </app-input>
+        </div>
+        <div class="col-md-3">
+          <app-input id="UPIName" type="text" [control]="form.get('UPIName')!"
+            [label]="'UPI Name'" placeholder="e.g., John Doe">
+          </app-input>
+        </div>
+        <div class="col-md-3">
+          <app-input id="UPIId" type="text" [control]="form.get('UPIId')!"
+            [label]="'UPI ID'" placeholder="e.g., jdoe&#64;upi">
+          </app-input>
+        </div>
 
-      <div class="col-md-3">
-        <app-input id="max_players_per_team" type="number" [control]="form.get('MaxPlayersPerTeam')!"
-          [label]="'Max Players/Team *'" placeholder="e.g., 11">
-        </app-input>
-      </div>
+        <!-- UPI QR Scanner Upload -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold text-secondary mb-2 d-block">
+            <i class="bi bi-qr-code me-1"></i> UPI QR Scanner Image
+            <small class="text-muted fw-normal">(Optional)</small>
+          </label>
 
-      <div class="col-md-3">
-        <app-select id="Status" [label]="'Select Status'" [control]="form.get('Status')!" [options]="StatusOptions"
-          placeholder="Select Status">
-        </app-select>
-      </div>
+          <!-- Preview zone -->
+          <div *ngIf="qrScannerPreview() || existingQrUrl()"
+               class="qr-preview-zone">
+            <img [src]="qrScannerPreview() || existingQrUrl()" alt="QR Scanner Preview" class="qr-preview-img">
+            <div class="flex-grow-1">
+              <p class="mb-1 fw-semibold text-success small">
+                <span *ngIf="qrScannerPreview()">✅ New image selected</span>
+                <span *ngIf="!qrScannerPreview() && existingQrUrl()">📌 Existing QR image</span>
+              </p>
+              <p class="mb-2 text-muted small">
+                <span *ngIf="qrScannerFile()">{{ qrScannerFile()!.name }}</span>
+                <span *ngIf="!qrScannerFile()">Upload a new image to replace this.</span>
+              </p>
+              <div class="d-flex gap-2">
+                <label for="qrScannerInputReplace" class="btn btn-sm btn-outline-primary" style="cursor:pointer;">
+                  <i class="bi bi-arrow-repeat me-1"></i>Replace
+                  <input id="qrScannerInputReplace" type="file" class="d-none" accept="image/*"
+                         (change)="onQrFileSelected($event)">
+                </label>
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeQrImage()">
+                  <i class="bi bi-trash me-1"></i>Remove
+                </button>
+              </div>
+            </div>
+          </div>
 
-      <!-- Registration Settings -->
-      <div class="col-12">
-        <h5 class="mt-2 text-secondary border-bottom pb-2">Registration &amp; Payment Settings</h5>
-      </div>
-
-      <div class="col-md-3">
-        <app-input id="PlayerRegistrationFee" type="number" [control]="form.get('PlayerRegistrationFee')!"
-          [label]="'Player Reg Fee'" placeholder="e.g., 100">
-        </app-input>
-      </div>
-
-      <div class="col-md-3">
-        <app-input id="OwnerRegistrationFee" type="number" [control]="form.get('OwnerRegistrationFee')!"
-          [label]="'Owner Reg Fee'" placeholder="e.g., 5000">
-        </app-input>
-      </div>
-
-      <div class="col-md-3">
-        <app-input id="UPIName" type="text" [control]="form.get('UPIName')!"
-          [label]="'UPI Name'" placeholder="e.g., John Doe">
-        </app-input>
-      </div>
-
-      <div class="col-md-3">
-        <app-input id="UPIId" type="text" [control]="form.get('UPIId')!"
-          [label]="'UPI ID'" placeholder="e.g., jdoe@upi">
-        </app-input>
-      </div>
-
-      <!-- UPI QR Scanner Upload -->
-      <div class="col-md-6">
-        <label class="form-label fw-semibold text-secondary mb-2 d-block">
-          <i class="bi bi-qr-code me-1"></i> UPI QR Scanner Image
-          <small class="text-muted fw-normal">(Optional)</small>
-        </label>
-
-        <!-- Preview zone: shows existing or newly selected image -->
-        <div *ngIf="qrScannerPreview() || existingQrUrl()"
-             class="border rounded-3 p-3 mb-2 bg-light d-flex align-items-start gap-3 position-relative">
-          <img [src]="qrScannerPreview() || existingQrUrl()"
-               alt="QR Scanner Preview"
-               style="width:120px;height:120px;object-fit:contain;border-radius:10px;border:1px solid #dee2e6;background:#fff;padding:4px;">
-          <div class="flex-grow-1">
-            <p class="mb-1 fw-semibold text-success" style="font-size:0.82rem;">
-              <span *ngIf="qrScannerPreview()">✅ New image selected</span>
-              <span *ngIf="!qrScannerPreview() && existingQrUrl()">📌 Existing QR image</span>
-            </p>
-            <p class="mb-2 text-muted" style="font-size:0.78rem;">
-              <span *ngIf="qrScannerFile()">{{ qrScannerFile()!.name }}</span>
-              <span *ngIf="!qrScannerFile()">Upload a new image to replace this.</span>
-            </p>
-            <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeQrImage()">
-              <i class="bi bi-trash me-1"></i>Remove
-            </button>
+          <!-- Upload zone -->
+          <div *ngIf="!qrScannerPreview() && !existingQrUrl()">
+            <label for="qrScannerInput" class="qr-upload-zone">
+              <span class="upload-icon">📲</span>
+              <span class="fw-semibold text-secondary">Click to upload QR Scanner</span>
+              <span class="text-muted small">PNG, JPG up to 5 MB</span>
+              <input id="qrScannerInput" type="file" class="d-none" accept="image/*"
+                     (change)="onQrFileSelected($event)">
+            </label>
           </div>
         </div>
-
-        <!-- Drop / click upload zone (shown when no preview) -->
-        <div *ngIf="!qrScannerPreview() && !existingQrUrl()">
-          <label for="qrScannerInput"
-                 class="d-flex flex-column align-items-center justify-content-center gap-2 border border-2 border-dashed rounded-3 p-4 text-center cursor-pointer"
-                 style="border-color:#ced4da;background:#f8fafc;cursor:pointer;transition:border-color .2s,background .2s;"
-                 onmouseenter="this.style.borderColor='#0d6efd';this.style.background='#f0f5ff'"
-                 onmouseleave="this.style.borderColor='#ced4da';this.style.background='#f8fafc'">
-            <span style="font-size:2.5rem;line-height:1;">📲</span>
-            <span class="fw-semibold text-secondary" style="font-size:0.9rem;">Click to upload QR Scanner</span>
-            <span class="text-muted" style="font-size:0.78rem;">PNG, JPG up to 5 MB</span>
-            <input id="qrScannerInput" type="file" class="d-none"
-                   accept="image/*"
-                   (change)="onQrFileSelected($event)">
-          </label>
-        </div>
-
-        <!-- Replace button shown when there's already a preview -->
-        <div *ngIf="qrScannerPreview() || existingQrUrl()" class="mt-1">
-          <label for="qrScannerInputReplace"
-                 class="btn btn-sm btn-outline-primary"
-                 style="cursor:pointer;">
-            <i class="bi bi-arrow-repeat me-1"></i>Replace Image
-            <input id="qrScannerInputReplace" type="file" class="d-none"
-                   accept="image/*"
-                   (change)="onQrFileSelected($event)">
-          </label>
-        </div>
-      </div>
-
-      <div class="col-md-12">
-        <app-textarea id="description" [control]="form.get('Description')!" [label]="'Description (Optional)'"
-          placeholder="Add notes or details">
-        </app-textarea>
       </div>
     </div>
 
-    <div class="text-end mt-4">
-      <app-button label="{{isEdit ? 'Update ':'Save '}}Auction Session" [disabled]="form.invalid"
+    <!-- Section 4: Description -->
+    <div class="form-section">
+      <div class="section-label">
+        <i class="bi bi-card-text"></i>
+        <span>Additional Notes</span>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <app-textarea id="description" [control]="form.get('Description')!" [label]="'Description (Optional)'"
+            placeholder="Add notes or details about this auction session">
+          </app-textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline-secondary px-4" (click)="router.navigate(['/kkk/auction-session-list'])">
+        <i class="bi bi-x-lg me-1"></i> Cancel
+      </button>
+      <app-button label="{{isEdit ? '✏️ Update' : '💾 Save'}} Session" [disabled]="form.invalid"
         type="submit"></app-button>
     </div>
+
   </form>
 </div>

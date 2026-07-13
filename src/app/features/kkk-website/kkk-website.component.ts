@@ -94,7 +94,6 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   activeFilter = 'All';
   searchQuery = '';
   currentPage = 1;
-  playersPerPage = 8;
 
   // ─── Gallery ───────────────────────────────────────────────────────────────
   selectedCategory = 'all';
@@ -130,6 +129,18 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   existingPlayerMatch: any | null = null;
   regType: 'team' | 'player' = 'team';
   playerRegForm = { playerName: '', fatherName: '', contactNumber: '', photoUrl: '', role: 'Batsman', battingStyle: 'Right-hand bat', bowlingStyle: 'Right-arm medium', jerseySize: 'M', basePrice: 100, sessionId: null };
+  battingStyleOptions = [
+    { value: 'Right-hand bat', label: 'Right-hand bat', icon: 'bi-bat', description: 'Classic right-handed stroke play', image: 'assets/avatars/default-avatar.png' },
+    { value: 'Left-hand bat', label: 'Left-hand bat', icon: 'bi-bat', description: 'Left-handed batting style', image: 'assets/avatars/default-avatar.png' }
+  ];
+  bowlingStyleOptions = [
+    { value: 'Right-arm fast', label: 'Right-arm fast', icon: 'bi-person-bounding-box', description: 'Fast bowler delivering pace', image: 'assets/avatars/default-avatar.png' },
+    { value: 'Right-arm medium', label: 'Right-arm medium', icon: 'bi-person-bounding-box', description: 'Medium pace with control', image: 'assets/avatars/default-avatar.png' },
+    { value: 'Right-arm spin', label: 'Right-arm spin', icon: 'bi-person-bounding-box', description: 'Spin bowler with turn', image: 'assets/avatars/default-avatar.png' },
+    { value: 'Left-arm fast', label: 'Left-arm fast', icon: 'bi-person-bounding-box', description: 'Left-arm quick delivery', image: 'assets/avatars/default-avatar.png' },
+    { value: 'Left-arm medium', label: 'Left-arm medium', icon: 'bi-person-bounding-box', description: 'Left-arm seam control', image: 'assets/avatars/default-avatar.png' },
+    { value: 'Left-arm spin', label: 'Left-arm spin', icon: 'bi-person-bounding-box', description: 'Left-arm wrist and flight', image: 'assets/avatars/default-avatar.png' }
+  ];
   selectedPhotoFile: File | null = null;
   selectedReceiptFile: File | null = null;
 
@@ -599,18 +610,12 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
         (p.Team || '').toLowerCase().includes(q)
       );
     }
-    const start = (this.currentPage - 1) * this.playersPerPage;
-    this.filteredPlayers = filtered.slice(start, start + this.playersPerPage);
+     this.filteredPlayers = filtered;
     this._totalFilteredCount = filtered.length;
   }
 
   _totalFilteredCount = 0;
-
-  get totalPages() { return Math.ceil(this._totalFilteredCount / this.playersPerPage); }
-
-  prevPage() { if (this.currentPage > 1) { this.currentPage--; this.applyPlayerFilter(); } }
-  nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.applyPlayerFilter(); } }
-
+ 
   onSearchChange() { this.currentPage = 1; this.applyPlayerFilter(); }
 
   getRoleBadgeClass(role: string) {
@@ -1040,17 +1045,20 @@ export class KkkWebsiteComponent implements OnInit, OnDestroy {
   }
 
   getRoleIcon(role: string): string {
-    switch (role?.toLowerCase()) {
-      case 'batsman':
-        return '🏏';
-      case 'bowler':
-        return '🥎';
-      case 'all-rounder':
-        return '🏏';
-      case 'wicket-keeper':
-        return '🧤';
-      default:
-        return '👤';
-    }
+    const r = role?.toLowerCase() || '';
+    if (r.includes('batsman')) return '🏏';
+    if (r.includes('bowler')) return '⚾';
+    if (r.includes('all-rounder') || r.includes('allrounder')) return '🏏';
+    if (r.includes('wicket')) return '🧤';
+    return '👤';
+  }
+
+  getRoleClass(role: string): string {
+    const r = role?.toLowerCase() || '';
+    if (r.includes('batsman')) return 'bg-success';
+    if (r.includes('bowler')) return 'bg-danger';
+    if (r.includes('all-rounder') || r.includes('allrounder')) return 'bg-primary';
+    if (r.includes('wicket')) return 'bg-warning text-dark';
+    return 'bg-secondary';
   }
 }

@@ -1,4 +1,3 @@
-// Auto-detect host to support LAN/Mobile access
 const apiBase = window.location.hostname;
 
 export const environment = {

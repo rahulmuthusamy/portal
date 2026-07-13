@@ -87,7 +87,7 @@ export class DatepickerComponent {
   @Input() maxDate?: Date;
 
   ngOnInit(): void {
-    this.minDate = this.minDate || new Date();
+    // Removed default minDate to allow components to specify if they want to restrict past dates
   }
 
   get controlAsFormControl(): FormControl {
