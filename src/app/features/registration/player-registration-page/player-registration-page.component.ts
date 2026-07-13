@@ -61,13 +61,22 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
   showCountdown: boolean = false;
 
   private route = inject(ActivatedRoute);
-
+  maxDob: string;
   constructor(
     private onboardingService: OnboardingService,
     private auctionSessionService: AuctionSessionService,
     private playerService: PlayerService,
     private router: Router
-  ) { }
+  ) {
+    const today = new Date();
+    const maxDate = new Date(
+      today.getFullYear() - 15,
+      today.getMonth(),
+      today.getDate()
+    );
+
+    this.maxDob = maxDate.toISOString().split('T')[0];
+  }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe(params => {
@@ -182,7 +191,7 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
     }
   }
 
- 
+
 
   onAadharSelected(event: any) {
     const file = event.target.files?.[0];
@@ -353,7 +362,7 @@ export class PlayerRegistrationPageComponent implements OnInit, OnDestroy {
       this.registrationError = 'Please enter a valid 10-digit mobile number.';
       return;
     }
-    if (!this.playerRegForm.photoUrl ||!this.playerRegForm.aadharUrl || !this.playerRegForm.playerName || !this.playerRegForm.fatherName || !this.playerRegForm.contactNumber || !this.playerRegForm.sessionId || !this.playerRegForm.dob) {
+    if (!this.playerRegForm.photoUrl || !this.playerRegForm.aadharUrl || !this.playerRegForm.playerName || !this.playerRegForm.fatherName || !this.playerRegForm.contactNumber || !this.playerRegForm.sessionId || !this.playerRegForm.dob) {
       this.registrationError = 'Please fill all required fields.';
       return;
     }
